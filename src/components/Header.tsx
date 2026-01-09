@@ -18,7 +18,7 @@ export default function Header() {
             className="text-4xl md:text-5xl font-black uppercase tracking-tighter leading-none mb-2" 
             style={{ fontFamily: '"Press Start 2P", "Courier New", monospace' }}
           >
-            ISMAÏL
+            ISMAIL BENKIRANE
           </h1>
           <p className="text-sm font-bold uppercase tracking-[0.2em] text-zinc-400">
             Junior Game Designer
