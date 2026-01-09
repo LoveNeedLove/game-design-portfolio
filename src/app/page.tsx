@@ -96,7 +96,7 @@ function ProjectCard({ project, onClick }: { project: Project; onClick: () => vo
          </div>
       </div>
       <div className="w-full md:w-1/3">
-        <span className="text-xs font-mono text-zinc-400 mb-2 block tracking-tighter uppercase">Mission_ID: {project.id}</span>
+        <span className="text-xs font-semibold text-zinc-400 mb-2 block tracking-wide uppercase">Project #{project.id}</span>
         <h3 className="text-4xl font-black uppercase italic leading-none mb-4 group-hover:text-blue-600 transition-colors">
           {project.title}
         </h3>
@@ -110,159 +110,147 @@ function ProjectCard({ project, onClick }: { project: Project; onClick: () => vo
 
 export default function Home() {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
-  const [featuredIndex, setFeaturedIndex] = useState(0);
+  const [activeCardIndex, setActiveCardIndex] = useState(0);
 
   const featuredMissions = projects.filter((p) => p.featured);
   const otherMissions = projects.filter((p) => !p.featured);
 
-  const handleNext = () => setFeaturedIndex((prev) => (prev + 1) % featuredMissions.length);
-  const handlePrev = () => setFeaturedIndex((prev) => (prev - 1 + featuredMissions.length) % featuredMissions.length);
-
   return (
-    <main className="min-h-screen bg-white text-black selection:bg-black selection:text-white pt-24">
+    <>
       <Header />
-
-      {/* SECTION FEATURED AVEC COULEUR DYNAMIQUE PAR PROJET */}
-      <motion.section 
-        id="featured" 
-        className="relative py-24 overflow-visible transition-colors duration-700"
-        animate={{ 
-          backgroundColor: featuredMissions[featuredIndex].bannerColor 
-        }}
-      >
-        <div className="px-6 max-w-6xl mx-auto flex flex-col md:flex-row gap-20 items-center overflow-visible relative z-10">
-          {/* GAUCHE: CARDS + NAVIGATION */}
-          <div className="w-full md:w-1/2 flex flex-col items-center justify-center min-h-[450px] overflow-visible">
-            <div className="relative w-full max-w-[400px] h-[300px] mb-12 flex items-center justify-center">
-               <CardSwap 
-                activeIndex={featuredIndex}
-                onCardClick={(idx: number) => {
-                  if (idx === featuredIndex) {
-                    setSelectedProject(featuredMissions[idx]);
-                  } else {
-                    setFeaturedIndex(idx);
-                  }
-                }}
-               >
-                 {featuredMissions.map((p) => (
-                   <Card key={p.id} className="cursor-pointer">
-                      <img 
-                        src={p.coverImage} 
-                        className="w-full h-full object-cover" 
-                        alt={p.title} 
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex items-end p-6">
-                        <span className="text-white font-black italic uppercase text-lg tracking-tighter">{p.title}</span>
-                      </div>
-                   </Card>
-                 ))}
-               </CardSwap>
-            </div>
-            
-            {/* NAVIGATION AVEC FLÈCHES */}
-            <div className="flex items-center gap-10 mt-4 bg-white/50 backdrop-blur-md p-2 rounded-full border border-black/5">
-              <button 
-                onClick={handlePrev}
-                className="p-3 hover:bg-white rounded-full transition-all group shadow-sm"
-              >
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M15 18l-6-6 6-6"/>
-                </svg>
-              </button>
-
-              <div className="flex gap-2">
-                {featuredMissions.map((_, i) => (
-                  <button 
-                    key={i}
-                    onClick={() => setFeaturedIndex(i)}
-                    className={`h-1 transition-all duration-500 rounded-full ${featuredIndex === i ? 'w-8 bg-black' : 'w-2 bg-zinc-300'}`}
-                  />
-                ))}
-              </div>
-
-              <button 
-                onClick={handleNext}
-                className="p-3 hover:bg-white rounded-full transition-all group shadow-sm"
-              >
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M9 18l6-6-6-6" transform="rotate(180 12 12)"/>
-                </svg>
-              </button>
-            </div>
-          </div>
-
-          {/* DROITE: LOGO + INFO AVEC FOND BLANC */}
-          <div className="w-full md:w-1/2 flex flex-col gap-6">
-            <motion.div
-              key={featuredIndex}
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.3 }}
-              className="space-y-6 bg-white p-8 md:p-12 border border-black shadow-[20px_20px_0px_rgba(0,0,0,0.05)]"
-            >
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-black flex items-center justify-center text-white font-black italic text-xl">
-                  {featuredMissions[featuredIndex].title.charAt(0)}
-                </div>
-                <div className="flex flex-col">
-                  <span className="text-[10px] font-black text-blue-600 tracking-[0.4em] uppercase">Featured_Mission</span>
-                  <h2 className="text-4xl font-black italic uppercase tracking-tighter leading-none">
-                    {featuredMissions[featuredIndex].title}
-                  </h2>
-                </div>
-              </div>
-              
-              <p className="text-xl font-medium leading-relaxed italic text-zinc-500 max-w-md">
-                {featuredMissions[featuredIndex].description}
-              </p>
-
-              <div className="pt-4">
-                <button 
-                  onClick={() => setSelectedProject(featuredMissions[featuredIndex])}
-                  className="px-8 py-4 bg-black text-white text-[10px] font-black uppercase tracking-[0.3em] hover:bg-blue-600 transition-all shadow-[10px_10px_0px_rgba(0,0,0,0.1)] active:translate-y-1 active:shadow-none"
-                >
-                  Access_Project_Intel
-                </button>
-              </div>
-            </motion.div>
-          </div>
-        </div>
-      </motion.section>
-
-      {/* ABOUT SECTION */}
-      <motion.section 
-        id="about" 
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true }}
-        variants={fadeInUp}
-        className="px-6 max-w-6xl mx-auto py-24 border-b border-zinc-100"
-      >
-        <div className="flex flex-col md:flex-row gap-12 items-start">
-          <div className="md:w-1/3">
-            <h2 className="text-[10px] font-mono text-zinc-400 uppercase tracking-[0.5em]">
-              // Bio_Data
-            </h2>
-          </div>
-          <div className="md:w-2/3">
-            <p className="text-xl md:text-2xl font-medium leading-relaxed italic text-zinc-800">
-              Junior Game Designer passionné par la création de mécaniques systémiques et l'équilibrage du gameplay. 
-              Mon approche combine une vision créative forte avec une rigueur technique, visant à transformer chaque interaction en une expérience mémorable pour le joueur.
-            </p>
-          </div>
-        </div>
-      </motion.section>
-
-      {/* PROJECT LIST (Operational History) */}
-      <section className="py-24 px-6 max-w-6xl mx-auto">
-        <motion.h2 
+      <main className="min-h-screen bg-white text-black selection:bg-black selection:text-white">
+        {/* ABOUT SECTION */}
+        <motion.section
+          id="about"
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true }}
           variants={fadeInUp}
-          className="text-[10px] font-mono text-zinc-400 uppercase tracking-[0.5em] mb-20"
+          className="px-6 max-w-6xl mx-auto py-24 border-b border-zinc-100"
         >
-          // Operational_History
+          <div className="flex flex-col md:flex-row gap-12 items-start">
+            <div className="md:w-1/3">
+              <h2 className="text-sm font-black text-zinc-800 uppercase tracking-wider">
+                About Me
+              </h2>
+            </div>
+            <div className="md:w-2/3">
+              <p className="text-xl md:text-2xl font-medium leading-relaxed italic text-zinc-800">
+                Welcome! I am a Game Designer dedicated to crafting deep, systemic experiences with a focus on User Experience and Economy Design. I believe games are at their best when they foster connection—whether through community-driven gameplay or seamless collaborative development.
+                <br /><br />
+                I am driven by a desire to translate ambitious creative visions into polished reality, utilizing a diverse toolkit to balance complex systems with intuitive feel.
+                <br /><br />
+                Currently, I am honing my craft at Isart Digital, Paris.
+              </p>
+            </div>
+          </div>
+        </motion.section>
+
+        {/* SECTION FEATURED */}
+      <section id="featured" className="relative py-24 overflow-visible">
+        {/* BANNIÈRE DE COULEUR SUR TOUTE LA LARGEUR DU SITE */}
+        <motion.div
+          className="absolute left-0 top-1/2 -translate-y-1/2 w-full transition-colors duration-700"
+          style={{ height: '350px' }}
+          animate={{
+            backgroundColor: featuredMissions[activeCardIndex].bannerColor
+          }}
+        />
+
+        <div className="px-6 max-w-6xl mx-auto overflow-visible relative z-10 w-full">
+          <motion.h2
+            initial={{ opacity: 0, y: -20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+            className="text-sm font-black text-zinc-800 uppercase tracking-wider mb-8"
+          >
+            Featured Project
+          </motion.h2>
+
+          <div className="relative flex flex-col md:flex-row gap-16 items-center overflow-visible">
+
+            {/* GAUCHE: INFO DU PROJET */}
+            <div className="w-full md:w-1/2 flex flex-col gap-6 md:-mt-8">
+              <motion.div
+                key={activeCardIndex}
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.3 }}
+                className="space-y-6"
+              >
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 bg-black flex items-center justify-center text-white font-black italic text-xl">
+                    {featuredMissions[activeCardIndex].title.charAt(0)}
+                  </div>
+                  <div className="flex flex-col">
+                    <h2 className="text-4xl font-black italic uppercase tracking-tighter leading-none">
+                      {featuredMissions[activeCardIndex].title}
+                    </h2>
+                  </div>
+                </div>
+
+                <p className="text-xl font-medium leading-relaxed italic text-zinc-800 max-w-md">
+                  {featuredMissions[activeCardIndex].description}
+                </p>
+
+                <div className="pt-4">
+                  <button
+                    onClick={() => setSelectedProject(featuredMissions[activeCardIndex])}
+                    className="px-8 py-4 bg-black text-white text-[10px] font-black uppercase tracking-[0.3em] hover:bg-blue-600 transition-all shadow-[10px_10px_0px_rgba(0,0,0,0.1)] active:translate-y-1 active:shadow-none"
+                  >
+                    Access_Project_Intel
+                  </button>
+                </div>
+              </motion.div>
+            </div>
+
+            {/* DROITE: CARDS */}
+            <div className="w-full md:w-1/2 relative md:mt-32">
+              <div className="overflow-x-visible" style={{ maskImage: 'linear-gradient(to bottom, black 0%, black 30%, black 65%, transparent 100%)', WebkitMaskImage: 'linear-gradient(to bottom, black 0%, black 30%, black 65%, transparent 100%)', paddingTop: '150px', marginTop: '-150px' }}>
+                <CardSwap
+                  width={450}
+                  height={350}
+                  cardDistance={60}
+                  verticalDistance={70}
+                  delay={4000}
+                  pauseOnHover={true}
+                  easing="elastic"
+                  skewAmount={6}
+                  onCardClick={(idx) => setSelectedProject(featuredMissions[idx])}
+                  onActiveIndexChange={(idx) => setActiveCardIndex(idx)}
+                >
+                {featuredMissions.map((p) => (
+                  <Card key={p.id} customClass="cursor-pointer overflow-hidden">
+                    <img
+                      src={p.coverImage}
+                      className="w-full h-full object-cover transition-all duration-300"
+                      style={{ filter: 'blur(0px)' }}
+                      alt={p.title}
+                      data-card-id={p.id}
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex items-end p-6">
+                      <span className="text-white font-black italic uppercase text-lg tracking-tighter">{p.title}</span>
+                    </div>
+                  </Card>
+                ))}
+              </CardSwap>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* PROJECT LIST (Operational History) */}
+      <section className="py-24 px-6 max-w-6xl mx-auto">
+        <motion.h2
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+          variants={fadeInUp}
+          className="text-sm font-black text-zinc-800 uppercase tracking-wider mb-20"
+        >
+          All Projects
         </motion.h2>
         
         <div className="grid grid-cols-1 gap-32">
@@ -288,5 +276,6 @@ export default function Home() {
         </div>
       </footer>
     </main>
+    </>
   );
 }

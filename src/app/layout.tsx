@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import DotGrid from "../backgrounds/DotGrid";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -27,7 +28,20 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {children}
+        {/* DotGrid en arrière-plan fixe */}
+        <div className="fixed inset-0 w-screen h-screen pointer-events-none" style={{ zIndex: 0 }}>
+          <DotGrid
+            dotSize={4}
+            gap={30}
+            baseColor="#d4c5a9"
+            activeColor="#4ade80"
+            proximity={120}
+            style={{ width: '100%', height: '100%' }}
+          />
+        </div>
+        <div className="main-bandeau">
+          {children}
+        </div>
       </body>
     </html>
   );
