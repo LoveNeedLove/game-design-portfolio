@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
+  --background: #111111; /* Couleur du fond des marges */
   --foreground: #171717;
 }
 
@@ -12,15 +12,27 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+body {
+  background-color: var(--background);
+  /* Motif optionnel pour donner de la texture aux marges */
+  background-image: radial-gradient(#333 1px, transparent 1px);
+  background-size: 30px 30px;
+  color: var(--foreground);
+  margin: 0;
+  padding: 0;
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* Conteneur principal qui crée le bandeau vertical */
+.main-bandeau {
+  max-width: 1000px; /* Largeur de votre portfolio */
+  margin: 0 auto;
+  background-color: #ffffff; /* Couleur de fond du portfolio */
+  min-height: 100vh;
+  box-shadow: 0 0 60px rgba(0, 0, 0, 0.5);
+  position: relative;
+}
+
+/* Ajustement pour que le contenu ne colle pas aux bords du bandeau */
+.content-wrapper {
+  padding: 2rem;
 }
