@@ -111,6 +111,9 @@ function ProjectCard({ project, onClick }: { project: Project; onClick: () => vo
 export default function Home() {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [activeCardIndex, setActiveCardIndex] = useState(0);
+  const [progress, setProgress] = useState(0);
+  const [triggerNext, setTriggerNext] = useState(0);
+  const [autoPlayEnabled, setAutoPlayEnabled] = useState(true);
 
   const featuredMissions = projects.filter((p) => p.featured);
   const otherMissions = projects.filter((p) => !p.featured);
@@ -147,7 +150,10 @@ export default function Home() {
         </motion.section>
 
         {/* SECTION FEATURED */}
-      <section id="featured" className="relative py-24 overflow-visible">
+      <section
+        id="featured"
+        className="relative py-24 overflow-visible"
+      >
         {/* BANNIÈRE DE COULEUR SUR TOUTE LA LARGEUR DU SITE */}
         <motion.div
           className="absolute left-0 top-1/2 -translate-y-1/2 w-full transition-colors duration-700"
@@ -156,6 +162,54 @@ export default function Home() {
             backgroundColor: featuredMissions[activeCardIndex].bannerColor
           }}
         />
+
+        {/* Contrôles en bas à droite - avec z-index élevé */}
+        <div className="absolute left-0 top-1/2 -translate-y-1/2 w-full pointer-events-none" style={{ height: '350px', zIndex: 100 }}>
+          <div className="absolute bottom-6 right-6 flex flex-col items-end gap-3 pointer-events-auto">
+            {/* Bouton Next avec progression radiale */}
+            <button
+              onClick={() => setTriggerNext(prev => prev + 1)}
+              className="w-10 h-10 rounded-full flex items-center justify-center transition-all group relative overflow-hidden"
+              aria-label="Next project"
+              style={{
+                background: `conic-gradient(
+                  rgba(0, 0, 0, 0.4) 0deg,
+                  rgba(0, 0, 0, 0.4) ${progress * 3.6}deg,
+                  rgba(0, 0, 0, 0.2) ${progress * 3.6}deg,
+                  rgba(0, 0, 0, 0.2) 360deg
+                )`
+              }}
+            >
+              <div className="absolute inset-0 backdrop-blur-sm rounded-full" />
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 16 16"
+                fill="none"
+                className="text-white/70 group-hover:text-white transition-colors relative z-10"
+              >
+                <path
+                  d="M6 12L10 8L6 4"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </button>
+
+            {/* Toggle Auto-play */}
+            <label className="flex items-center gap-2 cursor-pointer">
+              <span className="text-xs text-white/70 font-medium">Auto</span>
+              <input
+                type="checkbox"
+                checked={autoPlayEnabled}
+                onChange={(e) => setAutoPlayEnabled(e.target.checked)}
+                className="w-4 h-4 cursor-pointer"
+              />
+            </label>
+          </div>
+        </div>
 
         <div className="px-6 max-w-6xl mx-auto overflow-visible relative z-10 w-full">
           <motion.h2
@@ -206,20 +260,41 @@ export default function Home() {
             </div>
 
             {/* DROITE: CARDS */}
-            <div className="w-full md:w-1/2 relative md:mt-32">
-              <div className="overflow-x-visible" style={{ maskImage: 'linear-gradient(to bottom, black 0%, black 30%, black 65%, transparent 100%)', WebkitMaskImage: 'linear-gradient(to bottom, black 0%, black 30%, black 65%, transparent 100%)', paddingTop: '150px', marginTop: '-150px' }}>
-                <CardSwap
-                  width={450}
-                  height={350}
-                  cardDistance={60}
-                  verticalDistance={70}
-                  delay={4000}
-                  pauseOnHover={true}
-                  easing="elastic"
-                  skewAmount={6}
-                  onCardClick={(idx) => setSelectedProject(featuredMissions[idx])}
-                  onActiveIndexChange={(idx) => setActiveCardIndex(idx)}
-                >
+            <div className="w-full md:w-1/2 relative" style={{ marginTop: '25px' }}>
+              {/* Cards et navigation - positions indépendantes */}
+              <CardSwap
+                width={450}
+                height={350}
+                cardDistance={60}
+                verticalDistance={70}
+                delay={7000}
+                pauseOnHover={!autoPlayEnabled}
+                easing="elastic"
+                skewAmount={6}
+                onCardClick={(idx) => setSelectedProject(featuredMissions[idx])}
+                onActiveIndexChange={(idx) => setActiveCardIndex(idx)}
+                onProgressChange={(p) => setProgress(p)}
+                triggerNext={triggerNext}
+                renderWrapper={(cardsElement, navElement) => (
+                  <>
+                    {/* Fenêtres/Cartes - avec masque de dégradé */}
+                    <div style={{
+                      paddingTop: '150px',
+                      marginTop: '-150px',
+                      maskImage: 'linear-gradient(to bottom, transparent 0%, black 7%, black 30%, black 70%, transparent 77%)',
+                      WebkitMaskImage: 'linear-gradient(to bottom, transparent 0%, black 7%, black 30%, black 70%, transparent 77%)',
+                      paddingBottom: '200px'
+                    }}>
+                      {cardsElement}
+                    </div>
+
+                    {/* Barre de navigation - position indépendante */}
+                    <div style={{ marginTop: '-176px', position: 'relative', zIndex: 20 }}>
+                      {navElement}
+                    </div>
+                  </>
+                )}
+              >
                 {featuredMissions.map((p) => (
                   <Card key={p.id} customClass="cursor-pointer overflow-hidden">
                     <img
@@ -235,7 +310,6 @@ export default function Home() {
                   </Card>
                 ))}
               </CardSwap>
-              </div>
             </div>
           </div>
         </div>
