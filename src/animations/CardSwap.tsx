@@ -29,6 +29,7 @@ export interface CardSwapProps {
   easing?: 'linear' | 'elastic';
   renderWrapper?: (cardsElement: ReactNode, navElement: ReactNode, progressElement: ReactNode) => ReactNode;
   triggerNext?: number;
+  resetTimer?: number;
   children: ReactNode;
 }
 
@@ -88,6 +89,7 @@ const CardSwap: React.FC<CardSwapProps> = ({
   easing = 'linear',
   renderWrapper,
   triggerNext,
+  resetTimer,
   children
 }) => {
   const config = useMemo(
@@ -125,6 +127,12 @@ const CardSwap: React.FC<CardSwapProps> = ({
   const [, forceUpdate] = React.useReducer(x => x + 1, 0);
   const progressIntervalRef = useRef<number>(0);
   const prevTriggerNext = useRef<number>(0);
+  const pauseOnHoverRef = useRef<boolean>(pauseOnHover);
+
+  // Mettre à jour la ref quand pauseOnHover change
+  useEffect(() => {
+    pauseOnHoverRef.current = pauseOnHover;
+  }, [pauseOnHover]);
 
   // Notifier l'index initial au montage
   useEffect(() => {
@@ -312,12 +320,33 @@ const CardSwap: React.FC<CardSwapProps> = ({
     const currentIndex = order.current[0];
     if (currentIndex === targetCardIndex) return; // Déjà sur cette carte
 
+    // Arrêter les timers et réinitialiser la progression
+    clearInterval(intervalRef.current);
+    clearInterval(progressIntervalRef.current);
+    setProgress(0);
+
     // Trouver la position de la carte cible dans l'ordre actuel
     const targetPosition = order.current.indexOf(targetCardIndex);
 
     // Si la carte cible est juste après la carte active (position 1), utiliser swap()
     if (targetPosition === 1) {
       goToNext();
+      // Redémarrer les timers après l'animation si auto-play est activé
+      if (!pauseOnHoverRef.current) {
+        setTimeout(() => {
+          const progressStep = 100 / (delay / 50);
+          progressIntervalRef.current = window.setInterval(() => {
+            setProgress(prev => {
+              const next = prev + progressStep;
+              return next >= 100 ? 100 : next;
+            });
+          }, 50);
+
+          intervalRef.current = window.setInterval(() => {
+            swap();
+          }, delay);
+        }, config.durDrop + config.durMove + config.durReturn * 1000);
+      }
       return;
     }
 
@@ -336,8 +365,24 @@ const CardSwap: React.FC<CardSwapProps> = ({
 
       // Puis faire l'animation goToPrev
       goToPrev();
+      // Redémarrer les timers après l'animation si auto-play est activé
+      if (!pauseOnHoverRef.current) {
+        setTimeout(() => {
+          const progressStep = 100 / (delay / 50);
+          progressIntervalRef.current = window.setInterval(() => {
+            setProgress(prev => {
+              const next = prev + progressStep;
+              return next >= 100 ? 100 : next;
+            });
+          }, 50);
+
+          intervalRef.current = window.setInterval(() => {
+            swap();
+          }, delay);
+        }, config.durDrop + config.durMove + config.durReturn * 1000);
+      }
     }
-  }, [refs, cardDistance, verticalDistance, skewAmount, goToNext, goToPrev]);
+  }, [refs, cardDistance, verticalDistance, skewAmount, goToNext, goToPrev, delay, swap, config]);
 
   // Initialisation et positionnement (ne s'exécute qu'une fois au montage)
   useEffect(() => {
@@ -364,28 +409,49 @@ const CardSwap: React.FC<CardSwapProps> = ({
   // Déclencher manuellement le passage à la carte suivante
   useEffect(() => {
     if (triggerNext !== undefined && triggerNext > 0 && triggerNext !== prevTriggerNext.current) {
-      console.log('Triggering next, triggerNext =', triggerNext);
       prevTriggerNext.current = triggerNext;
       goToNext();
     }
   }, [triggerNext, goToNext]);
 
-  // Gestion du timer automatique et de la progression
+  // Réinitialiser le timer quand resetTimer change
+  useEffect(() => {
+    if (resetTimer !== undefined && resetTimer > 0) {
+      clearInterval(intervalRef.current);
+      clearInterval(progressIntervalRef.current);
+      setProgress(0);
+
+      // Redémarrer le timer seulement si pauseOnHover est false (auto-play activé)
+      if (!pauseOnHoverRef.current) {
+        const progressInterval = setInterval(() => {
+          setProgress((prev) => {
+            if (prev >= 100) {
+              return 0;
+            }
+            return prev + (100 / (delay / 100));
+          });
+        }, 100);
+        progressIntervalRef.current = progressInterval as any;
+
+        const interval = setInterval(() => {
+          swap();
+        }, delay);
+        intervalRef.current = interval as any;
+      }
+    }
+  }, [resetTimer, delay, swap]);
+
+  // Gestion du timer automatique et de la progression - au montage et quand delay/swap change
   useEffect(() => {
     // Nettoyer les anciens timers
     clearInterval(intervalRef.current);
     clearInterval(progressIntervalRef.current);
 
-    if (!pauseOnHover) {
-      // Réinitialiser la progression au début
-      setProgress(0);
+    // Réinitialiser la progression au début
+    setProgress(0);
 
-      // Timer pour le swap automatique
-      intervalRef.current = window.setInterval(() => {
-        swap();
-      }, delay);
-
-      // Timer pour la barre de progression
+    // Timer pour la barre de progression et le swap automatique - seulement si pauseOnHover est false
+    if (!pauseOnHoverRef.current) {
       const progressStep = 100 / (delay / 50);
       progressIntervalRef.current = window.setInterval(() => {
         setProgress(prev => {
@@ -393,14 +459,40 @@ const CardSwap: React.FC<CardSwapProps> = ({
           return next >= 100 ? 100 : next;
         });
       }, 50);
-    } else {
-      setProgress(0);
+
+      intervalRef.current = window.setInterval(() => {
+        swap();
+      }, delay);
     }
 
     return () => {
       clearInterval(intervalRef.current);
       clearInterval(progressIntervalRef.current);
     };
+  }, [delay, swap]);
+
+  // Réagir aux changements de pauseOnHover pour démarrer/arrêter les timers
+  useEffect(() => {
+    clearInterval(intervalRef.current);
+    clearInterval(progressIntervalRef.current);
+
+    if (!pauseOnHover) {
+      // Démarrer les timers
+      const progressStep = 100 / (delay / 50);
+      progressIntervalRef.current = window.setInterval(() => {
+        setProgress(prev => {
+          const next = prev + progressStep;
+          return next >= 100 ? 100 : next;
+        });
+      }, 50);
+
+      intervalRef.current = window.setInterval(() => {
+        swap();
+      }, delay);
+    } else {
+      // Arrêter et réinitialiser la progression
+      setProgress(0);
+    }
   }, [pauseOnHover, delay, swap]);
 
   const rendered = childArr.map((child, i) => {

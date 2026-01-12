@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence, Variants } from "framer-motion";
-import { projects, Project } from "../data/projects";
+import { projects, Project, MediaItem } from "../data/projects";
 import Header from "../components/Header";
 import ProjectModal from "../components/ProjectModal";
 import CardSwap, { Card } from "../animations/CardSwap";
@@ -16,92 +16,225 @@ const getYouTubeID = (url: string) => {
 // Animation accélérée (0.4s)
 const fadeInUp: Variants = {
   hidden: { opacity: 0, y: 30 },
-  visible: { 
-    opacity: 1, 
-    y: 0, 
-    transition: { duration: 0.4, ease: [0.22, 1, 0.36, 1] } 
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.4, ease: [0.22, 1, 0.36, 1] }
   }
 };
 
-function ProjectCard({ project, onClick }: { project: Project; onClick: () => void }) {
-  const [isHovered, setIsHovered] = useState(false);
-  const [previewIndex, setPreviewIndex] = useState(0);
+// Variable pour contrôler l'arrondi des coins des images
+const IMAGE_BORDER_RADIUS = 12; // en pixels
 
-  const previews = [
-    { url: project.coverImage, isVideo: false },
+// Paramètres pour l'effet de dock/propulsion
+const DOCK_CONFIG = {
+  hoverScale: 1.3,        // Scale de l'élément survolé
+  adjacentScale: 0.8,     // Scale des éléments adjacents (même ligne)
+  gridGap: 32,            // Gap entre les éléments (en px) - correspond au gap-8 de Tailwind
+  // Calcul de la distance horizontale : expansion de l'élément + rétrécissement de l'adjacent + gap existant
+  getHorizontalPushDistance: (elementWidth: number) => {
+    const hoveredExpansion = elementWidth * (DOCK_CONFIG.hoverScale - 1) / 2; // expansion d'un côté
+    const adjacentShrink = elementWidth * (1 - DOCK_CONFIG.adjacentScale) / 2; // rétrécissement d'un côté
+    // L'élément du milieu doit compenser l'expansion du survolé, son propre rétrécissement, et maintenir le gap
+    return hoveredExpansion + adjacentShrink + DOCK_CONFIG.gridGap;
+  },
+  // Calcul de la distance verticale : expansion de l'élément + le gap existant
+  getVerticalPushDistance: (elementHeight: number) => {
+    const expansion = elementHeight * (DOCK_CONFIG.hoverScale - 1) / 2; // expansion d'un côté (haut ou bas)
+    // Les lignes adjacentes doivent s'éloigner pour maintenir le gap + compenser l'expansion
+    return expansion + DOCK_CONFIG.gridGap;
+  }
+};
+
+// Composant ProjectGridItem avec carousel d'images
+function ProjectGridItem({
+  project,
+  onClick,
+  isHovered,
+  onHoverChange,
+  columnIndex,
+  rowIndex,
+  hoveredRowIndex,
+  hoveredColumnIndex,
+  sameRow
+}: {
+  project: Project;
+  onClick: () => void;
+  isHovered: boolean;
+  onHoverChange: (hovered: boolean) => void;
+  columnIndex: number;
+  rowIndex: number;
+  hoveredRowIndex: number | null;
+  hoveredColumnIndex: number | null;
+  sameRow: boolean;
+}) {
+  const [currentMediaIndex, setCurrentMediaIndex] = useState(0);
+
+  // Créer la liste des médias avec la cover image en premier
+  const mediaList = [
+    { type: 'image' as const, url: project.coverImage },
     ...project.mediaList
-      .filter(m => m.type === 'image' || m.type === 'youtube')
-      .map(m => ({
-        url: m.type === 'youtube' 
-          ? `https://img.youtube.com/vi/${getYouTubeID(m.url)}/mqdefault.jpg` 
-          : m.url,
-        isVideo: m.type === 'youtube'
-      }))
   ];
 
+  // Faire défiler les images quand on hover (plus lent)
   useEffect(() => {
-    let interval: any;
-    if (isHovered && previews.length > 1) {
+    let interval: NodeJS.Timeout;
+    if (isHovered && mediaList.length > 1) {
       interval = setInterval(() => {
-        setPreviewIndex((prev) => (prev + 1) % previews.length);
-      }, 1200);
+        setCurrentMediaIndex((prev) => (prev + 1) % mediaList.length);
+      }, 1500); // Ralenti à 1.5 secondes
     } else {
-      setPreviewIndex(0);
+      setCurrentMediaIndex(0);
     }
     return () => clearInterval(interval);
-  }, [isHovered, previews.length]);
+  }, [isHovered, mediaList.length]);
+
+  const currentMedia = mediaList[currentMediaIndex];
+  const isYouTube = currentMedia.type === 'youtube';
+
+  // Déterminer l'origine de transformation en fonction de la colonne
+  // Utilise 'center' pour le container, l'alignement des images se fera via leur propre transform
+  const getTransformOrigin = () => {
+    if (columnIndex === 0) return 'left center';
+    if (columnIndex === 2) return 'right center';
+    return 'center center';
+  };
+
+  // Calculer l'effet de proximité (dock-like effect)
+  const getProximityEffect = () => {
+    // Push vertical : se déclenche dès qu'une ligne est survolée (même entre les projets)
+    if (hoveredRowIndex !== null && rowIndex !== hoveredRowIndex) {
+      // Lignes différentes de celle survolée : augmenter l'espace vertical et rétrécir
+      const estimatedHeight = 225;
+      const verticalDistance = DOCK_CONFIG.getVerticalPushDistance(estimatedHeight);
+
+      if (rowIndex < hoveredRowIndex) {
+        // Ligne au-dessus : pousser vers le haut et rétrécir
+        return { scale: 0.9, x: 0, y: -verticalDistance, opacity: 0.8 };
+      } else {
+        // Ligne en-dessous : pousser vers le bas et rétrécir
+        return { scale: 0.9, x: 0, y: verticalDistance, opacity: 0.8 };
+      }
+    }
+
+    // Effets horizontaux : uniquement quand un projet spécifique est survolé
+    if (hoveredColumnIndex !== null && sameRow) {
+      const distance = Math.abs(columnIndex - hoveredColumnIndex);
+
+      if (distance === 0) {
+        // C'est le projet survolé
+        return { scale: DOCK_CONFIG.hoverScale, x: 0, y: 0, opacity: 1 };
+      } else {
+        // Autres projets de la même ligne
+        if (columnIndex === 1) {
+          // L'élément du milieu se déplace en fonction de quel côté est survolé
+          const estimatedWidth = 400;
+          const pushDistance = DOCK_CONFIG.getHorizontalPushDistance(estimatedWidth);
+
+          const direction = hoveredColumnIndex === 0 ? 1 : -1;
+          return { scale: DOCK_CONFIG.adjacentScale, x: direction * pushDistance, y: 0, opacity: 0.7 };
+        } else {
+          // Les éléments aux extrémités ne se déplacent pas horizontalement mais ont le même scale
+          return { scale: DOCK_CONFIG.adjacentScale, x: 0, y: 0, opacity: 0.7 };
+        }
+      }
+    }
+
+    // État par défaut
+    return { scale: 1, x: 0, y: 0, opacity: 1 };
+  };
+
+  const proximityEffect = getProximityEffect();
 
   return (
-    <motion.div 
-      variants={fadeInUp}
-      initial="hidden"
-      whileInView="visible"
-      viewport={{ once: true, margin: "-100px" }}
-      whileHover={{ x: 10 }}
+    <motion.div
+      initial={{ opacity: 0 }}
+      whileInView={{ opacity: 1 }}
+      viewport={{ once: true }}
+      animate={{
+        scale: proximityEffect.scale,
+        x: proximityEffect.x,
+        y: proximityEffect.y,
+        zIndex: isHovered ? 10 : 1
+      }}
+      style={{
+        transformOrigin: getTransformOrigin(),
+        position: 'relative',
+        willChange: 'transform',
+        opacity: proximityEffect.opacity
+      }}
+      transition={{
+        duration: 0.6,
+        ease: [0.34, 1.56, 0.64, 1],
+        scale: { duration: 0.5 },
+        x: { duration: 0.6 },
+        y: { duration: 0.6 }
+      }}
       onClick={onClick}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      className="group cursor-pointer flex flex-col md:flex-row gap-10 items-start border-b border-zinc-100 pb-20"
+      onMouseEnter={() => onHoverChange(true)}
+      onMouseLeave={() => onHoverChange(false)}
+      className="cursor-pointer group"
     >
-      <div className="w-full md:w-2/3 aspect-video bg-zinc-100 relative overflow-hidden rounded-sm border border-zinc-200">
-         <AnimatePresence mode="wait">
-           <motion.div 
-             key={previewIndex}
-             initial={{ opacity: 0 }}
-             animate={{ opacity: 1 }}
-             exit={{ opacity: 0 }}
-             transition={{ duration: 0.3 }}
-             className="absolute inset-0"
-           >
-             <img 
-               src={previews[previewIndex].url} 
-               className="absolute inset-0 w-full h-full object-cover"
-               alt={project.title}
-             />
-             {previews[previewIndex].isVideo && (
-               <div className="absolute inset-0 flex items-center justify-center">
-                 <div className="bg-black/40 backdrop-blur-sm p-4 rounded-full border border-white/20 text-white shadow-xl">
-                   <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                     <path d="M8 5v14l11-7z"/>
-                   </svg>
-                 </div>
-               </div>
-             )}
-           </motion.div>
-         </AnimatePresence>
-         <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/10 backdrop-blur-[2px] z-10">
-            <span className="text-[10px] font-black uppercase tracking-[0.2em] bg-white px-4 py-2 border border-black shadow-[4px_4px_0px_rgba(0,0,0,1)]">
-              [ View_Mission_File ]
-            </span>
-         </div>
+      {/* Image du projet avec carousel */}
+      <div
+        className="relative w-full bg-zinc-100 overflow-hidden mb-4"
+        style={{
+          aspectRatio: '8/5',
+          borderRadius: `${IMAGE_BORDER_RADIUS}px`,
+          transformOrigin: 'center bottom'
+        }}
+      >
+        {/* Afficher toutes les images en absolu, une seule visible à la fois */}
+        {mediaList.map((media, index) => {
+          const mediaIsYouTube = media.type === 'youtube';
+          const mediaUrl = mediaIsYouTube
+            ? `https://img.youtube.com/vi/${getYouTubeID(media.url)}/mqdefault.jpg`
+            : media.url;
+
+          return (
+            <motion.img
+              key={index}
+              src={mediaUrl}
+              alt={project.title}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: index === currentMediaIndex ? 1 : 0 }}
+              transition={{ duration: 0.6 }}
+              className="absolute inset-0 w-full h-full object-cover"
+            />
+          );
+        })}
+
+        {/* Overlay sombre au hover */}
+        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300" />
+
+        {/* Logo YouTube si c'est une vidéo */}
+        {isYouTube && (
+          <div className="absolute top-2 right-2 bg-red-600 text-white px-2 py-1 rounded text-xs font-bold">
+            ▶ YouTube
+          </div>
+        )}
       </div>
-      <div className="w-full md:w-1/3">
-        <span className="text-xs font-semibold text-zinc-400 mb-2 block tracking-wide uppercase">Project #{project.id}</span>
-        <h3 className="text-4xl font-black uppercase italic leading-none mb-4 group-hover:text-blue-600 transition-colors">
+
+      {/* Conteneur de texte avec rendu optimisé */}
+      <div
+        style={{
+          WebkitFontSmoothing: 'subpixel-antialiased',
+          textRendering: 'geometricPrecision'
+        }}
+      >
+        {/* Année de sortie */}
+        <div className="text-xs font-mono text-zinc-400 mb-2">
+          {project.year}
+        </div>
+
+        {/* Titre du projet */}
+        <h3 className="text-lg font-black text-zinc-900 uppercase tracking-tight mb-2 group-hover:text-blue-600 transition-colors">
           {project.title}
         </h3>
-        <p className="text-zinc-500 text-sm leading-relaxed font-medium">
-          {project.description}
+
+        {/* Description courte */}
+        <p className="text-sm text-zinc-600 leading-relaxed">
+          {project.shortDescription}
         </p>
       </div>
     </motion.div>
@@ -113,10 +246,17 @@ export default function Home() {
   const [activeCardIndex, setActiveCardIndex] = useState(0);
   const [progress, setProgress] = useState(0);
   const [triggerNext, setTriggerNext] = useState(0);
+  const [resetTimer, setResetTimer] = useState(0);
   const [autoPlayEnabled, setAutoPlayEnabled] = useState(true);
+  const [hoveredProjectInfo, setHoveredProjectInfo] = useState<{
+    id: string;
+    rowIndex: number;
+    columnIndex: number;
+  } | null>(null);
+  const [hoveredRowIndex, setHoveredRowIndex] = useState<number | null>(null);
+  const [isInProjectSection, setIsInProjectSection] = useState(false);
 
   const featuredMissions = projects.filter((p) => p.featured);
-  const otherMissions = projects.filter((p) => !p.featured);
 
   return (
     <>
@@ -163,12 +303,14 @@ export default function Home() {
           }}
         />
 
-        {/* Contrôles en bas à droite - avec z-index élevé */}
+        {/* Bouton Next - dans le coin en bas à droite de la bannière */}
         <div className="absolute left-0 top-1/2 -translate-y-1/2 w-full pointer-events-none" style={{ height: '350px', zIndex: 100 }}>
-          <div className="absolute bottom-6 right-6 flex flex-col items-end gap-3 pointer-events-auto">
-            {/* Bouton Next avec progression radiale */}
+          <div className="absolute bottom-6 right-6 pointer-events-auto">
             <button
-              onClick={() => setTriggerNext(prev => prev + 1)}
+              onClick={() => {
+                setTriggerNext(prev => prev + 1);
+                setResetTimer(prev => prev + 1);
+              }}
               className="w-10 h-10 rounded-full flex items-center justify-center transition-all group relative overflow-hidden"
               aria-label="Next project"
               style={{
@@ -197,10 +339,14 @@ export default function Home() {
                 />
               </svg>
             </button>
+          </div>
+        </div>
 
-            {/* Toggle Auto-play */}
+        {/* Toggle Auto-play - positionné juste en dessous de la bannière colorée */}
+        <div className="absolute left-0 top-1/2 w-full pointer-events-none" style={{ zIndex: 100 }}>
+          <div className="absolute right-6 pointer-events-auto" style={{ top: 'calc(175px + 12px)' }}>
             <label className="flex items-center gap-2 cursor-pointer">
-              <span className="text-xs text-white/70 font-medium">Auto</span>
+              <span className="text-xs text-black font-medium">Auto Next</span>
               <input
                 type="checkbox"
                 checked={autoPlayEnabled}
@@ -271,10 +417,14 @@ export default function Home() {
                 pauseOnHover={!autoPlayEnabled}
                 easing="elastic"
                 skewAmount={6}
-                onCardClick={(idx) => setSelectedProject(featuredMissions[idx])}
+                onCardClick={(idx) => {
+                  setSelectedProject(featuredMissions[idx]);
+                  setResetTimer(prev => prev + 1);
+                }}
                 onActiveIndexChange={(idx) => setActiveCardIndex(idx)}
                 onProgressChange={(p) => setProgress(p)}
                 triggerNext={triggerNext}
+                resetTimer={resetTimer}
                 renderWrapper={(cardsElement, navElement) => (
                   <>
                     {/* Fenêtres/Cartes - avec masque de dégradé */}
@@ -315,8 +465,15 @@ export default function Home() {
         </div>
       </section>
 
-      {/* PROJECT LIST (Operational History) */}
-      <section className="py-24 px-6 max-w-6xl mx-auto">
+      {/* PROJECT LIST (Tous les projets en grille chronologique) */}
+      <section
+        className="py-24 px-6 max-w-6xl mx-auto"
+        onMouseEnter={() => setIsInProjectSection(true)}
+        onMouseLeave={() => {
+          setIsInProjectSection(false);
+          setHoveredRowIndex(null);
+        }}
+      >
         <motion.h2
           initial="hidden"
           whileInView="visible"
@@ -324,13 +481,131 @@ export default function Home() {
           variants={fadeInUp}
           className="text-sm font-black text-zinc-800 uppercase tracking-wider mb-20"
         >
-          All Projects
+          Projects
         </motion.h2>
-        
-        <div className="grid grid-cols-1 gap-32">
-          {otherMissions.map((p) => (
-            <ProjectCard key={p.id} project={p} onClick={() => setSelectedProject(p)} />
-          ))}
+
+        {/* Grille de projets - Organisée par lignes pour détecter le hover de ligne */}
+        <div className="flex flex-col" style={{ gap: `${DOCK_CONFIG.gridGap}px` }}>
+          {(() => {
+            const sortedProjects = [...projects].sort((a, b) => b.year - a.year);
+            const rows: typeof sortedProjects[] = [];
+
+            // Grouper les projets par lignes de 3
+            for (let i = 0; i < sortedProjects.length; i += 3) {
+              rows.push(sortedProjects.slice(i, i + 3));
+            }
+
+            // Déterminer quelle ligne afficher par défaut (première ligne si dans la section)
+            const effectiveHoveredRow = hoveredRowIndex !== null ? hoveredRowIndex : (isInProjectSection ? 0 : null);
+
+            return rows.map((rowProjects, rowIndex) => (
+              <div
+                key={`row-${rowIndex}`}
+                style={{
+                  position: 'relative',
+                  overflow: 'visible'
+                }}
+              >
+                {/* Zone de gap au-dessus de chaque ligne (sauf la première) pour détecter le hover entre lignes */}
+                {rowIndex > 0 && (
+                  <div
+                    style={{
+                      position: 'absolute',
+                      top: `-${DOCK_CONFIG.gridGap}px`,
+                      left: 0,
+                      right: 0,
+                      height: `${DOCK_CONFIG.gridGap}px`,
+                      zIndex: 1
+                    }}
+                    onMouseEnter={() => {
+                      // Garder la ligne actuellement active (ne rien changer)
+                      // Si aucune ligne n'est active, garder la ligne du haut
+                      if (hoveredRowIndex === null && isInProjectSection) {
+                        setHoveredRowIndex(rowIndex - 1);
+                      }
+                    }}
+                  />
+                )}
+
+                {/* Wrapper avec extensions gauche et droite pour étendre la zone de détection */}
+                <div
+                  className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
+                  style={{
+                    position: 'relative',
+                    overflow: 'visible',
+                    gap: `${DOCK_CONFIG.gridGap}px`
+                  }}
+                  onMouseEnter={() => setHoveredRowIndex(rowIndex)}
+                  onMouseLeave={(e) => {
+                    // Ne pas réinitialiser si on quitte vers une zone de gap
+                    const relatedTarget = e.relatedTarget as HTMLElement | null;
+                    if (!relatedTarget || (relatedTarget instanceof HTMLElement && !relatedTarget.closest('[data-gap-zone]'))) {
+                      if (isInProjectSection && hoveredRowIndex === rowIndex) {
+                        setHoveredRowIndex(0); // Retour à la première ligne par défaut
+                      }
+                    }
+                  }}
+                >
+                  {/* Extension gauche invisible - jusqu'au bord de la section max-w-6xl */}
+                  <div
+                    style={{
+                      position: 'absolute',
+                      right: '100%',
+                      top: 0,
+                      bottom: 0,
+                      width: 'calc((100vw - 100%) / 2)', // Moitié de l'espace disponible jusqu'au bord de max-w-6xl
+                      pointerEvents: 'auto'
+                    }}
+                    onMouseEnter={() => setHoveredRowIndex(rowIndex)}
+                  />
+
+                  {/* Extension droite invisible - jusqu'au bord de la section max-w-6xl */}
+                  <div
+                    style={{
+                      position: 'absolute',
+                      left: '100%',
+                      top: 0,
+                      bottom: 0,
+                      width: 'calc((100vw - 100%) / 2)', // Moitié de l'espace disponible jusqu'au bord de max-w-6xl
+                      pointerEvents: 'auto'
+                    }}
+                    onMouseEnter={() => setHoveredRowIndex(rowIndex)}
+                  />
+
+                  {rowProjects.map((project, colIndex) => {
+                    const isHovered = hoveredProjectInfo?.id === project.id;
+                    const sameRow = hoveredProjectInfo ? rowIndex === hoveredProjectInfo.rowIndex : false;
+
+                    return (
+                      <div
+                        key={project.id}
+                        style={{
+                          position: 'relative',
+                          overflow: 'visible'
+                        }}
+                      >
+                        <ProjectGridItem
+                          project={project}
+                          onClick={() => setSelectedProject(project)}
+                          isHovered={isHovered}
+                          onHoverChange={(hovered) =>
+                            setHoveredProjectInfo(
+                              hovered ? { id: project.id, rowIndex, columnIndex: colIndex } : null
+                            )
+                          }
+                          columnIndex={colIndex}
+                          rowIndex={rowIndex}
+                          hoveredRowIndex={effectiveHoveredRow}
+                          hoveredColumnIndex={hoveredProjectInfo?.columnIndex ?? null}
+                          sameRow={sameRow}
+                        />
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            ));
+          })()}
         </div>
       </section>
 
