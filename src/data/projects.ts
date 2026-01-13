@@ -85,7 +85,7 @@ export const projects: Project[] = [
     bannerColor: "#6366f1",
     mediaList: [
       { type: 'youtube', url: 'dQw4w9WgXcQ' },
-      { type: 'image', url: 'https://images.unsplash.com/photo-1511512578047-dfb367046420?w=1200' },
+      { type: 'image', url: 'https://images.unsplash.com/photo-1511512578047-dfb367046420?w=1200' }
     ],
     linkUrl: "https://example.com/fling",
     linkTitle: "Play Fling"
@@ -126,7 +126,9 @@ export const projects: Project[] = [
     coverImage: "/projects/GD2/Last Scythe.png",
     overlayColor: "rgba(220, 38, 38, 0.05)",
     bannerColor: "#dc2626",
-    mediaList: []
+    mediaList: [
+      { type: 'youtube', url: '20m89_nlSHE' }
+    ]
   },
   {
     id: "wa-sir-ltaxi",
@@ -160,7 +162,9 @@ export const projects: Project[] = [
     coverImage: "/projects/GD1/Wa Sir L'taxi/Wa Sir l'taxi.png",
     overlayColor: "rgba(234, 179, 8, 0.05)",
     bannerColor: "#eab308",
-    mediaList: []
+    mediaList: [
+      { type: 'youtube', url: '0jdoxy1O4_o' }
+    ]
   },
   {
     id: "ostin8to",
@@ -204,7 +208,7 @@ export const projects: Project[] = [
     title: "Chaotiles",
     description: "Trapped in a maze controlled by The Entity of Chaos, you must make agonizing decisions to escape. Amidst a backdrop of colliding myths and legends, you must be careful: your choices will one day corrupt you, turning you against the people you once called your allies.",
     date: "December 2024",
-    developmentTime: "2 weeks",
+    developmentTime: "1 month",
     genres: ["Board Game", "Semi-Coop"],
     roles: ["Game Design", "Systems Design"],
     teamSize: [
@@ -234,7 +238,10 @@ export const projects: Project[] = [
     coverImage: "/projects/GD1/Chaotiles/Chaotiles.png",
     overlayColor: "rgba(249, 115, 22, 0.05)",
     bannerColor: "#f97316",
-    mediaList: []
+    mediaList: [
+      { type: 'youtube', url: 'fDGHpldf5qQ' },
+      { type: 'image', url: 'https://images.unsplash.com/photo-1511512578047-dfb367046420?w=1200' },
+    ]
   },
   {
     id: "blcs",
@@ -272,7 +279,9 @@ export const projects: Project[] = [
     coverImage: "/projects/GD1/BLCS/BLCS.png",
     overlayColor: "rgba(14, 165, 233, 0.05)",
     bannerColor: "#0ea5e9",
-    mediaList: []
+    mediaList: [
+      { type: 'iframe', url: '/projects/GD1/BLCS/Content/blcsrules.html' }
+    ]
   },
   {
     id: "musee",
@@ -346,6 +355,8 @@ export const projects: Project[] = [
     coverImage: "/projects/GD1/Journal de bord 2050/Journal de bord 2050.png",
     overlayColor: "rgba(16, 185, 129, 0.05)",
     bannerColor: "#10b981",
-    mediaList: []
+    mediaList: [
+      { type: 'youtube', url: 'V8atEgIWxNM' }
+    ]
   }
 ];

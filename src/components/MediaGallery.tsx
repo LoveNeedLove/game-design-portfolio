@@ -59,12 +59,15 @@ export default function MediaGallery({ mediaList = [] }: MediaGalleryProps) {
         return <iframe className="w-full h-full" src={`https://www.youtube.com/embed/${cleanID}?autoplay=1&mute=1&modestbranding=1`} allowFullScreen />;
       case 'video':
         return <video className={`w-full h-full ${isContain ? 'object-contain' : 'object-cover'}`} src={item.url} autoPlay muted loop playsInline />;
+      case 'iframe':
+        return <iframe className="w-full h-full" src={item.url} allowFullScreen />;
       default:
         return <img src={item.url} className={`w-full h-full ${isContain ? 'object-contain' : 'object-cover'}`} alt="Focus" />;
     }
   };
 
   const isYouTube = activeMedia?.type === 'youtube';
+  const hideControls = isYouTube;
 
   return (
     <motion.div
@@ -79,7 +82,7 @@ export default function MediaGallery({ mediaList = [] }: MediaGalleryProps) {
         </div>
 
         {/* ICÔNES DISCRÈTES EN HAUT À DROITE (seulement si ce n'est pas YouTube) */}
-        {!isYouTube && (
+        {!hideControls && (
           <div className="absolute top-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity z-20">
             <button
               onClick={() => setIsLightboxOpen(true)}
