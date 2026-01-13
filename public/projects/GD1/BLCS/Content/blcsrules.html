@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BLCS | Official Rules</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Pirata+One&family=Quicksand:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --ocean-dark: #1b262c;
+            --parchment: #fdf5e6;
+            --wood-brown: #5d4037;
+        }
+        
+        body {
+            background-color: #2c3e50;
+            font-family: 'Quicksand', sans-serif;
+            margin: 0;
+            padding: 2rem 1rem;
+            display: flex;
+            justify-content: center;
+        }
+
+        .parchment-container {
+            width: 100%;
+            max-width: 800px;
+            background-color: var(--parchment);
+            background-image: url("https://www.transparenttextures.com/patterns/papyrus.png");
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            border: 8px solid var(--wood-brown);
+            padding: 2.5rem;
+            position: relative;
+            box-sizing: border-box;
+            border-radius: 4px;
+        }
+
+        .pirate-font {
+            font-family: 'Pirata One', system-ui;
+        }
+
+        .divider {
+            height: 3px;
+            background: linear-gradient(to right, transparent, var(--wood-brown), transparent);
+            margin: 1.5rem 0;
+        }
+
+        /* Tactical Card Styling */
+        .playing-card {
+            background: #ffffff;
+            border: 2px solid #d1d5db;
+            border-radius: 12px;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            aspect-ratio: 2.5 / 3.5;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .playing-card:hover {
+            transform: translateY(-8px) rotate(1deg);
+            box-shadow: 0 12px 20px rgba(0,0,0,0.2);
+            border-color: var(--wood-brown);
+        }
+
+        .card-letter {
+            font-family: 'Pirata One', serif;
+            font-size: 2.5rem;
+            line-height: 1;
+            color: var(--wood-brown);
+            align-self: flex-start;
+        }
+
+        .card-emoji {
+            font-size: 3rem;
+            filter: drop-shadow(0 2px 2px rgba(0,0,0,0.1));
+        }
+
+        .card-info {
+            text-align: center;
+        }
+
+        .step-circle {
+            background: var(--wood-brown);
+            color: white;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        section {
+            margin-bottom: 2.5rem;
+        }
+
+        h2.section-title {
+            font-family: 'Pirata One', system-ui;
+            font-size: 2.5rem;
+            color: #451a03;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid rgba(120, 53, 15, 0.2);
+            padding-bottom: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="parchment-container">
+        <!-- Header -->
+        <header class="text-center">
+            <h1 class="text-8xl pirate-font text-yellow-900 mb-0 tracking-tighter">BLCS</h1>
+        </header>
+
+        <!-- Setting -->
+        <section class="text-center px-4 md:px-12">
+            <p class="text-lg leading-relaxed text-gray-800">
+                The ship is gone, lost to the abyss. You are trapped amidst the wreckage, 
+                scavenging floating pieces of wood to build the <strong>raft of your dreams</strong>. 
+                But the ocean is small, and there isn't enough timber for everyone.
+            </p>
+        </section>
+
+        <!-- Core Mechanics -->
+        <div class="grid md:grid-cols-2 gap-6 mb-10">
+            <div class="bg-amber-100/40 p-6 rounded-lg border-2 border-amber-900/10">
+                <h2 class="pirate-font text-3xl text-red-900 mb-2">The Objective</h2>
+                <p class="text-lg leading-snug">Be the <strong>last surviving pirate</strong> on the wreckage. If your raft is dismantled and you have nowhere to stand, you're shark bait.</p>
+            </div>
+            <div class="bg-amber-100/40 p-6 rounded-lg border-2 border-amber-900/10">
+                <h2 class="pirate-font text-3xl text-red-900 mb-2">The First Mate</h2>
+                <p class="text-lg leading-snug">The starting player is the person who can perform the <strong>best snake imitation</strong>. Turns proceed clockwise.</p>
+            </div>
+        </div>
+
+        <!-- Course of a Round -->
+        <section class="bg-white/30 p-8 rounded-2xl border border-amber-900/10 shadow-inner">
+            <h2 class="section-title">Course of a Round</h2>
+            <div class="space-y-6">
+                <div class="flex items-start gap-4">
+                    <div class="step-circle">1</div>
+                    <div>
+                        <h3 class="font-bold text-xl text-amber-950">Navigate the Raft (Move)</h3>
+                        <p class="text-gray-700">Move your pirate anywhere on your connected wreckage. You cannot move through or land on a space occupied by another player.</p>
+                    </div>
+                </div>
+                <div class="flex items-start gap-4">
+                    <div class="step-circle">2</div>
+                    <div>
+                        <h3 class="font-bold text-xl text-amber-950">Secure the Wood (Rearrange)</h3>
+                        <p class="text-gray-700">Rearrange up to <strong>3 blocks</strong> of your raft to any empty spaces bordering your current wreckage.</p>
+                    </div>
+                </div>
+                <div class="flex items-start gap-4">
+                    <div class="step-circle">3</div>
+                    <div>
+                        <h3 class="font-bold text-xl text-amber-950">Scavenge the Tides (Draw)</h3>
+                        <p class="text-gray-700">Draw 1 card from the deck to conclude your turn.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Cards -->
+        <section>
+            <h2 class="section-title">The BLCS Cards</h2>
+            <p class="mb-8 italic text-amber-900 font-bold uppercase tracking-wider text-sm">Play as many cards as you wish during your turn before you draw.</p>
+            
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+                <!-- B Card -->
+                <div class="playing-card">
+                    <div class="card-letter">B</div>
+                    <div class="card-emoji">🧱</div>
+                    <div class="card-info">
+                        <p class="font-bold uppercase text-xs mb-1">Block</p>
+                        <p class="text-[10px] leading-tight text-gray-600">Move <strong>any</strong> block to <strong>any</strong> space.</p>
+                    </div>
+                </div>
+                <!-- L Card -->
+                <div class="playing-card">
+                    <div class="card-letter">L</div>
+                    <div class="card-emoji">🪜</div>
+                    <div class="card-info">
+                        <p class="font-bold uppercase text-xs mb-1">Ladder</p>
+                        <p class="text-[10px] leading-tight text-gray-600">Jump to any space within <strong>3-blocks</strong>.</p>
+                    </div>
+                </div>
+                <!-- C Card -->
+                <div class="playing-card">
+                    <div class="card-letter">C</div>
+                    <div class="card-emoji">💣</div>
+                    <div class="card-info">
+                        <p class="font-bold uppercase text-xs mb-1">Canon</p>
+                        <p class="text-[10px] leading-tight text-gray-600"><strong>Remove</strong> any block from the board.</p>
+                    </div>
+                </div>
+                <!-- S Card -->
+                <div class="playing-card">
+                    <div class="card-letter">S</div>
+                    <div class="card-emoji">🐍</div>
+                    <div class="card-info">
+                        <p class="font-bold uppercase text-xs mb-1">Snake</p>
+                        <p class="text-[10px] leading-tight text-gray-600"><strong>Push</strong> a row/column 1 space away.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Death -->
+        <section class="p-8 bg-yellow-950 text-amber-50 rounded-xl shadow-2xl">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 gap-2">
+                <h2 class="pirate-font text-4xl text-yellow-400">Lost to the Abyss</h2>
+                <span class="text-xs uppercase tracking-widest bg-red-900/50 px-3 py-1 rounded-full border border-red-800">Raft Integrity: 0%</span>
+            </div>
+            <p class="text-lg leading-relaxed mb-6">
+                A player "dies" when they are <strong>isolated</strong>, without any blocks left to move onto.
+            </p>
+            <div class="bg-black/40 p-4 rounded-lg italic border-l-4 border-yellow-500">
+                "Dead pirates still drift. On your turn, remove 1 block from the board to haunt those still building their dreams."
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="mt-8 text-center text-gray-500 text-xs uppercase tracking-[0.3em]">
+            BLCS PROTOTYPE
+        </footer>
+    </div>
+
+</body>
+</html>
