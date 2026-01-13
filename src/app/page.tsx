@@ -140,8 +140,13 @@ function ProjectGridItem({
       }
     }
 
-    // État par défaut
-    return { scale: 1, x: 0, y: 0, opacity: 1 };
+    // Si la ligne est survolée mais pas de projet spécifique, agrandir légèrement
+    if (hoveredRowIndex !== null && rowIndex === hoveredRowIndex) {
+      return { scale: 1, x: 0, y: 0, opacity: 1 };
+    }
+
+    // État par défaut : taille réduite
+    return { scale: 0.92, x: 0, y: 0, opacity: 1 };
   };
 
   const proximityEffect = getProximityEffect();
@@ -222,9 +227,9 @@ function ProjectGridItem({
           textRendering: 'geometricPrecision'
         }}
       >
-        {/* Année de sortie */}
+        {/* Date de sortie */}
         <div className="text-xs font-mono text-zinc-400 mb-2">
-          {project.year}
+          {project.date}
         </div>
 
         {/* Titre du projet */}
@@ -232,9 +237,9 @@ function ProjectGridItem({
           {project.title}
         </h3>
 
-        {/* Description courte */}
-        <p className="text-sm text-zinc-600 leading-relaxed">
-          {project.shortDescription}
+        {/* Description */}
+        <p className="text-sm text-zinc-600 leading-relaxed line-clamp-4 group-hover:line-clamp-none transition-all">
+          {project.description}
         </p>
       </div>
     </motion.div>
@@ -254,7 +259,6 @@ export default function Home() {
     columnIndex: number;
   } | null>(null);
   const [hoveredRowIndex, setHoveredRowIndex] = useState<number | null>(null);
-  const [isInProjectSection, setIsInProjectSection] = useState(false);
 
   const featuredMissions = projects.filter((p) => p.featured);
 
@@ -379,38 +383,38 @@ export default function Home() {
                 transition={{ duration: 0.3 }}
                 className="space-y-6"
               >
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 bg-black flex items-center justify-center text-white font-black italic text-xl">
-                    {featuredMissions[activeCardIndex].title.charAt(0)}
+                <div className="flex items-start justify-between gap-4">
+                  <h2 className="text-4xl font-black italic uppercase tracking-tighter leading-none">
+                    {featuredMissions[activeCardIndex].title}
+                  </h2>
+                  <div className="text-xs font-mono text-zinc-400 whitespace-nowrap pt-1">
+                    {featuredMissions[activeCardIndex].date}
                   </div>
-                  <div className="flex flex-col">
-                    <h2 className="text-4xl font-black italic uppercase tracking-tighter leading-none">
-                      {featuredMissions[activeCardIndex].title}
-                    </h2>
-                  </div>
+                </div>
+
+                <div className="flex flex-wrap gap-2">
+                  {featuredMissions[activeCardIndex].genres.map((genre) => (
+                    <span
+                      key={genre}
+                      className="px-3 py-1 text-xs font-bold uppercase tracking-wider bg-zinc-100 text-zinc-700 border border-zinc-300"
+                    >
+                      {genre}
+                    </span>
+                  ))}
                 </div>
 
                 <p className="text-xl font-medium leading-relaxed italic text-zinc-800 max-w-md">
                   {featuredMissions[activeCardIndex].description}
                 </p>
-
-                <div className="pt-4">
-                  <button
-                    onClick={() => setSelectedProject(featuredMissions[activeCardIndex])}
-                    className="px-8 py-4 bg-black text-white text-[10px] font-black uppercase tracking-[0.3em] hover:bg-blue-600 transition-all shadow-[10px_10px_0px_rgba(0,0,0,0.1)] active:translate-y-1 active:shadow-none"
-                  >
-                    Access_Project_Intel
-                  </button>
-                </div>
               </motion.div>
             </div>
 
             {/* DROITE: CARDS */}
-            <div className="w-full md:w-1/2 relative" style={{ marginTop: '25px' }}>
+            <div className="w-full md:w-1/2 relative" style={{ marginTop: '25px', marginLeft: '-40px', paddingBottom: '30px' }}>
               {/* Cards et navigation - positions indépendantes */}
               <CardSwap
-                width={450}
-                height={350}
+                width={480}
+                height={300}
                 cardDistance={60}
                 verticalDistance={70}
                 delay={7000}
@@ -454,8 +458,8 @@ export default function Home() {
                       alt={p.title}
                       data-card-id={p.id}
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex items-end p-6">
-                      <span className="text-white font-black italic uppercase text-lg tracking-tighter">{p.title}</span>
+                    <div className="absolute inset-0 flex items-end p-6">
+                      <span className="text-white font-black italic uppercase text-lg tracking-tighter drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">{p.title}</span>
                     </div>
                   </Card>
                 ))}
@@ -468,9 +472,7 @@ export default function Home() {
       {/* PROJECT LIST (Tous les projets en grille chronologique) */}
       <section
         className="py-24 px-6 max-w-6xl mx-auto"
-        onMouseEnter={() => setIsInProjectSection(true)}
         onMouseLeave={() => {
-          setIsInProjectSection(false);
           setHoveredRowIndex(null);
         }}
       >
@@ -495,8 +497,8 @@ export default function Home() {
               rows.push(sortedProjects.slice(i, i + 3));
             }
 
-            // Déterminer quelle ligne afficher par défaut (première ligne si dans la section)
-            const effectiveHoveredRow = hoveredRowIndex !== null ? hoveredRowIndex : (isInProjectSection ? 0 : null);
+            // Utiliser seulement la ligne effectivement survolée, pas de défaut
+            const effectiveHoveredRow = hoveredRowIndex;
 
             return rows.map((rowProjects, rowIndex) => (
               <div
@@ -518,9 +520,8 @@ export default function Home() {
                       zIndex: 1
                     }}
                     onMouseEnter={() => {
-                      // Garder la ligne actuellement active (ne rien changer)
-                      // Si aucune ligne n'est active, garder la ligne du haut
-                      if (hoveredRowIndex === null && isInProjectSection) {
+                      // Garder la ligne actuellement active si elle existe, sinon prendre la ligne du haut
+                      if (hoveredRowIndex === null) {
                         setHoveredRowIndex(rowIndex - 1);
                       }
                     }}
@@ -540,33 +541,33 @@ export default function Home() {
                     // Ne pas réinitialiser si on quitte vers une zone de gap
                     const relatedTarget = e.relatedTarget as HTMLElement | null;
                     if (!relatedTarget || (relatedTarget instanceof HTMLElement && !relatedTarget.closest('[data-gap-zone]'))) {
-                      if (isInProjectSection && hoveredRowIndex === rowIndex) {
-                        setHoveredRowIndex(0); // Retour à la première ligne par défaut
+                      if (hoveredRowIndex === rowIndex) {
+                        setHoveredRowIndex(null); // Désactiver la mise en valeur
                       }
                     }
                   }}
                 >
-                  {/* Extension gauche invisible - jusqu'au bord de la section max-w-6xl */}
+                  {/* Extension gauche invisible - jusqu'au bord du foreground (48px) */}
                   <div
                     style={{
                       position: 'absolute',
                       right: '100%',
                       top: 0,
                       bottom: 0,
-                      width: 'calc((100vw - 100%) / 2)', // Moitié de l'espace disponible jusqu'au bord de max-w-6xl
+                      width: '48px',
                       pointerEvents: 'auto'
                     }}
                     onMouseEnter={() => setHoveredRowIndex(rowIndex)}
                   />
 
-                  {/* Extension droite invisible - jusqu'au bord de la section max-w-6xl */}
+                  {/* Extension droite invisible - jusqu'au bord du foreground (48px) */}
                   <div
                     style={{
                       position: 'absolute',
                       left: '100%',
                       top: 0,
                       bottom: 0,
-                      width: 'calc((100vw - 100%) / 2)', // Moitié de l'espace disponible jusqu'au bord de max-w-6xl
+                      width: '48px',
                       pointerEvents: 'auto'
                     }}
                     onMouseEnter={() => setHoveredRowIndex(rowIndex)}

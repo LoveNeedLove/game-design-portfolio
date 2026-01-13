@@ -64,7 +64,7 @@ export default function Header() {
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: -100, opacity: 0 }}
             transition={{ duration: 0.3, ease: "easeOut" }}
-            className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-b border-zinc-200 shadow-sm"
+            className="fixed top-0 left-0 right-0 z-[150] bg-white/95 backdrop-blur-md border-b border-zinc-200 shadow-sm"
           >
             <div className="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
               <h2 className="text-lg font-black uppercase tracking-tighter">
