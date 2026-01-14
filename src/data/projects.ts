@@ -19,6 +19,7 @@ export interface Project {
   featured: boolean;
   title: string;
   description: string;
+  shortDescription: string;
 
   // Project details
   date: string; // Format: "Month Year" (e.g., "January 2024")
@@ -37,6 +38,8 @@ export interface Project {
   coverImage: string;
   overlayColor: string;
   bannerColor: string;
+  featuredTextColor: string; // Color for title/description text in featured section
+  secondaryTextColor: string; // Color for date/roles text in featured section
   mediaList: MediaItem[];
 
   // Optional
@@ -50,6 +53,7 @@ export const projects: Project[] = [
     featured: true,
     title: "Fling",
     description: "You've crash-landed in an unknown habitat, but you have a unique advantage: the ability to possess and fling spherical objects. Jump, dash, and throw your way through six unique levels to reach the core of this hostile planet—literally!",
+    shortDescription: "A 2.5D platformer with a unique recoil-based mobility system where projecting objects flings you in the opposite direction.",
     date: "May 2025",
     developmentTime: "2 months",
     genres: ["Platformer"],
@@ -82,7 +86,9 @@ export const projects: Project[] = [
     solution: "To bridge this gap without breaking immersion, I designed and implemented a series of wordless, in-game 2D animations at key progression points. By teaching the mechanics through clear visual observation rather than text, I eliminated the language barrier and allowed players to master the complex controls intuitively.",
     coverImage: "/projects/GD1/Fling/Fling.png",
     overlayColor: "rgba(99, 102, 241, 0.05)",
-    bannerColor: "#6366f1",
+    bannerColor: "#babbfa",
+    featuredTextColor: "#000000",
+    secondaryTextColor: "#6b7280",
     mediaList: [
       { type: 'youtube', url: 'dQw4w9WgXcQ' },
       { type: 'image', url: 'https://images.unsplash.com/photo-1511512578047-dfb367046420?w=1200' }
@@ -95,6 +101,7 @@ export const projects: Project[] = [
     featured: true,
     title: "Last Scythe",
     description: "The work of a reaper is never over... and that's exactly why you're ready to quit! Take on waves of vengeful souls with your trusty scythe, explore various arenas, and uncover the truth behind your retirement plan. Because let's be honest: even death deserves a vacation.",
+    shortDescription: "A top-down brawler with a spacing-focused combat system where your scythe only deals damage at the tip of the blade.",
     date: "December 2025",
     developmentTime: "2 months",
     genres: ["Brawler", "Top-Down"],
@@ -125,7 +132,9 @@ export const projects: Project[] = [
     solution: "I implemented a Hub-world progression system tied to a fully-fledged short storyline. By adding NPCs and furniture to the Hub that unlock as the player advances, I gave the player a tangible, visual representation of their progress. This shifted the motivation from mere survival to personal investment, using the narrative as a powerful hook to keep players engaged until the final credits.",
     coverImage: "/projects/GD2/Last Scythe.png",
     overlayColor: "rgba(220, 38, 38, 0.05)",
-    bannerColor: "#dc2626",
+    bannerColor: "#161616",
+    featuredTextColor: "#f1f1f1",
+    secondaryTextColor: "#5de9ff",
     mediaList: [
       { type: 'youtube', url: '20m89_nlSHE' }
     ]
@@ -135,6 +144,7 @@ export const projects: Project[] = [
     featured: true,
     title: "Wa Sir L'taxi",
     description: "Your trusty red taxi won't stop! Guess it's the perfect opportunity to register for the White House City GP. Buckle up, because the meter is running, the brakes are broken, and the only way to the finish line is forward!",
+    shortDescription: "A one-button racing game with wacky physics designed for speedrunning, controlled entirely with the Space bar.",
     date: "March 2025",
     developmentTime: "1 month",
     genres: ["Racing", "One-Button"],
@@ -161,7 +171,9 @@ export const projects: Project[] = [
     solution: "I designed a \"Press vs. Hold\" interface: quick taps for navigation and sustained holds for confirmation. To make this intuitive, I implemented dynamic camera transitions and radial UI animations on every button. These visual cues provided constant feedback on the input state, ensuring the player always felt in control of the menu process despite the hardware limitations.",
     coverImage: "/projects/GD1/Wa Sir L'taxi/Wa Sir l'taxi.png",
     overlayColor: "rgba(234, 179, 8, 0.05)",
-    bannerColor: "#eab308",
+    bannerColor: "#ffedb7",
+    featuredTextColor: "#000000",
+    secondaryTextColor: "#6b7280",
     mediaList: [
       { type: 'youtube', url: '0jdoxy1O4_o' }
     ]
@@ -171,6 +183,7 @@ export const projects: Project[] = [
     featured: false,
     title: "Ostin8to",
     description: "You're stuck in a loop, but your enemies aren't. Oh, and bombs are spawning everywhere. Survive the frantic, explosive chaos for as many loops as possible in this high-intensity survival FPS.",
+    shortDescription: "A frantic survival FPS created in 24 hours for GMTK Game Jam 2025 with the theme 'Loop'.",
     date: "July 2025",
     developmentTime: "24 hours",
     genres: ["FPS", "Survival"],
@@ -200,6 +213,8 @@ export const projects: Project[] = [
     coverImage: "/projects/GD1/Ostin8to/Ostin8to.png",
     overlayColor: "rgba(168, 85, 247, 0.05)",
     bannerColor: "#a855f7",
+    featuredTextColor: "#000000",
+    secondaryTextColor: "#6b7280",
     mediaList: []
   },
   {
@@ -207,6 +222,7 @@ export const projects: Project[] = [
     featured: false,
     title: "Chaotiles",
     description: "Trapped in a maze controlled by The Entity of Chaos, you must make agonizing decisions to escape. Amidst a backdrop of colliding myths and legends, you must be careful: your choices will one day corrupt you, turning you against the people you once called your allies.",
+    shortDescription: "A semi-cooperative board game where moral choices eventually corrupt one player, transforming the game into a 1-vs-All scenario.",
     date: "December 2024",
     developmentTime: "1 month",
     genres: ["Board Game", "Semi-Coop"],
@@ -238,6 +254,8 @@ export const projects: Project[] = [
     coverImage: "/projects/GD1/Chaotiles/Chaotiles.png",
     overlayColor: "rgba(249, 115, 22, 0.05)",
     bannerColor: "#f97316",
+    featuredTextColor: "#000000",
+    secondaryTextColor: "#6b7280",
     mediaList: [
       { type: 'youtube', url: 'fDGHpldf5qQ' },
       { type: 'image', url: 'https://images.unsplash.com/photo-1511512578047-dfb367046420?w=1200' },
@@ -248,6 +266,7 @@ export const projects: Project[] = [
     featured: false,
     title: "BLCS",
     description: "Your ship has crashed, and it's time to rebuild your dream boat from the wreckage. But this time, you aren't looking for crewmates. Use floating logs and washed-up tools to ensure you are the only survivor in this merciless tactical board game.",
+    shortDescription: "A tactical board game created in 6 hours where players build modular rafts and compete to be the last survivor.",
     date: "May 2025",
     developmentTime: "6 hours",
     genres: ["Board Game", "Paper Prototyping"],
@@ -279,6 +298,8 @@ export const projects: Project[] = [
     coverImage: "/projects/GD1/BLCS/BLCS.png",
     overlayColor: "rgba(14, 165, 233, 0.05)",
     bannerColor: "#0ea5e9",
+    featuredTextColor: "#000000",
+    secondaryTextColor: "#6b7280",
     mediaList: [
       { type: 'iframe', url: '/projects/GD1/BLCS/Content/blcsrules.html' }
     ]
@@ -288,6 +309,7 @@ export const projects: Project[] = [
     featured: false,
     title: "Musée Abdelaziz Tazi",
     description: "Experience the Abdelaziz Tazi Museum through a dual-layered engagement strategy: a physical, activity-filled pamphlet designed to captivate younger audiences, and a digital companion for visitors seeking in-depth knowledge. Scan QR codes throughout the gallery to unlock detailed descriptions of each artwork in three different languages.",
+    shortDescription: "A dual-layered museum experience with an interactive pamphlet for children and QR-based digital content in three languages.",
     date: "February 2026",
     developmentTime: "1 month",
     genres: ["Gamification"],
@@ -319,6 +341,8 @@ export const projects: Project[] = [
     coverImage: "/projects/GD1/Fling/Fling.png",
     overlayColor: "rgba(139, 92, 246, 0.05)",
     bannerColor: "#8b5cf6",
+    featuredTextColor: "#000000",
+    secondaryTextColor: "#6b7280",
     mediaList: []
   },
   {
@@ -326,6 +350,7 @@ export const projects: Project[] = [
     featured: false,
     title: "2050 : Journal de bord",
     description: "The year is 2050. An extreme climatic crisis has forced you to flee the city of Dunkirk, France. In this precarious era for humanity, you must manage your survival diary—designed as a personal scrapbook—and make impossible choices as if you were writing your own story. How will you endure? Who will you meet? And most importantly: is this a vision of the future, or is it already the reality for millions today?",
+    shortDescription: "A branching visual novel about climate crisis created for the French Red Cross, linking fictional futures to present realities.",
     date: "June 2025",
     developmentTime: "3 days",
     genres: ["Visual Novel", "Serious Game"],
@@ -355,6 +380,8 @@ export const projects: Project[] = [
     coverImage: "/projects/GD1/Journal de bord 2050/Journal de bord 2050.png",
     overlayColor: "rgba(16, 185, 129, 0.05)",
     bannerColor: "#10b981",
+    featuredTextColor: "#000000",
+    secondaryTextColor: "#6b7280",
     mediaList: [
       { type: 'youtube', url: 'V8atEgIWxNM' }
     ]
