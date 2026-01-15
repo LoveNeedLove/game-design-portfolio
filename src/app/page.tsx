@@ -277,122 +277,157 @@ export default function Home() {
   } | null>(null);
   const [hoveredRowIndex, setHoveredRowIndex] = useState<number | null>(null);
 
-  const featuredMissions = projects.filter((p) => p.featured);
+  // Helper function to parse date strings like "Month Year" into comparable Date objects
+  const parseDate = (dateStr: string): Date => {
+    const [month, year] = dateStr.split(' ');
+    const monthIndex = new Date(Date.parse(month + " 1, 2000")).getMonth();
+    return new Date(parseInt(year), monthIndex);
+  };
+
+  // Sort projects by date (most recent first)
+  const sortedProjects = [...projects].sort((a, b) => {
+    const dateA = parseDate(a.date);
+    const dateB = parseDate(b.date);
+    return dateB.getTime() - dateA.getTime();
+  });
+
+  // Filter featured missions and sort them by date as well
+  const featuredMissions = sortedProjects.filter((p) => p.featured);
+
+  // Helper function to determine if a color is dark
+  const isColorDark = (hexColor: string): boolean => {
+    const hex = hexColor.replace('#', '');
+    const r = parseInt(hex.substring(0, 2), 16);
+    const g = parseInt(hex.substring(2, 4), 16);
+    const b = parseInt(hex.substring(4, 6), 16);
+    const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+    return luminance < 0.5;
+  };
 
   return (
     <>
       <Header />
       <main className="min-h-screen bg-white text-black selection:bg-black selection:text-white">
         {/* ABOUT SECTION */}
-        <motion.section
-          id="about"
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-          variants={fadeInUp}
-          className="px-6 max-w-6xl mx-auto py-24 border-b border-zinc-100"
-        >
-          <div className="flex flex-col md:flex-row gap-12 items-start">
-            <div className="md:w-1/3">
-              <h2 className="text-sm font-black text-zinc-800 uppercase tracking-wider">
-                About Me
-              </h2>
-            </div>
-            <div className="md:w-2/3">
-              <p className="text-xl md:text-2xl font-medium leading-relaxed italic text-zinc-800">
-                Welcome! I am a Game Designer dedicated to crafting deep, systemic experiences with a focus on User Experience and Economy Design. I believe games are at their best when they foster connection—whether through community-driven gameplay or seamless collaborative development.
-                <br /><br />
-                I am driven by a desire to translate ambitious creative visions into polished reality, utilizing a diverse toolkit to balance complex systems with intuitive feel.
-                <br /><br />
-                Currently, I am honing my craft at Isart Digital, Paris.
-              </p>
-            </div>
-          </div>
-        </motion.section>
+        <section id="about" className="py-24 border-b border-zinc-100">
+          <motion.h2
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            variants={fadeInUp}
+            className="text-4xl font-black text-zinc-800 uppercase tracking-wider mb-12 px-6"
+          >
+            About Me
+          </motion.h2>
+
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            variants={fadeInUp}
+            className="px-6 max-w-6xl mx-auto"
+          >
+            <p className="text-xl md:text-2xl font-medium leading-relaxed italic text-zinc-800">
+              Welcome! I am a Game Designer dedicated to crafting deep, systemic experiences with a focus on User Experience and Economy Design. I believe games are at their best when they foster connection—whether through community-driven gameplay or seamless collaborative development.
+              <br /><br />
+              I am driven by a desire to translate ambitious creative visions into polished reality, utilizing a diverse toolkit to balance complex systems with intuitive feel.
+              <br /><br />
+              Currently, I am honing my craft at Isart Digital, Paris.
+            </p>
+          </motion.div>
+        </section>
 
         {/* SECTION FEATURED */}
       <section
         id="featured"
-        className="relative py-24 overflow-visible"
+        className="relative py-24 overflow-hidden"
       >
-        {/* BANNIÈRE DE COULEUR SUR TOUTE LA LARGEUR DU SITE */}
-        <motion.div
-          className="absolute left-0 top-1/2 -translate-y-1/2 w-full transition-colors duration-700"
-          style={{ height: '350px' }}
-          animate={{
-            backgroundColor: featuredMissions[activeCardIndex].bannerColor
-          }}
-        />
+        <motion.h2
+          initial={{ opacity: 0, y: -20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
+          className="text-4xl font-black text-zinc-800 uppercase tracking-wider mb-8 px-6"
+        >
+          Featured Projects
+        </motion.h2>
 
-        {/* Bouton Next - dans le coin en bas à droite de la bannière */}
-        <div className="absolute left-0 top-1/2 -translate-y-1/2 w-full pointer-events-none" style={{ height: '350px', zIndex: 100 }}>
-          <div className="absolute bottom-6 right-6 pointer-events-auto">
-            <button
-              onClick={() => {
-                setTriggerNext(prev => prev + 1);
-                setResetTimer(prev => prev + 1);
-              }}
-              className="w-10 h-10 rounded-full flex items-center justify-center transition-all group relative overflow-hidden"
-              aria-label="Next project"
-              style={{
-                background: `conic-gradient(
-                  rgba(0, 0, 0, 0.4) 0deg,
-                  rgba(0, 0, 0, 0.4) ${progress * 3.6}deg,
-                  rgba(0, 0, 0, 0.2) ${progress * 3.6}deg,
-                  rgba(0, 0, 0, 0.2) 360deg
-                )`
-              }}
-            >
-              <div className="absolute inset-0 backdrop-blur-sm rounded-full" />
-              <svg
-                width="16"
-                height="16"
-                viewBox="0 0 16 16"
-                fill="none"
-                className="text-white/70 group-hover:text-white transition-colors relative z-10"
+        {/* Conteneur principal avec la bannière et les fenêtres liées */}
+        <div className="px-6 mx-auto overflow-visible relative z-10 w-full" style={{ maxWidth: '1600px' }}>
+          {/* BANNIÈRE DE COULEUR - confinée au conteneur */}
+          <motion.div
+            className="absolute left-0 top-1/2 -translate-y-1/2 w-full transition-colors duration-700"
+            style={{ height: '280px' }}
+            animate={{
+              backgroundColor: featuredMissions[activeCardIndex].bannerColor
+            }}
+          />
+
+          {/* Bouton Next - dans le coin en bas à droite de la bannière */}
+          <div className="absolute left-0 top-1/2 -translate-y-1/2 w-full pointer-events-none" style={{ height: '280px', zIndex: 100 }}>
+            <div className="absolute bottom-2 right-2 pointer-events-auto">
+              <button
+                onClick={() => {
+                  setTriggerNext(prev => prev + 1);
+                  setResetTimer(prev => prev + 1);
+                }}
+                className="w-10 h-10 rounded-full flex items-center justify-center transition-all group relative overflow-hidden"
+                aria-label="Next project"
+                style={{
+                  background: isColorDark(featuredMissions[activeCardIndex].bannerColor)
+                    ? `conic-gradient(
+                        rgba(255, 255, 255, 0.4) 0deg,
+                        rgba(255, 255, 255, 0.4) ${progress * 3.6}deg,
+                        rgba(255, 255, 255, 0.2) ${progress * 3.6}deg,
+                        rgba(255, 255, 255, 0.2) 360deg
+                      )`
+                    : `conic-gradient(
+                        rgba(0, 0, 0, 0.4) 0deg,
+                        rgba(0, 0, 0, 0.4) ${progress * 3.6}deg,
+                        rgba(0, 0, 0, 0.2) ${progress * 3.6}deg,
+                        rgba(0, 0, 0, 0.2) 360deg
+                      )`
+                }}
               >
-                <path
-                  d="M6 12L10 8L6 4"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
+                <div className="absolute inset-0 backdrop-blur-sm rounded-full" />
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 16 16"
+                  fill="none"
+                  className="text-white/70 group-hover:text-white transition-colors relative z-10"
+                >
+                  <path
+                    d="M6 12L10 8L6 4"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          {/* Toggle Auto-play - positionné juste en dessous du bouton Next */}
+          <div className="absolute left-0 top-1/2 w-full pointer-events-none" style={{ zIndex: 100 }}>
+            <div className="absolute right-2 pointer-events-auto" style={{ top: 'calc(140px + 14px)' }}>
+              <label className="flex items-center gap-1.5 cursor-pointer">
+                <span className="text-[10px] text-black font-medium">Auto Next</span>
+                <input
+                  type="checkbox"
+                  checked={autoPlayEnabled}
+                  onChange={(e) => setAutoPlayEnabled(e.target.checked)}
+                  className="w-3 h-3 cursor-pointer"
                 />
-              </svg>
-            </button>
+              </label>
+            </div>
           </div>
-        </div>
-
-        {/* Toggle Auto-play - positionné juste en dessous de la bannière colorée */}
-        <div className="absolute left-0 top-1/2 w-full pointer-events-none" style={{ zIndex: 100 }}>
-          <div className="absolute right-6 pointer-events-auto" style={{ top: 'calc(175px + 12px)' }}>
-            <label className="flex items-center gap-2 cursor-pointer">
-              <span className="text-xs text-black font-medium">Auto Next</span>
-              <input
-                type="checkbox"
-                checked={autoPlayEnabled}
-                onChange={(e) => setAutoPlayEnabled(e.target.checked)}
-                className="w-4 h-4 cursor-pointer"
-              />
-            </label>
-          </div>
-        </div>
-
-        <div className="px-6 max-w-6xl mx-auto overflow-visible relative z-10 w-full">
-          <motion.h2
-            initial={{ opacity: 0, y: -20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-            className="text-sm font-black text-zinc-800 uppercase tracking-wider mb-8"
-          >
-            Featured Project
-          </motion.h2>
 
           <div className="relative flex flex-col md:flex-row gap-16 items-center overflow-visible">
 
-            {/* GAUCHE: INFO DU PROJET */}
-            <div className="w-full md:w-[55%] flex flex-col gap-6 md:-mt-8 pr-4">
+            {/* GAUCHE: INFO DU PROJET - centré verticalement avec la bannière */}
+            <div className="w-full md:w-[55%] flex flex-col gap-6 pr-4 justify-center">
               <motion.div
                 key={activeCardIndex}
                 initial={{ opacity: 0, x: -20 }}
@@ -449,7 +484,7 @@ export default function Home() {
             </div>
 
             {/* DROITE: CARDS */}
-            <div className="w-full md:w-1/2 relative" style={{ marginTop: '25px', marginLeft: '-40px', paddingBottom: '30px' }}>
+            <div className="w-full md:w-1/2 relative overflow-visible" style={{ marginTop: '60px', marginLeft: '-40px', paddingBottom: '30px' }}>
               {/* Cards et navigation - positions indépendantes */}
               <CardSwap
                 width={480}
@@ -489,16 +524,16 @@ export default function Home() {
                 )}
               >
                 {featuredMissions.map((p) => (
-                  <Card key={p.id} customClass="cursor-pointer overflow-hidden">
+                  <Card key={p.id} customClass="cursor-pointer overflow-hidden" style={{ aspectRatio: '8/5' }}>
                     <img
                       src={p.coverImage}
                       className="w-full h-full object-cover transition-all duration-300"
-                      style={{ filter: 'blur(0px)' }}
+                      style={{ filter: 'blur(0px)', aspectRatio: '8/5' }}
                       alt={p.title}
                       data-card-id={p.id}
                     />
-                    <div className="absolute inset-0 flex items-end p-6">
-                      <span className="text-white font-black italic uppercase text-lg tracking-tighter drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">{p.title}</span>
+                    <div className="absolute inset-0 flex items-end justify-start p-6">
+                      <span className="text-white font-black italic uppercase text-lg tracking-tighter drop-shadow-[0_4px_8px_rgba(0,0,0,1)] [text-shadow:_2px_2px_4px_rgb(0_0_0_/_100%)]">{p.title}</span>
                     </div>
                   </Card>
                 ))}
@@ -510,7 +545,7 @@ export default function Home() {
 
       {/* PROJECT LIST (Tous les projets en grille chronologique) */}
       <section
-        className="py-24 px-6 max-w-6xl mx-auto"
+        className="py-24 border-t border-zinc-100"
         onMouseLeave={() => {
           setHoveredRowIndex(null);
         }}
@@ -520,16 +555,17 @@ export default function Home() {
           whileInView="visible"
           viewport={{ once: true }}
           variants={fadeInUp}
-          className="text-sm font-black text-zinc-800 uppercase tracking-wider mb-20"
+          className="text-4xl font-black text-zinc-800 uppercase tracking-wider mb-20 text-center px-6"
         >
           Projects
         </motion.h2>
 
+        <div className="px-6 max-w-6xl mx-auto">
+
         {/* Grille de projets - Organisée par lignes pour détecter le hover de ligne */}
         <div className="flex flex-col" style={{ gap: `${DOCK_CONFIG.gridGap}px` }}>
           {(() => {
-            const sortedProjects = [...projects].sort((a, b) => b.year - a.year);
-            const rows: typeof sortedProjects[] = [];
+            const rows: Project[][] = [];
 
             // Grouper les projets par lignes de 3
             for (let i = 0; i < sortedProjects.length; i += 3) {
@@ -647,6 +683,7 @@ export default function Home() {
             ));
           })()}
         </div>
+        </div>
       </section>
 
       <AnimatePresence>
@@ -655,15 +692,50 @@ export default function Home() {
         )}
       </AnimatePresence>
 
-      <footer id="contact" className="py-20 text-center border-t border-zinc-100 bg-zinc-50/30">
-        <p className="text-[9px] font-mono text-zinc-300 uppercase tracking-widest">
-          SYSTEM_STATE: STABLE // © {new Date().getFullYear()} — Ismail
-        </p>
-        <div className="mt-8 flex justify-center gap-12 text-[10px] font-black uppercase tracking-widest">
-           <a href="mailto:ismail@example.com" className="hover:text-blue-600 transition-colors">Direct_Signal</a>
-           <a href="#" className="hover:text-blue-600 transition-colors">Linked_In</a>
+      {/* CONTACT SECTION */}
+      <motion.section
+        id="contact"
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true }}
+        variants={fadeInUp}
+        className="px-6 max-w-6xl mx-auto py-24 border-t border-zinc-100"
+      >
+        <h2 className="text-4xl font-black text-zinc-800 uppercase tracking-wider mb-12 text-center">
+          Contact
+        </h2>
+
+        <div className="max-w-2xl mx-auto text-center space-y-8">
+          <p className="text-xl font-medium leading-relaxed italic text-zinc-800">
+            Let's connect! Whether you have a project in mind or just want to chat about game design, feel free to reach out.
+          </p>
+
+          <a href="mailto:ismail@example.com" className="text-2xl font-black text-zinc-900 hover:text-blue-600 transition-colors block">
+            ismail@example.com
+          </a>
+
+          <div className="flex flex-col sm:flex-row justify-center gap-6 pt-8">
+            <a
+              href="mailto:ismail@example.com"
+              className="px-8 py-4 bg-black text-white text-sm font-black uppercase tracking-wider hover:bg-blue-600 transition-all shadow-lg hover:shadow-xl"
+            >
+              Email Me
+            </a>
+            <a
+              href="#"
+              className="px-8 py-4 border-2 border-black text-black text-sm font-black uppercase tracking-wider hover:bg-black hover:text-white transition-all"
+            >
+              LinkedIn
+            </a>
+          </div>
         </div>
-      </footer>
+
+        <div className="mt-16 pt-8 border-t border-zinc-200 text-center">
+          <p className="text-xs font-mono text-zinc-400 uppercase tracking-widest">
+            © {new Date().getFullYear()} Ismail — Game Designer
+          </p>
+        </div>
+      </motion.section>
     </main>
     </>
   );

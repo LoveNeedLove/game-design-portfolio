@@ -130,7 +130,7 @@ export const projects: Project[] = [
     ],
     challenge: "Early playtesting revealed a critical engagement drop-off; while the combat mechanics were functional, players didn't feel a strong enough \"pull\" to finish each level or a sufficient sense of reward for their efforts.",
     solution: "I implemented a Hub-world progression system tied to a fully-fledged short storyline. By adding NPCs and furniture to the Hub that unlock as the player advances, I gave the player a tangible, visual representation of their progress. This shifted the motivation from mere survival to personal investment, using the narrative as a powerful hook to keep players engaged until the final credits.",
-    coverImage: "/projects/GD2/Last Scythe.png",
+    coverImage: "/projects/GD2/Last Scythe/Last Scythe.png",
     overlayColor: "rgba(220, 38, 38, 0.05)",
     bannerColor: "#161616",
     featuredTextColor: "#f1f1f1",
