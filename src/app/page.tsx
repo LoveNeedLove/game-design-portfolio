@@ -711,7 +711,7 @@ export default function Home() {
           </p>
 
           <a href="mailto:ismail@example.com" className="text-2xl font-black text-zinc-900 hover:text-blue-600 transition-colors block">
-            ismail@example.com
+            ismailbenkirane.pro@gmail.com
           </a>
 
           <div className="flex flex-col sm:flex-row justify-center gap-6 pt-8">
