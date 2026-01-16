@@ -135,24 +135,24 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
                   animate={{ y: 0 }}
                   exit={{ y: '-100%' }}
                   transition={{ duration: 0.5, ease: "easeInOut" }}
-                  className="absolute inset-0 p-8 md:p-12 overflow-y-auto no-scrollbar flex flex-col justify-between text-center"
+                  className="absolute inset-0 p-8 md:p-12 flex flex-col text-center"
                 >
                   {/* Context Section */}
-                  <div className="flex-1 flex flex-col justify-center">
-                    <span className="text-[9px] font-black text-zinc-400 tracking-[0.3em] uppercase block mb-6">
+                  <div className="flex-[0.6] flex flex-col justify-center min-h-0">
+                    <span className="text-[8px] font-black text-zinc-400 tracking-[0.3em] uppercase block mb-2">
                       Context
                     </span>
 
                     {/* Team Composition and Development Time */}
-                    <p className="text-sm font-medium text-zinc-500 leading-snug italic mb-4">
+                    <p className="text-[11px] font-medium text-zinc-500 leading-tight italic mb-2">
                       {(() => {
                         const totalMembers = project.teamSize.reduce((sum, member) => sum + member.count, 0);
                         if (totalMembers === 1) {
-                          return `This was a solo project, developed over the span of ${project.developmentTime}.`;
+                          return `Solo project, ${project.developmentTime}`;
                         }
                         return (
                           <>
-                            The team was composed of {project.teamSize.map((member, i) => {
+                            {project.teamSize.map((member, i) => {
                               const text = `${member.count} ${member.role}${member.count > 1 ? 's' : ''}`;
                               if (i === project.teamSize.length - 1 && project.teamSize.length > 1) {
                                 return `and ${text}`;
@@ -162,22 +162,20 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
                                 return `${text}, `;
                               }
                               return text;
-                            }).join('')}.
-                            <br />
-                            This project was developed over the span of {project.developmentTime}.
+                            }).join('')} — {project.developmentTime}
                           </>
                         );
                       })()}
                     </p>
 
-                    <p className="text-xl md:text-2xl font-medium text-black leading-relaxed">
+                    <p className="text-base md:text-lg font-medium text-black leading-snug">
                       {project.mission}
                     </p>
                   </div>
 
                   {/* Role Section - Tasks Grid 2x2 */}
-                  <div className="flex-1 flex flex-col justify-center">
-                    <span className="text-[9px] font-black text-zinc-400 tracking-[0.3em] uppercase block mb-8 text-center">
+                  <div className="flex-[1.4] flex flex-col justify-center min-h-0">
+                    <span className="text-[9px] font-black text-zinc-400 tracking-[0.3em] uppercase block mb-4 text-center">
                       Role
                     </span>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -189,7 +187,7 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
                           transition={{ delay: 0.1 + (i * 0.05) }}
                           className="bg-white border border-zinc-200 p-4 rounded-sm shadow-sm hover:shadow-md transition-shadow text-left"
                         >
-                          <h3 className="text-sm font-black text-zinc-900 mb-2">{task.title}</h3>
+                          <h3 className="text-sm font-black text-zinc-900 mb-1.5">{task.title}</h3>
                           <p className="text-xs font-medium text-zinc-600 leading-relaxed">{task.description}</p>
                         </motion.div>
                       ))}
@@ -197,18 +195,18 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
                   </div>
 
                   {/* Scroll Down Button */}
-                  <div className="flex justify-center pt-8">
+                  <div className="flex justify-center pt-4 flex-shrink-0">
                     <button
                       onClick={scrollToBottom}
-                      className="flex items-center gap-2 px-6 py-3 bg-black text-white font-black uppercase text-xs tracking-wider hover:bg-blue-600 transition-all"
+                      className="p-3 bg-zinc-200 hover:bg-zinc-300 rounded-full transition-all group"
+                      title="See Challenge & Solution"
                     >
-                      <span>See Challenge & Solution</span>
                       <svg
-                        width="16"
-                        height="16"
+                        width="20"
+                        height="20"
                         viewBox="0 0 16 16"
                         fill="none"
-                        className="text-white"
+                        className="text-zinc-600 group-hover:text-zinc-900 transition-colors"
                       >
                         <path
                           d="M4 6L8 10L12 6"
@@ -228,20 +226,21 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
                   animate={{ y: 0 }}
                   exit={{ y: '100%' }}
                   transition={{ duration: 0.5, ease: "easeInOut" }}
-                  className="absolute inset-0 p-8 md:p-12 overflow-y-auto no-scrollbar flex flex-col justify-between text-center"
+                  className="absolute inset-0 p-8 md:p-12 flex flex-col text-center"
                 >
                   {/* Scroll Up Button */}
-                  <div className="flex justify-center pb-8">
+                  <div className="flex justify-center pb-4 flex-shrink-0">
                     <button
                       onClick={scrollToTop}
-                      className="flex items-center gap-2 px-6 py-3 bg-black text-white font-black uppercase text-xs tracking-wider hover:bg-blue-600 transition-all"
+                      className="p-3 bg-zinc-200 hover:bg-zinc-300 rounded-full transition-all group"
+                      title="Back to Overview"
                     >
                       <svg
-                        width="16"
-                        height="16"
+                        width="20"
+                        height="20"
                         viewBox="0 0 16 16"
                         fill="none"
-                        className="text-white"
+                        className="text-zinc-600 group-hover:text-zinc-900 transition-colors"
                       >
                         <path
                           d="M12 10L8 6L4 10"
@@ -251,26 +250,25 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
                           strokeLinejoin="round"
                         />
                       </svg>
-                      <span>Back to Overview</span>
                     </button>
                   </div>
 
                   {/* Challenge Section */}
-                  <div className="flex-1 flex flex-col justify-center">
-                    <span className="text-[9px] font-black text-zinc-400 tracking-[0.3em] uppercase block mb-6">
+                  <div className="flex-1 flex flex-col justify-center min-h-0">
+                    <span className="text-[8px] font-black text-zinc-400 tracking-[0.3em] uppercase block mb-3">
                       Challenge
                     </span>
-                    <p className="text-xl md:text-2xl font-medium text-black leading-relaxed">
+                    <p className="text-base md:text-lg font-medium text-black leading-snug">
                       {project.challenge}
                     </p>
                   </div>
 
                   {/* Solution Section */}
-                  <div className="flex-1 flex flex-col justify-center">
-                    <span className="text-[9px] font-black text-zinc-400 tracking-[0.3em] uppercase block mb-6">
+                  <div className="flex-1 flex flex-col justify-center min-h-0">
+                    <span className="text-[8px] font-black text-zinc-400 tracking-[0.3em] uppercase block mb-3">
                       Solution
                     </span>
-                    <p className="text-xl md:text-2xl font-medium text-black leading-relaxed">
+                    <p className="text-base md:text-lg font-medium text-black leading-snug">
                       {project.solution}
                     </p>
                   </div>
