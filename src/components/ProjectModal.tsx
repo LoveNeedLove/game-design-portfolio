@@ -12,6 +12,7 @@ interface ProjectModalProps {
 
 export default function ProjectModal({ project, onClose }: ProjectModalProps) {
   const [scrollPosition, setScrollPosition] = useState<'top' | 'bottom'>('top');
+  const [isMediaExpanded, setIsMediaExpanded] = useState(false);
 
   useEffect(() => {
     const originalStyle = window.getComputedStyle(document.body).overflow;
@@ -58,7 +59,7 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
         <div className="relative w-full h-full overflow-hidden flex flex-col md:flex-row">
           {/* LEFT COLUMN - Fixed */}
           <div className="w-full md:w-[42%] flex flex-col border-r border-zinc-100 bg-white">
-            <div className="flex-1 p-8 md:p-10 flex flex-col gap-6">
+            <div className="flex-1 p-8 md:p-10 flex flex-col gap-4">
               {/* Title */}
               <div className="flex flex-col gap-4">
                 <h2 className="text-4xl md:text-5xl font-black uppercase italic leading-tight tracking-tighter">
@@ -82,20 +83,32 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
               </div>
 
               {/* Media Gallery */}
-              <MediaGallery mediaList={[
-                { type: 'image', url: project.coverImage },
-                ...project.mediaList
-              ]} />
+              <MediaGallery
+                mediaList={[
+                  { type: 'image', url: project.coverImage },
+                  ...project.mediaList
+                ]}
+                onExpandChange={setIsMediaExpanded}
+              />
 
               {/* Description */}
-              <div>
-                <span className="text-[9px] font-black text-zinc-400 tracking-[0.3em] uppercase block mb-3">
-                  Description
-                </span>
-                <p className="text-zinc-600 font-medium leading-relaxed italic">
-                  {project.description}
-                </p>
-              </div>
+              <AnimatePresence>
+                {!isMediaExpanded && (
+                  <motion.div
+                    initial={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
+                    transition={{ duration: 0.2 }}
+                    className="overflow-hidden"
+                  >
+                    <span className="text-[9px] font-black text-zinc-400 tracking-[0.3em] uppercase block mb-2">
+                      Description
+                    </span>
+                    <p className="text-zinc-600 font-medium leading-relaxed italic">
+                      {project.description}
+                    </p>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
 
             {/* Link Button */}

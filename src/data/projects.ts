@@ -91,7 +91,9 @@ export const projects: Project[] = [
     secondaryTextColor: "#6b7280",
     mediaList: [
       { type: 'youtube', url: 'dQw4w9WgXcQ' },
-      { type: 'image', url: 'https://images.unsplash.com/photo-1511512578047-dfb367046420?w=1200' }
+      { type: 'image', url: '/projects/GD1/Fling/Content/Fling 1.png' },
+      { type: 'image', url: '/projects/GD1/Fling/Content/Fling 2.png' },
+      { type: 'image', url: '/projects/GD1/Fling/Content/Fling 3.png' }
     ],
     linkUrl: "https://example.com/fling",
     linkTitle: "Play Fling"
@@ -136,7 +138,11 @@ export const projects: Project[] = [
     featuredTextColor: "#f1f1f1",
     secondaryTextColor: "#5de9ff",
     mediaList: [
-      { type: 'youtube', url: '20m89_nlSHE' }
+      { type: 'youtube', url: '20m89_nlSHE' },
+      { type: 'image', url: '/projects/GD2/Last Scythe/Content/Last_Scythe_Screenshot 1.png' },
+      { type: 'image', url: '/projects/GD2/Last Scythe/Content/Last_Scythe_Screenshot 2.png' },
+      { type: 'image', url: '/projects/GD2/Last Scythe/Content/Last_Scythe_Screenshot 3.png' },
+      { type: 'image', url: '/projects/GD2/Last Scythe/Content/Last_Scythe_Screenshot 4.png' }
     ]
   },
   {
@@ -175,7 +181,10 @@ export const projects: Project[] = [
     featuredTextColor: "#000000",
     secondaryTextColor: "#6b7280",
     mediaList: [
-      { type: 'youtube', url: '0jdoxy1O4_o' }
+      { type: 'youtube', url: '0jdoxy1O4_o' },
+      { type: 'image', url: '/projects/GD1/Wa Sir L\'taxi/Content/Wa Sir l\'taxi 1.png' },
+      { type: 'image', url: '/projects/GD1/Wa Sir L\'taxi/Content/Wa Sir l\'taxi 2.png' },
+      { type: 'image', url: '/projects/GD1/Wa Sir L\'taxi/Content/Wa Sir l\'taxi 3.png' }
     ]
   },
   {
@@ -215,7 +224,11 @@ export const projects: Project[] = [
     bannerColor: "#a855f7",
     featuredTextColor: "#000000",
     secondaryTextColor: "#6b7280",
-    mediaList: []
+    mediaList: [
+      { type: 'image', url: '/projects/GD1/Ostin8to/Content/ostin8to_photo.png' },
+      { type: 'image', url: '/projects/GD1/Ostin8to/Content/osin8to_flip.gif' },
+      { type: 'image', url: '/projects/GD1/Ostin8to/Content/ostin8tosexy.gif' }
+    ]
   },
   {
     id: "chaotiles",
@@ -257,8 +270,10 @@ export const projects: Project[] = [
     featuredTextColor: "#000000",
     secondaryTextColor: "#6b7280",
     mediaList: [
-      { type: 'youtube', url: 'fDGHpldf5qQ' },
-      { type: 'image', url: 'https://images.unsplash.com/photo-1511512578047-dfb367046420?w=1200' },
+      { type: 'image', url: '/projects/GD1/Chaotiles/Content/Chaotiles_1.png' },
+      { type: 'image', url: '/projects/GD1/Chaotiles/Content/Chaotiles_2.png' },
+      { type: 'image', url: '/projects/GD1/Chaotiles/Content/Chaotiles_3.png' },
+      { type: 'youtube', url: 'fDGHpldf5qQ' }
     ]
   },
   {
@@ -301,7 +316,10 @@ export const projects: Project[] = [
     featuredTextColor: "#000000",
     secondaryTextColor: "#6b7280",
     mediaList: [
-      { type: 'iframe', url: '/projects/GD1/BLCS/Content/blcsrules.html' }
+      { type: 'iframe', url: '/projects/GD1/BLCS/Content/blcsrules.html' },
+      { type: 'image', url: '/projects/GD1/BLCS/Content/BECS_Photo.png' },
+      { type: 'image', url: '/projects/GD1/BLCS/Content/BECS_Photo 2.png' },
+      { type: 'image', url: '/projects/GD1/BLCS/Content/BECS_Photo 3.png' }
     ]
   },
   {
