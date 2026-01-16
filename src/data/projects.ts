@@ -307,8 +307,8 @@ export const projects: Project[] = [
   {
     id: "musee",
     featured: false,
-    title: "Musée Abdelaziz Tazi",
-    description: "Experience the Abdelaziz Tazi Museum through a dual-layered engagement strategy: a physical, activity-filled pamphlet designed to captivate younger audiences, and a digital companion for visitors seeking in-depth knowledge. Scan QR codes throughout the gallery to unlock detailed descriptions of each artwork in three different languages.",
+    title: "Museum Passport and Digital Exhibition",
+    description: "Experience an upcoming museum through a dual-layered engagement strategy: a physical, activity-filled pamphlet designed to captivate younger audiences, and a digital companion for visitors seeking in-depth knowledge. Scan QR codes throughout the gallery to unlock detailed descriptions of each artwork in three different languages.",
     shortDescription: "A dual-layered museum experience with an interactive pamphlet for children and QR-based digital content in three languages.",
     date: "February 2026",
     developmentTime: "1 month",
@@ -317,7 +317,7 @@ export const projects: Project[] = [
     teamSize: [
       { count: 1, role: "UX Designer" }
     ],
-    mission: "In this solo project for the upcoming Abdelaziz Tazi Museum of Arts in Casablanca, I was tasked with two primary objectives: first, to deconstruct the idea that museums are \"boring\" for children by creating an interactive physical pamphlet; and second, to provide accessible, multilingual information for visitors via a simple digital interface accessed through QR code integration.",
+    mission: "In this solo project for an upcoming museum in Casablanca, I was tasked with two primary objectives: first, to deconstruct the idea that museums are \"boring\" for children by creating an interactive physical pamphlet; and second, to provide accessible, multilingual information for visitors via a simple digital interface accessed through QR code integration.",
     tasks: [
       {
         title: "Physical Design & Gamification",
@@ -338,7 +338,7 @@ export const projects: Project[] = [
     ],
     challenge: "A significant portion of the museum's audience required information to be displayed in Arabic. This presented a complex UX challenge regarding Right-to-Left (RTL) layout consistency and typography legibility within the constraints of the web layout.",
     solution: "I conducted research into Arabic UI/UX standards to adapt my digital designs. This involved restructuring the layout architecture to support RTL flow, ensuring that navigation, alignment, and visual hierarchy were culturally and technically appropriate for Arabic-speaking visitors. This effort ensured that the museum's information was professional and accessible across all three supported languages.",
-    coverImage: "/projects/GD1/Fling/Fling.png",
+    coverImage: "/projects/GD2/Musée/Museum.png",
     overlayColor: "rgba(139, 92, 246, 0.05)",
     bannerColor: "#8b5cf6",
     featuredTextColor: "#000000",
@@ -377,7 +377,7 @@ export const projects: Project[] = [
     ],
     challenge: "A recurring issue in serious games is the \"empathy gap\"—players often view futuristic scenarios as purely fictional. We struggled to find a way to meaningfully link the player's fictional adventure in 2050 with the actual climatic tragedies currently occurring across the globe.",
     solution: "I designed a \"Souvenir\" system to ground the experience in reality. As players met various characters in the game, they would receive a special memento. At the end of the experience, a concluding debrief revealed that each character encountered was actually a representation of a real-life individual's experience with the current climate crisis. By linking these \"souvenirs\" to contemporary global events, we forced a moment of reflection, transforming a futuristic survival game into a powerful tool for awareness of current human tragedies.",
-    coverImage: "/projects/GD1/Journal de bord 2050/Journal de bord 2050.png",
+    coverImage: "/projects/GD1/Journal de bord 2050/Journal de bord - 2050.png",
     overlayColor: "rgba(16, 185, 129, 0.05)",
     bannerColor: "#10b981",
     featuredTextColor: "#000000",

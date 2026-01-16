@@ -310,50 +310,51 @@ export default function Home() {
       <main className="min-h-screen bg-white text-black selection:bg-black selection:text-white">
         {/* ABOUT SECTION */}
         <section id="about" className="py-24 border-b border-zinc-100">
-          <motion.h2
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            variants={fadeInUp}
-            className="text-4xl font-black text-zinc-800 uppercase tracking-wider mb-12 px-6"
-          >
-            About Me
-          </motion.h2>
+          <div className="pl-12 pr-6 max-w-6xl mx-auto">
+            <motion.h2
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              variants={fadeInUp}
+              className="text-5xl font-black text-zinc-800 uppercase tracking-wider mb-12"
+            >
+              About Me
+            </motion.h2>
 
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            variants={fadeInUp}
-            className="px-6 max-w-6xl mx-auto"
-          >
-            <p className="text-xl md:text-2xl font-medium leading-relaxed italic text-zinc-800">
-              Welcome! I am a Game Designer dedicated to crafting deep, systemic experiences with a focus on User Experience and Economy Design. I believe games are at their best when they foster connection—whether through community-driven gameplay or seamless collaborative development.
-              <br /><br />
-              I am driven by a desire to translate ambitious creative visions into polished reality, utilizing a diverse toolkit to balance complex systems with intuitive feel.
-              <br /><br />
-              Currently, I am honing my craft at Isart Digital, Paris.
-            </p>
-          </motion.div>
+            <motion.div
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              variants={fadeInUp}
+            >
+              <p className="text-xl md:text-2xl font-medium leading-relaxed italic text-zinc-800">
+                Welcome! I am a Game Designer dedicated to crafting deep, systemic experiences with a focus on User Experience and Economy Design. I believe games are at their best when they foster connection—whether through community-driven gameplay or seamless collaborative development.
+                <br /><br />
+                I am driven by a desire to translate ambitious creative visions into polished reality, utilizing a diverse toolkit to balance complex systems with intuitive feel.
+                <br /><br />
+                Currently, I am honing my craft at Isart Digital, Paris.
+              </p>
+            </motion.div>
+          </div>
         </section>
 
         {/* SECTION FEATURED */}
       <section
         id="featured"
-        className="relative py-24 overflow-hidden"
+        className="relative pt-2 pb-12 overflow-hidden"
       >
         <motion.h2
           initial={{ opacity: 0, y: -20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
-          className="text-4xl font-black text-zinc-800 uppercase tracking-wider mb-8 px-6"
+          className="text-5xl font-black text-zinc-800 uppercase tracking-wider mt-16 mb-0 pl-12 pr-6 italic"
         >
           Featured Projects
         </motion.h2>
 
         {/* Conteneur principal avec la bannière et les fenêtres liées */}
-        <div className="px-6 mx-auto overflow-visible relative z-10 w-full" style={{ maxWidth: '1600px' }}>
+        <div className="px-6 mx-auto overflow-visible relative z-10 w-full -mt-8" style={{ maxWidth: '1600px' }}>
           {/* BANNIÈRE DE COULEUR - confinée au conteneur */}
           <motion.div
             className="absolute left-0 top-1/2 -translate-y-1/2 w-full transition-colors duration-700"
@@ -427,7 +428,7 @@ export default function Home() {
           <div className="relative flex flex-col md:flex-row gap-16 items-center overflow-visible">
 
             {/* GAUCHE: INFO DU PROJET - centré verticalement avec la bannière */}
-            <div className="w-full md:w-[55%] flex flex-col gap-6 pr-4 justify-center">
+            <div className="w-full md:w-[55%] flex flex-col gap-6 pl-8 pr-4 justify-center">
               <motion.div
                 key={activeCardIndex}
                 initial={{ opacity: 0, x: -20 }}
@@ -545,7 +546,7 @@ export default function Home() {
 
       {/* PROJECT LIST (Tous les projets en grille chronologique) */}
       <section
-        className="py-24 border-t border-zinc-100"
+        className="pt-12 pb-24 border-t border-zinc-100"
         onMouseLeave={() => {
           setHoveredRowIndex(null);
         }}
@@ -555,7 +556,7 @@ export default function Home() {
           whileInView="visible"
           viewport={{ once: true }}
           variants={fadeInUp}
-          className="text-4xl font-black text-zinc-800 uppercase tracking-wider mb-20 text-center px-6"
+          className="text-5xl font-black text-zinc-800 uppercase tracking-wider mb-20 text-center px-6"
         >
           Projects
         </motion.h2>
@@ -716,13 +717,13 @@ export default function Home() {
 
           <div className="flex flex-col sm:flex-row justify-center gap-6 pt-8">
             <a
-              href="mailto:ismail@example.com"
+              href="mailto:ismailbenkirane.pro@gmail.com"
               className="px-8 py-4 bg-black text-white text-sm font-black uppercase tracking-wider hover:bg-blue-600 transition-all shadow-lg hover:shadow-xl"
             >
               Email Me
             </a>
             <a
-              href="#"
+              href="https://www.linkedin.com/in/ismail-benkirane-gd/"
               className="px-8 py-4 border-2 border-black text-black text-sm font-black uppercase tracking-wider hover:bg-black hover:text-white transition-all"
             >
               LinkedIn
