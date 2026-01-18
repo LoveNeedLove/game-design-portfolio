@@ -139,6 +139,7 @@ export const projects: Project[] = [
     secondaryTextColor: "#5de9ff",
     mediaList: [
       { type: 'youtube', url: '20m89_nlSHE' },
+      { type: 'youtube', url: 'eIs244Z9ESw' },
       { type: 'image', url: '/projects/GD2/Last Scythe/Content/Last_Scythe_Screenshot 1.png' },
       { type: 'image', url: '/projects/GD2/Last Scythe/Content/Last_Scythe_Screenshot 2.png' },
       { type: 'image', url: '/projects/GD2/Last Scythe/Content/Last_Scythe_Screenshot 3.png' },

@@ -44,8 +44,8 @@ export default function MediaGallery({ mediaList = [], onExpandChange }: MediaGa
   }, [activeIndex]);
 
   useEffect(() => {
-    onExpandChange?.(isLightboxOpen);
-  }, [isLightboxOpen, onExpandChange]);
+    onExpandChange?.(isLightboxOpen || isTheaterMode);
+  }, [isLightboxOpen, isTheaterMode, onExpandChange]);
 
   // Gérer le mouseup global pour arrêter le drag même en dehors du conteneur
   useEffect(() => {
@@ -169,12 +169,13 @@ export default function MediaGallery({ mediaList = [], onExpandChange }: MediaGa
 
   return (
     <motion.div
-      className="flex flex-col w-full gap-4 transition-all duration-300"
+      className={`flex flex-col w-full transition-all duration-300 ${isTheaterMode ? 'h-full' : ''}`}
+      style={{ gap: 'clamp(4px, 0.8vmin, 10px)' }}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.3 }}
     >
-      <div className={`bg-black rounded-sm border border-black/5 overflow-hidden flex items-center justify-center relative transition-all duration-300 ${isTheaterMode ? 'min-h-[600px]' : 'aspect-video'} group`}>
+      <div className={`bg-black rounded-sm border border-black/5 overflow-hidden flex items-center justify-center relative transition-all duration-300 ${isTheaterMode ? 'flex-1 min-h-0' : 'aspect-video flex-shrink-0'} group`}>
         <div
           className={`absolute inset-0 select-none ${zoomLevel > 1 ? 'cursor-grab active:cursor-grabbing' : 'cursor-default'}`}
           style={{
@@ -192,28 +193,28 @@ export default function MediaGallery({ mediaList = [], onExpandChange }: MediaGa
 
         {/* ICÔNES DISCRÈTES EN HAUT À DROITE (seulement si ce n'est pas YouTube) */}
         {!hideControls && (
-          <div className="absolute top-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity z-20">
+          <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity z-20 bg-black/40 backdrop-blur-sm rounded-lg p-1">
             <button
               onClick={() => setIsLightboxOpen(true)}
-              className="p-2 transition-all"
+              className="p-1.5 hover:bg-white/20 rounded transition-all"
               title="Fullscreen"
             >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" className="drop-shadow-lg">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5">
                 <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
               </svg>
             </button>
             <button
               onClick={() => setIsTheaterMode(!isTheaterMode)}
-              className="p-2 transition-all"
+              className="p-1.5 hover:bg-white/20 rounded transition-all"
               title={isTheaterMode ? "Exit Theater Mode" : "Theater Mode"}
             >
               {isTheaterMode ? (
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" className="drop-shadow-lg">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5">
                   <circle cx="11" cy="11" r="8"/>
                   <path d="M21 21l-4.35-4.35M8 11h6"/>
                 </svg>
               ) : (
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" className="drop-shadow-lg">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5">
                   <circle cx="11" cy="11" r="8"/>
                   <path d="M21 21l-4.35-4.35M11 8v6M8 11h6"/>
                 </svg>
@@ -260,26 +261,28 @@ export default function MediaGallery({ mediaList = [], onExpandChange }: MediaGa
 
       {/* BARRE DE MINIATURES AVEC FLÈCHES */}
       {mediaList.length > 1 && (
-        <div className="flex items-center gap-3">
+        <div className="flex items-center flex-shrink-0" style={{ gap: 'clamp(4px, 0.8vmin, 12px)' }}>
           {/* FLÈCHE GAUCHE */}
           <button
             onClick={handlePrev}
-            className="flex-shrink-0 p-2 hover:bg-zinc-100 rounded transition-all"
+            className="flex-shrink-0 hover:bg-zinc-100 rounded transition-all"
+            style={{ padding: 'clamp(4px, 0.6vmin, 10px)' }}
             aria-label="Previous"
           >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ width: 'clamp(12px, 2vmin, 20px)', height: 'clamp(12px, 2vmin, 20px)' }}>
               <path d="M15 18l-6-6 6-6"/>
             </svg>
           </button>
 
           {/* MINIATURES */}
-          <div ref={scrollRef} className="flex gap-3 overflow-x-auto overflow-y-hidden flex-1" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+          <div ref={scrollRef} className="flex overflow-x-auto overflow-y-hidden flex-1" style={{ gap: 'clamp(4px, 0.8vmin, 12px)', scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
             {mediaList.map((item, index) => (
               <div
                 key={index}
                 ref={(el) => { thumbRefs.current[index] = el; }}
                 onClick={() => setActiveIndex(index)}
-                className={`flex-shrink-0 w-24 aspect-video bg-zinc-100 rounded-sm overflow-hidden border-2 cursor-pointer transition-all ${activeIndex === index ? 'border-blue-500 scale-105' : 'border-transparent opacity-40 hover:opacity-100'}`}
+                className={`flex-shrink-0 aspect-video bg-zinc-100 rounded-sm overflow-hidden border-2 cursor-pointer transition-all ${activeIndex === index ? 'border-blue-500 scale-105' : 'border-transparent opacity-40 hover:opacity-100'}`}
+                style={{ width: 'clamp(50px, 8vmin, 96px)' }}
               >
                 <img
                   src={item.type === 'youtube' ? `https://img.youtube.com/vi/${getYouTubeID(item.url)}/mqdefault.jpg` : item.url}
@@ -293,10 +296,11 @@ export default function MediaGallery({ mediaList = [], onExpandChange }: MediaGa
           {/* FLÈCHE DROITE */}
           <button
             onClick={handleNext}
-            className="flex-shrink-0 p-2 hover:bg-zinc-100 rounded transition-all"
+            className="flex-shrink-0 hover:bg-zinc-100 rounded transition-all"
+            style={{ padding: 'clamp(4px, 0.6vmin, 10px)' }}
             aria-label="Next"
           >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ width: 'clamp(12px, 2vmin, 20px)', height: 'clamp(12px, 2vmin, 20px)' }}>
               <path d="M9 18l6-6-6-6"/>
             </svg>
           </button>
