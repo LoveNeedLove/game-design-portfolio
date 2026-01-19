@@ -12,6 +12,7 @@ export interface TeamMember {
 export interface Task {
   title: string;
   description: string;
+  illustrations?: MediaItem[]; // Optional images/videos to illustrate this role
 }
 
 export interface Project {
@@ -115,7 +116,11 @@ export const projects: Project[] = [
     tasks: [
       {
         title: "UX & UI Implementation",
-        description: "I designed and fully implemented the entire UI architecture, including all menus, the tutorial flow, and a dynamic HUD that tracks off-screen threats to maintain combat awareness."
+        description: "I designed and fully implemented the entire UI architecture, including all menus, the tutorial flow, and a dynamic HUD that tracks off-screen threats to maintain combat awareness.",
+        illustrations: [
+        { type: 'image', url: '/projects/GD2/Last Scythe/Content/Last_Scythe_Screenshot 1.png' },
+        { type: 'image', url: '/projects/GD2/Last Scythe/Content/Last_Scythe_Screenshot 1.png' }
+  ]
       },
       {
         title: "Narrative & Implementation",

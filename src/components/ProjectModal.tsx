@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from "framer-motion";
 import { Project } from "../data/projects";
 import MediaGallery from "./MediaGallery";
+import RoleDetailModal from "./RoleDetailModal";
 
 // Format du pop-up (largeur/hauteur) - modifier cette valeur pour changer le ratio
 const MODAL_ASPECT_RATIO = "16/11"; // Options: "16/9", "16/10", "8/5", "4/3", "21/9"
@@ -19,6 +20,7 @@ interface ProjectModalProps {
 export default function ProjectModal({ project, onClose }: ProjectModalProps) {
   const [scrollPosition, setScrollPosition] = useState<'top' | 'bottom'>('top');
   const [isMediaExpanded, setIsMediaExpanded] = useState(false);
+  const [selectedRoleIndex, setSelectedRoleIndex] = useState<number | null>(null);
 
   useEffect(() => {
     const originalStyle = window.getComputedStyle(document.body).overflow;
@@ -58,7 +60,7 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
         <button
           onClick={onClose}
           className="absolute top-4 right-4 z-50 p-2 hover:bg-zinc-100 rounded-full transition-all group font-black"
-          style={{ fontSize: 'clamp(8px, 1.2vmin, 12px)' }}
+          style={{ fontSize: 'clamp(8px, 1.4vmin, 16px)' }}
         >
           [X]
         </button>
@@ -72,27 +74,27 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
           >
             <div
               className="flex-1 flex flex-col overflow-hidden"
-              style={{ padding: 'clamp(12px, 2vmin, 24px)', gap: 'clamp(8px, 1.5vmin, 16px)' }}
+              style={{ padding: 'clamp(12px, 3vmin, 40px)', gap: 'clamp(8px, 2vmin, 24px)' }}
             >
               {/* Title */}
-              <div className="flex flex-col flex-shrink-0" style={{ gap: 'clamp(4px, 1vmin, 12px)' }}>
+              <div className="flex flex-col flex-shrink-0" style={{ gap: 'clamp(4px, 1.2vmin, 16px)' }}>
                 <h2
                   className="font-black uppercase italic leading-tight tracking-tighter"
-                  style={{ fontSize: 'clamp(16px, 3.5vmin, 40px)' }}
+                  style={{ fontSize: 'clamp(16px, 4.5vmin, 56px)' }}
                 >
                   {project.title}
                 </h2>
 
                 {/* Genres with Date on the right */}
-                <div className="flex items-center justify-between flex-wrap" style={{ gap: 'clamp(4px, 0.8vmin, 8px)' }}>
-                  <div className="flex flex-wrap" style={{ gap: 'clamp(2px, 0.5vmin, 6px)' }}>
+                <div className="flex items-center justify-between flex-wrap" style={{ gap: 'clamp(4px, 1vmin, 12px)' }}>
+                  <div className="flex flex-wrap" style={{ gap: 'clamp(2px, 0.6vmin, 8px)' }}>
                     {project.genres.map((genre, i) => (
                       <span
                         key={i}
                         className="bg-zinc-100 text-zinc-800 font-bold uppercase tracking-wider rounded-sm"
                         style={{
-                          fontSize: 'clamp(7px, 1vmin, 11px)',
-                          padding: 'clamp(2px, 0.4vmin, 4px) clamp(4px, 0.8vmin, 10px)'
+                          fontSize: 'clamp(7px, 1.2vmin, 14px)',
+                          padding: 'clamp(2px, 0.5vmin, 6px) clamp(4px, 1vmin, 14px)'
                         }}
                       >
                         {genre}
@@ -101,7 +103,7 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
                   </div>
                   <span
                     className="font-mono text-zinc-400 whitespace-nowrap"
-                    style={{ fontSize: 'clamp(8px, 1.1vmin, 13px)' }}
+                    style={{ fontSize: 'clamp(8px, 1.3vmin, 16px)' }}
                   >
                     {project.date}
                   </span>
@@ -122,26 +124,26 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
 
                 {/* Description - séparée de la gallery, cachée en mode expanded */}
                 {!isMediaExpanded && (
-                  <div className="flex-shrink-0 flex flex-col items-center" style={{ marginTop: 'clamp(10px, 2vmin, 20px)' }}>
+                  <div className="flex-shrink-0 flex flex-col items-center" style={{ marginTop: 'clamp(10px, 2.5vmin, 30px)' }}>
                     {/* Ligne séparatrice */}
                     <div
                       className="bg-zinc-200 rounded-full"
                       style={{
                         width: '90%',
-                        height: 'clamp(1px, 0.2vmin, 2px)',
-                        marginBottom: 'clamp(10px, 2vmin, 20px)'
+                        height: 'clamp(1px, 0.25vmin, 3px)',
+                        marginBottom: 'clamp(10px, 2.5vmin, 30px)'
                       }}
                     />
                     <div className="w-full">
                       <span
                         className="font-black text-zinc-400 tracking-[0.3em] uppercase block"
-                        style={{ fontSize: 'clamp(6px, 0.9vmin, 10px)', marginBottom: 'clamp(2px, 0.5vmin, 6px)' }}
+                        style={{ fontSize: 'clamp(6px, 1.1vmin, 13px)', marginBottom: 'clamp(2px, 0.6vmin, 8px)' }}
                       >
                         Description
                       </span>
                       <p
                         className="text-zinc-600 font-medium leading-relaxed italic"
-                        style={{ fontSize: 'clamp(9px, 1.3vmin, 15px)' }}
+                        style={{ fontSize: 'clamp(9px, 1.3vmin, 14px)' }}
                       >
                         {project.description}
                       </p>
@@ -155,15 +157,15 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
             {project.linkUrl && (
               <div
                 className="bg-white border-t border-zinc-50 flex-shrink-0"
-                style={{ padding: 'clamp(12px, 2vmin, 24px)' }}
+                style={{ padding: 'clamp(12px, 3vmin, 36px)' }}
               >
                 <a
                   href={project.linkUrl}
                   target="_blank"
                   className="block w-full bg-black text-white text-center font-black uppercase tracking-[0.2em] hover:bg-blue-600 transition-all shadow-[8px_8px_0px_rgba(0,0,0,0.1)]"
                   style={{
-                    fontSize: 'clamp(7px, 1vmin, 11px)',
-                    padding: 'clamp(8px, 1.5vmin, 18px) 0'
+                    fontSize: 'clamp(7px, 1.2vmin, 14px)',
+                    padding: 'clamp(8px, 2vmin, 24px) 0'
                   }}
                 >
                   {project.linkTitle || "Deploy_Build.exe"}
@@ -181,18 +183,18 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
               {scrollPosition === 'top' ? (
                 <motion.div
                   key="top"
-                  initial={{ y: 0 }}
+                  initial={{ y: '-100%' }}
                   animate={{ y: 0 }}
                   exit={{ y: '-100%' }}
                   transition={{ duration: 0.5, ease: "easeInOut" }}
                   className="absolute inset-0 flex flex-col text-center overflow-hidden"
-                  style={{ padding: 'clamp(12px, 2vmin, 32px)' }}
+                  style={{ padding: 'clamp(12px, 3vmin, 48px)' }}
                 >
                   {/* Context Section */}
-                  <div className="flex-[0.6] flex flex-col justify-center min-h-0">
+                  <div className="flex-shrink-0 flex flex-col justify-center" style={{ marginTop: 'clamp(20px, 5vmin, 70px)' }}>
                     <span
                       className="font-black text-zinc-400 tracking-[0.3em] uppercase block"
-                      style={{ fontSize: 'clamp(6px, 0.8vmin, 10px)', marginBottom: 'clamp(2px, 0.5vmin, 6px)' }}
+                      style={{ fontSize: 'clamp(6px, 1vmin, 13px)', marginBottom: 'clamp(2px, 0.6vmin, 8px)' }}
                     >
                       Context
                     </span>
@@ -200,7 +202,7 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
                     {/* Team Composition and Development Time */}
                     <p
                       className="font-medium text-zinc-500 leading-tight italic"
-                      style={{ fontSize: 'clamp(8px, 1.1vmin, 12px)', marginBottom: 'clamp(2px, 0.5vmin, 6px)' }}
+                      style={{ fontSize: 'clamp(8px, 1.3vmin, 16px)', marginBottom: 'clamp(2px, 0.6vmin, 8px)' }}
                     >
                       {(() => {
                         const totalMembers = project.teamSize.reduce((sum, member) => sum + member.count, 0);
@@ -227,63 +229,135 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
 
                     <p
                       className="font-medium text-black leading-snug"
-                      style={{ fontSize: 'clamp(10px, 1.5vmin, 18px)' }}
+                      style={{ fontSize: 'clamp(10px, 1.8vmin, 24px)' }}
                     >
                       {project.mission}
                     </p>
                   </div>
 
-                  {/* Role Section - Tasks Grid 2x2 */}
-                  <div className="flex-[1.4] flex flex-col justify-center min-h-0 overflow-hidden">
+                  {/* Role Section - Vertical by default, grid when space limited */}
+                  <div className="flex-1 flex flex-col min-h-0 overflow-hidden" style={{ marginTop: 'clamp(10px, 2.5vmin, 36px)' }}>
                     <span
-                      className="font-black text-zinc-400 tracking-[0.3em] uppercase block text-center"
-                      style={{ fontSize: 'clamp(6px, 0.9vmin, 10px)', marginBottom: 'clamp(6px, 1.2vmin, 14px)' }}
+                      className="font-black text-zinc-400 tracking-[0.3em] uppercase block text-center flex-shrink-0"
+                      style={{ fontSize: 'clamp(6px, 1.1vmin, 13px)', marginBottom: 'clamp(8px, 2vmin, 24px)' }}
                     >
                       Role
                     </span>
                     <div
-                      className="grid grid-cols-1 md:grid-cols-2 overflow-hidden"
-                      style={{ gap: 'clamp(6px, 1.2vmin, 14px)' }}
+                      className="flex flex-col flex-1 min-h-0 justify-around group/roles"
+                      style={{ gap: 'clamp(8px, 1.5vmin, 20px)' }}
                     >
-                      {project.tasks.map((task, i) => (
-                        <motion.div
-                          key={i}
-                          initial={{ opacity: 0, x: -10 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: 0.1 + (i * 0.05) }}
-                          className="bg-white border border-zinc-200 rounded-sm shadow-sm hover:shadow-md transition-shadow text-left overflow-hidden"
-                          style={{ padding: 'clamp(6px, 1.2vmin, 14px)' }}
-                        >
-                          <h3
-                            className="font-black text-zinc-900"
-                            style={{ fontSize: 'clamp(8px, 1.2vmin, 14px)', marginBottom: 'clamp(1px, 0.3vmin, 4px)' }}
+                      {project.tasks.map((task, i) => {
+                        const hasIllustrations = task.illustrations && task.illustrations.length > 0;
+                        return (
+                          <motion.div
+                            key={i}
+                            initial={{ opacity: 0, x: -10 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: 0.1 + (i * 0.05) }}
+                            onClick={() => hasIllustrations && setSelectedRoleIndex(i)}
+                            className={`text-left flex-1 min-h-0 relative transition-all duration-300 ease-out group-hover/roles:opacity-60 hover:!opacity-100 group-hover/roles:scale-[0.98] hover:!scale-100 ${
+                              hasIllustrations ? 'cursor-pointer group' : ''
+                            }`}
+                            style={{
+                              paddingTop: hasIllustrations ? 'clamp(6px, 1vmin, 10px)' : '0',
+                              paddingBottom: hasIllustrations ? 'clamp(6px, 1vmin, 10px)' : '0'
+                            }}
                           >
-                            {task.title}
-                          </h3>
-                          <p
-                            className="font-medium text-zinc-600 leading-relaxed"
-                            style={{ fontSize: 'clamp(7px, 1.1vmin, 12px)' }}
-                          >
-                            {task.description}
-                          </p>
-                        </motion.div>
-                      ))}
+                            {/* Yellow shadow - visible only at bottom, rotated for style effect */}
+                            {hasIllustrations && (
+                              <div
+                                className="absolute transition-all duration-300 ease-out group-hover:rotate-[2deg] group-hover:translate-x-0.5"
+                                style={{
+                                  top: '60%',
+                                  left: 'clamp(4px, 0.8vmin, 8px)',
+                                  right: 'clamp(-2px, -0.4vmin, -1px)',
+                                  bottom: 'clamp(2px, 0.4vmin, 4px)',
+                                  background: '#fbbf24',
+                                  borderRadius: '0 clamp(2px, 0.4vmin, 4px) clamp(2px, 0.4vmin, 4px) clamp(2px, 0.4vmin, 4px)',
+                                  transform: 'rotate(1deg)',
+                                  transformOrigin: 'top left'
+                                }}
+                              />
+                            )}
+
+                            {/* Folder tab - small extension top left */}
+                            {hasIllustrations && (
+                              <div
+                                className="absolute bg-zinc-100 border border-zinc-200 border-b-0 transition-all duration-300 ease-out group-hover:-translate-y-0.5"
+                                style={{
+                                  top: 'clamp(4px, 0.8vmin, 8px)',
+                                  left: 'clamp(8px, 1.5vmin, 16px)',
+                                  width: 'clamp(20px, 4vmin, 40px)',
+                                  height: 'clamp(6px, 1.2vmin, 12px)',
+                                  borderRadius: 'clamp(2px, 0.4vmin, 4px) clamp(2px, 0.4vmin, 4px) 0 0'
+                                }}
+                              />
+                            )}
+
+                            {/* Main card content - folder shape */}
+                            <div
+                              className={`bg-white border border-zinc-200 shadow-sm relative transition-all duration-300 ease-out h-full flex flex-col justify-center ${
+                                hasIllustrations
+                                  ? 'group-hover:-translate-y-1 group-hover:shadow-md'
+                                  : 'hover:shadow-md rounded-sm'
+                              }`}
+                              style={{
+                                padding: 'clamp(4px, 1.5vmin, 20px)',
+                                borderRadius: hasIllustrations ? '0 clamp(2px, 0.4vmin, 4px) clamp(2px, 0.4vmin, 4px) clamp(2px, 0.4vmin, 4px)' : undefined,
+                                marginTop: hasIllustrations ? 'clamp(6px, 1.2vmin, 12px)' : '0'
+                              }}
+                            >
+                              <h3
+                                className="font-black text-zinc-900 leading-tight flex-shrink-0"
+                                style={{ fontSize: 'clamp(5px, 1.6vmin, 14px)', marginBottom: 'clamp(1px, 0.5vmin, 6px)' }}
+                              >
+                                {task.title}
+                              </h3>
+                              <p
+                                className="font-medium text-zinc-600 leading-snug flex-1"
+                                style={{ fontSize: 'clamp(4px, 1.4vmin, 12px)' }}
+                              >
+                                {task.description}
+                              </p>
+                            </div>
+
+                            {/* Paperclip icon - on the top edge of the folder */}
+                            {hasIllustrations && (
+                              <div
+                                className="absolute z-20 transition-transform duration-300 group-hover:-translate-y-0.5"
+                                style={{
+                                  top: 'clamp(2px, 0.4vmin, 6px)',
+                                  right: 'clamp(12px, 3vmin, 32px)',
+                                  width: 'clamp(10px, 1.8vmin, 18px)',
+                                  height: 'clamp(18px, 3vmin, 30px)',
+                                  color: '#71717a'
+                                }}
+                              >
+                                <svg viewBox="0 0 24 40" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="w-full h-full">
+                                  <path d="M12 0 L12 8 C12 12 8 12 8 16 L8 28 C8 34 16 34 16 28 L16 12 C16 8 12 8 12 12 L12 26"/>
+                                </svg>
+                              </div>
+                            )}
+                          </motion.div>
+                        );
+                      })}
                     </div>
                   </div>
 
                   {/* Scroll Down Button */}
-                  <div className="flex justify-center flex-shrink-0" style={{ paddingTop: 'clamp(6px, 1.2vmin, 14px)' }}>
+                  <div className="flex justify-center flex-shrink-0" style={{ paddingTop: 'clamp(6px, 1.5vmin, 20px)' }}>
                     <button
                       onClick={scrollToBottom}
                       className="bg-zinc-200 hover:bg-zinc-300 rounded-full transition-all group"
                       title="See Challenge & Solution"
-                      style={{ padding: 'clamp(6px, 1.2vmin, 14px)' }}
+                      style={{ padding: 'clamp(6px, 1.5vmin, 18px)' }}
                     >
                       <svg
                         viewBox="0 0 16 16"
                         fill="none"
                         className="text-zinc-600 group-hover:text-zinc-900 transition-colors"
-                        style={{ width: 'clamp(10px, 1.8vmin, 18px)', height: 'clamp(10px, 1.8vmin, 18px)' }}
+                        style={{ width: 'clamp(10px, 2.2vmin, 24px)', height: 'clamp(10px, 2.2vmin, 24px)' }}
                       >
                         <path
                           d="M4 6L8 10L12 6"
@@ -304,21 +378,21 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
                   exit={{ y: '100%' }}
                   transition={{ duration: 0.5, ease: "easeInOut" }}
                   className="absolute inset-0 flex flex-col text-center overflow-hidden"
-                  style={{ padding: 'clamp(12px, 2vmin, 32px)' }}
+                  style={{ padding: 'clamp(12px, 3vmin, 48px)' }}
                 >
                   {/* Scroll Up Button */}
-                  <div className="flex justify-center flex-shrink-0" style={{ paddingBottom: 'clamp(6px, 1.2vmin, 14px)' }}>
+                  <div className="flex justify-center flex-shrink-0" style={{ paddingBottom: 'clamp(6px, 1.5vmin, 20px)' }}>
                     <button
                       onClick={scrollToTop}
                       className="bg-zinc-200 hover:bg-zinc-300 rounded-full transition-all group"
                       title="Back to Overview"
-                      style={{ padding: 'clamp(6px, 1.2vmin, 14px)' }}
+                      style={{ padding: 'clamp(6px, 1.5vmin, 18px)' }}
                     >
                       <svg
                         viewBox="0 0 16 16"
                         fill="none"
                         className="text-zinc-600 group-hover:text-zinc-900 transition-colors"
-                        style={{ width: 'clamp(10px, 1.8vmin, 18px)', height: 'clamp(10px, 1.8vmin, 18px)' }}
+                        style={{ width: 'clamp(10px, 2.2vmin, 24px)', height: 'clamp(10px, 2.2vmin, 24px)' }}
                       >
                         <path
                           d="M12 10L8 6L4 10"
@@ -335,13 +409,13 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
                   <div className="flex-1 flex flex-col justify-center min-h-0">
                     <span
                       className="font-black text-zinc-400 tracking-[0.3em] uppercase block"
-                      style={{ fontSize: 'clamp(6px, 0.8vmin, 10px)', marginBottom: 'clamp(4px, 0.8vmin, 10px)' }}
+                      style={{ fontSize: 'clamp(6px, 1.1vmin, 13px)', marginBottom: 'clamp(4px, 1vmin, 14px)' }}
                     >
                       Challenge
                     </span>
                     <p
                       className="font-medium text-black leading-snug"
-                      style={{ fontSize: 'clamp(10px, 1.5vmin, 18px)' }}
+                      style={{ fontSize: 'clamp(10px, 1.8vmin, 24px)' }}
                     >
                       {project.challenge}
                     </p>
@@ -351,13 +425,13 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
                   <div className="flex-1 flex flex-col justify-center min-h-0">
                     <span
                       className="font-black text-zinc-400 tracking-[0.3em] uppercase block"
-                      style={{ fontSize: 'clamp(6px, 0.8vmin, 10px)', marginBottom: 'clamp(4px, 0.8vmin, 10px)' }}
+                      style={{ fontSize: 'clamp(6px, 1.1vmin, 13px)', marginBottom: 'clamp(4px, 1vmin, 14px)' }}
                     >
                       Solution
                     </span>
                     <p
                       className="font-medium text-black leading-snug"
-                      style={{ fontSize: 'clamp(10px, 1.5vmin, 18px)' }}
+                      style={{ fontSize: 'clamp(10px, 1.8vmin, 24px)' }}
                     >
                       {project.solution}
                     </p>
@@ -368,6 +442,18 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
           </div>
         </div>
       </motion.div>
+
+      {/* Role Detail Modal */}
+      <AnimatePresence>
+        {selectedRoleIndex !== null && (
+          <RoleDetailModal
+            tasks={project.tasks}
+            initialTaskIndex={selectedRoleIndex}
+            onClose={() => setSelectedRoleIndex(null)}
+            accentColor={project.bannerColor}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 }
