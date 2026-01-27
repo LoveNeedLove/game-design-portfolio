@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Project } from "../data/projects";
 import MediaGallery from "./MediaGallery";
 import RoleDetailModal from "./RoleDetailModal";
+import Folder from "../animations/Folder";
 
 // Format du pop-up (largeur/hauteur) - modifier cette valeur pour changer le ratio
 const MODAL_ASPECT_RATIO = "16/11"; // Options: "16/9", "16/10", "8/5", "4/3", "21/9"
@@ -21,6 +22,15 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
   const [scrollPosition, setScrollPosition] = useState<'top' | 'bottom'>('top');
   const [isMediaExpanded, setIsMediaExpanded] = useState(false);
   const [selectedRoleIndex, setSelectedRoleIndex] = useState<number | null>(null);
+  const [rolesPage, setRolesPage] = useState(0);
+
+  // Pagination for roles grid (2x2 = 4 per page)
+  const ROLES_PER_PAGE = 4;
+  const totalRolesPages = Math.ceil(project.tasks.length / ROLES_PER_PAGE);
+  const currentPageRoles = project.tasks.slice(
+    rolesPage * ROLES_PER_PAGE,
+    (rolesPage + 1) * ROLES_PER_PAGE
+  );
 
   useEffect(() => {
     const originalStyle = window.getComputedStyle(document.body).overflow;
@@ -236,112 +246,155 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
                   </div>
 
                   {/* Role Section - Vertical by default, grid when space limited */}
-                  <div className="flex-1 flex flex-col min-h-0 overflow-hidden" style={{ marginTop: 'clamp(10px, 2.5vmin, 36px)' }}>
+                  <div className="flex-1 flex flex-col min-h-0 overflow-visible" style={{ marginTop: 'clamp(10px, 2.5vmin, 36px)' }}>
                     <span
                       className="font-black text-zinc-400 tracking-[0.3em] uppercase block text-center flex-shrink-0"
                       style={{ fontSize: 'clamp(6px, 1.1vmin, 13px)', marginBottom: 'clamp(8px, 2vmin, 24px)' }}
                     >
                       Role
                     </span>
-                    <div
-                      className="flex flex-col flex-1 min-h-0 justify-around group/roles"
-                      style={{ gap: 'clamp(8px, 1.5vmin, 20px)' }}
-                    >
-                      {project.tasks.map((task, i) => {
-                        const hasIllustrations = task.illustrations && task.illustrations.length > 0;
-                        return (
-                          <motion.div
-                            key={i}
-                            initial={{ opacity: 0, x: -10 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ delay: 0.1 + (i * 0.05) }}
-                            onClick={() => hasIllustrations && setSelectedRoleIndex(i)}
-                            className={`text-left flex-1 min-h-0 relative transition-all duration-300 ease-out group-hover/roles:opacity-60 hover:!opacity-100 group-hover/roles:scale-[0.98] hover:!scale-100 ${
-                              hasIllustrations ? 'cursor-pointer group' : ''
-                            }`}
-                            style={{
-                              paddingTop: hasIllustrations ? 'clamp(6px, 1vmin, 10px)' : '0',
-                              paddingBottom: hasIllustrations ? 'clamp(6px, 1vmin, 10px)' : '0'
-                            }}
+                    <div className="flex flex-1 min-h-0 items-stretch overflow-visible" style={{ gap: 'clamp(4px, 0.8vmin, 12px)' }}>
+                      {/* Previous page button */}
+                      {totalRolesPages > 1 && (
+                        <button
+                          onClick={() => setRolesPage(p => Math.max(0, p - 1))}
+                          disabled={rolesPage === 0}
+                          className={`flex-shrink-0 rounded-full transition-all ${
+                            rolesPage === 0 ? 'opacity-30 cursor-not-allowed' : 'hover:bg-zinc-200'
+                          }`}
+                          style={{ padding: 'clamp(4px, 0.8vmin, 10px)' }}
+                        >
+                          <svg
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            className="text-zinc-600"
+                            style={{ width: 'clamp(12px, 2vmin, 24px)', height: 'clamp(12px, 2vmin, 24px)' }}
                           >
-                            {/* Yellow shadow - visible only at bottom, rotated for style effect */}
-                            {hasIllustrations && (
-                              <div
-                                className="absolute transition-all duration-300 ease-out group-hover:rotate-[2deg] group-hover:translate-x-0.5"
-                                style={{
-                                  top: '60%',
-                                  left: 'clamp(4px, 0.8vmin, 8px)',
-                                  right: 'clamp(-2px, -0.4vmin, -1px)',
-                                  bottom: 'clamp(2px, 0.4vmin, 4px)',
-                                  background: '#fbbf24',
-                                  borderRadius: '0 clamp(2px, 0.4vmin, 4px) clamp(2px, 0.4vmin, 4px) clamp(2px, 0.4vmin, 4px)',
-                                  transform: 'rotate(1deg)',
-                                  transformOrigin: 'top left'
-                                }}
-                              />
-                            )}
+                            <polyline points="15 18 9 12 15 6" />
+                          </svg>
+                        </button>
+                      )}
 
-                            {/* Folder tab - small extension top left */}
-                            {hasIllustrations && (
-                              <div
-                                className="absolute bg-zinc-100 border border-zinc-200 border-b-0 transition-all duration-300 ease-out group-hover:-translate-y-0.5"
-                                style={{
-                                  top: 'clamp(4px, 0.8vmin, 8px)',
-                                  left: 'clamp(8px, 1.5vmin, 16px)',
-                                  width: 'clamp(20px, 4vmin, 40px)',
-                                  height: 'clamp(6px, 1.2vmin, 12px)',
-                                  borderRadius: 'clamp(2px, 0.4vmin, 4px) clamp(2px, 0.4vmin, 4px) 0 0'
-                                }}
-                              />
-                            )}
-
-                            {/* Main card content - folder shape */}
+                      {/* 2x2 Grid - Row by row for sibling hover effect */}
+                      <div
+                        className="flex flex-col flex-1 min-h-0 justify-around items-center overflow-visible"
+                        style={{ padding: 'clamp(4px, 1vmin, 12px)', gap: 'clamp(8px, 1.5vmin, 20px)' }}
+                      >
+                        {[0, 1].map(rowIndex => {
+                          const rowRoles = currentPageRoles.slice(rowIndex * 2, rowIndex * 2 + 2);
+                          return (
                             <div
-                              className={`bg-white border border-zinc-200 shadow-sm relative transition-all duration-300 ease-out h-full flex flex-col justify-center ${
-                                hasIllustrations
-                                  ? 'group-hover:-translate-y-1 group-hover:shadow-md'
-                                  : 'hover:shadow-md rounded-sm'
-                              }`}
-                              style={{
-                                padding: 'clamp(4px, 1.5vmin, 20px)',
-                                borderRadius: hasIllustrations ? '0 clamp(2px, 0.4vmin, 4px) clamp(2px, 0.4vmin, 4px) clamp(2px, 0.4vmin, 4px)' : undefined,
-                                marginTop: hasIllustrations ? 'clamp(6px, 1.2vmin, 12px)' : '0'
-                              }}
+                              key={rowIndex}
+                              className="flex flex-row justify-center items-center group/row"
+                              style={{ gap: 'clamp(80px, 15vmin, 180px)' }}
                             >
-                              <h3
-                                className="font-black text-zinc-900 leading-tight flex-shrink-0"
-                                style={{ fontSize: 'clamp(5px, 1.6vmin, 14px)', marginBottom: 'clamp(1px, 0.5vmin, 6px)' }}
-                              >
-                                {task.title}
-                              </h3>
-                              <p
-                                className="font-medium text-zinc-600 leading-snug flex-1"
-                                style={{ fontSize: 'clamp(4px, 1.4vmin, 12px)' }}
-                              >
-                                {task.description}
-                              </p>
-                            </div>
+                              {rowRoles.map((task, colIndex) => {
+                                const i = rowIndex * 2 + colIndex;
+                                const globalIndex = rolesPage * ROLES_PER_PAGE + i;
+                                const hasIllustrations = task.illustrations && task.illustrations.length > 0;
+                                const isLeftColumn = colIndex === 0;
 
-                            {/* Paperclip icon - on the top edge of the folder */}
-                            {hasIllustrations && (
-                              <div
-                                className="absolute z-20 transition-transform duration-300 group-hover:-translate-y-0.5"
-                                style={{
-                                  top: 'clamp(2px, 0.4vmin, 6px)',
-                                  right: 'clamp(12px, 3vmin, 32px)',
-                                  width: 'clamp(10px, 1.8vmin, 18px)',
-                                  height: 'clamp(18px, 3vmin, 30px)',
-                                  color: '#71717a'
-                                }}
-                              >
-                                <svg viewBox="0 0 24 40" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="w-full h-full">
-                                  <path d="M12 0 L12 8 C12 12 8 12 8 16 L8 28 C8 34 16 34 16 28 L16 12 C16 8 12 8 12 12 L12 26"/>
-                                </svg>
-                              </div>
-                            )}
-                          </motion.div>
-                        );
-                      })}
+                                const folderItems = hasIllustrations && task.illustrations
+                                  ? task.illustrations.map((img, imgIndex) => (
+                                      <img
+                                        key={imgIndex}
+                                        src={img.type === 'image' ? img.url : img.thumbnail || '/placeholder.jpg'}
+                                        alt=""
+                                        className="w-full h-full object-cover"
+                                      />
+                                    ))
+                                  : [];
+
+                                return (
+                                  <motion.div
+                                    key={globalIndex}
+                                    initial={{ opacity: 0, scale: 0.95 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    transition={{ delay: 0.05 + (i * 0.03) }}
+                                    onClick={() => {
+                                      if (hasIllustrations) {
+                                        setSelectedRoleIndex(globalIndex);
+                                      }
+                                    }}
+                                    className={`relative cursor-pointer group-hover/row:opacity-60 group-hover/row:scale-95 hover:!opacity-100 hover:!scale-100 transition-all duration-300 group/role ${
+                                      isLeftColumn
+                                        ? 'group-hover/row:-translate-x-16 hover:!-translate-x-24'
+                                        : 'group-hover/row:translate-x-16 hover:!translate-x-24'
+                                    }`}
+                                  >
+                                    <div className="transition-all duration-300">
+                                      <Folder
+                                        color="#e4e4e7"
+                                        size={1.5}
+                                        items={folderItems}
+                                        label={task.title}
+                                      />
+                                    </div>
+                                    <div
+                                      className={`absolute top-1/2 -translate-y-1/2 transition-all duration-300 opacity-0 group-hover/role:opacity-100 ${
+                                        isLeftColumn
+                                          ? 'left-full text-left ml-8 translate-x-0 group-hover/role:translate-x-4'
+                                          : 'right-full text-right mr-8 translate-x-0 group-hover/role:-translate-x-4'
+                                      }`}
+                                      style={{ width: 'clamp(100px, 20vmin, 220px)' }}
+                                    >
+                                      <p
+                                        className={`text-zinc-800 font-bold leading-snug ${isLeftColumn ? 'text-left' : 'text-right'}`}
+                                        style={{ fontSize: 'clamp(8px, 1.5vmin, 14px)', marginBottom: 'clamp(2px, 0.5vmin, 6px)' }}
+                                      >
+                                        {task.title}
+                                      </p>
+                                      <p
+                                        className={`text-zinc-600 leading-snug ${isLeftColumn ? 'text-left' : 'text-right'}`}
+                                        style={{ fontSize: 'clamp(6px, 1.2vmin, 12px)' }}
+                                      >
+                                        {task.description}
+                                      </p>
+                                      {hasIllustrations && (
+                                        <span
+                                          className={`text-zinc-400 block mt-1 ${isLeftColumn ? 'text-left' : 'text-right'}`}
+                                          style={{ fontSize: 'clamp(5px, 1vmin, 10px)' }}
+                                        >
+                                          (click to view)
+                                        </span>
+                                      )}
+                                    </div>
+                                  </motion.div>
+                                );
+                              })}
+                            </div>
+                          );
+                        })}
+                      </div>
+
+                      {/* Next page button */}
+                      {totalRolesPages > 1 && (
+                        <button
+                          onClick={() => setRolesPage(p => Math.min(totalRolesPages - 1, p + 1))}
+                          disabled={rolesPage === totalRolesPages - 1}
+                          className={`flex-shrink-0 rounded-full transition-all ${
+                            rolesPage === totalRolesPages - 1 ? 'opacity-30 cursor-not-allowed' : 'hover:bg-zinc-200'
+                          }`}
+                          style={{ padding: 'clamp(4px, 0.8vmin, 10px)' }}
+                        >
+                          <svg
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            className="text-zinc-600"
+                            style={{ width: 'clamp(12px, 2vmin, 24px)', height: 'clamp(12px, 2vmin, 24px)' }}
+                          >
+                            <polyline points="9 18 15 12 9 6" />
+                          </svg>
+                        </button>
+                      )}
                     </div>
                   </div>
 
