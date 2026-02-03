@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from "framer-motion";
-import { Project } from "../data/projects";
+import { Project } from "../data";
 import MediaGallery from "./MediaGallery";
 import RoleDetailModal from "./RoleDetailModal";
 import Folder from "../animations/Folder";
@@ -320,12 +320,26 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
                                         setSelectedRoleIndex(globalIndex);
                                       }
                                     }}
-                                    className={`relative cursor-pointer group-hover/row:opacity-60 group-hover/row:scale-95 hover:!opacity-100 hover:!scale-100 transition-all duration-300 group/role ${
+                                    className={`relative cursor-pointer group-hover/row:opacity-60 group-hover/row:scale-95 hover:!opacity-100 hover:!scale-100 hover:!z-10 transition-all duration-300 group/role ${
                                       isLeftColumn
                                         ? 'group-hover/row:-translate-x-16 hover:!-translate-x-24'
                                         : 'group-hover/row:translate-x-16 hover:!translate-x-24'
                                     }`}
                                   >
+                                    {/* Zone de détection: petite par défaut, s'étend vers le texte au hover */}
+                                    <div
+                                      className="absolute inset-0 group-hover/row:pointer-events-none group-hover/role:!pointer-events-auto"
+                                    />
+                                    <div
+                                      className={`absolute pointer-events-none group-hover/role:pointer-events-auto ${
+                                        isLeftColumn ? 'left-full' : 'right-full'
+                                      }`}
+                                      style={{
+                                        width: 'clamp(150px, 28vmin, 300px)',
+                                        top: '-20px',
+                                        bottom: '-20px'
+                                      }}
+                                    />
                                     <div className="transition-all duration-300">
                                       <Folder
                                         color="#e4e4e7"

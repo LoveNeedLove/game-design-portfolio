@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence, Variants } from "framer-motion";
-import { projects, Project, MediaItem } from "../data/projects";
+import { projects, Project, MediaItem } from "../data";
 import Header from "../components/Header";
 import ProjectModal from "../components/ProjectModal";
 import CardSwap, { Card } from "../animations/CardSwap";

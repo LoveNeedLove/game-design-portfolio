@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence, Variants } from 'framer-motion';
-import { MediaItem } from '../data/projects';
+import { MediaItem } from '../data';
 
 interface MediaGalleryProps {
   mediaList?: MediaItem[];
