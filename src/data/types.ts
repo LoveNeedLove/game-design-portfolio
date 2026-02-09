@@ -24,6 +24,7 @@ export interface ContentBlock {
   textAlign?: 'left' | 'center' | 'right';
   variant?: 'accent' | 'quote' | 'highlight';
   group?: string; // Group ID to link blocks together in a row
+  groupStack?: string; // Stack ID to create vertical columns within a group
 }
 
 export interface Task {

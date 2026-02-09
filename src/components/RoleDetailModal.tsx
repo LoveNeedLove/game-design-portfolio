@@ -556,7 +556,18 @@ export default function RoleDetailModal({ tasks, initialTaskIndex, onClose, acce
 
               return rows.map((row, rowIndex) => {
                 if (row.groupId && row.blocks.length > 1) {
-                  // Grouped blocks - render in a flex row
+                  // Grouped blocks - organize by groupStack first
+                  const stackMap: Map<string, { block: ContentBlock; index: number }[]> = new Map();
+
+                  row.blocks.forEach(item => {
+                    const stackId = item.block.groupStack || `_default_${item.index}`;
+                    if (!stackMap.has(stackId)) {
+                      stackMap.set(stackId, []);
+                    }
+                    stackMap.get(stackId)!.push(item);
+                  });
+
+                  // Render as columns (stacks) within a row
                   return (
                     <motion.div
                       key={`row-${rowIndex}`}
@@ -565,9 +576,13 @@ export default function RoleDetailModal({ tasks, initialTaskIndex, onClose, acce
                       transition={{ delay: 0.1 + rowIndex * 0.05 }}
                       className="flex flex-col md:flex-row gap-6 items-stretch"
                     >
-                      {row.blocks.map(({ block, index }) => (
-                        <div key={index} className="flex-1 flex flex-col justify-center">
-                          {renderGroupedBlock(block, index)}
+                      {Array.from(stackMap.values()).map((stackBlocks, stackIndex) => (
+                        <div key={stackIndex} className="flex-1 flex flex-col gap-4 justify-center">
+                          {stackBlocks.map(({ block, index }) => (
+                            <div key={index}>
+                              {renderGroupedBlock(block, index)}
+                            </div>
+                          ))}
                         </div>
                       ))}
                     </motion.div>
