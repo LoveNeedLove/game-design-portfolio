@@ -1,7 +1,10 @@
 export interface MediaItem {
-  type: 'youtube' | 'video' | 'image' | 'iframe';
+  type: 'youtube' | 'video' | 'image' | 'iframe' | 'slideshow';
   url: string;
   thumbnail?: string;
+  // For slideshow type
+  images?: string[];
+  title?: string;
 }
 
 export interface TeamMember {
@@ -10,13 +13,17 @@ export interface TeamMember {
 }
 
 export interface ContentBlock {
-  type: 'text' | 'heading' | 'list' | 'image';
+  type: 'text' | 'heading' | 'list' | 'image' | 'separator' | 'slideshow';
   content?: string;
   items?: string[];
   url?: string;
+  images?: string[]; // For slideshow type
+  title?: string; // For slideshow type
   size?: 'full' | 'large' | 'medium' | 'small';
   align?: 'left' | 'center' | 'right';
+  textAlign?: 'left' | 'center' | 'right';
   variant?: 'accent' | 'quote' | 'highlight';
+  group?: string; // Group ID to link blocks together in a row
 }
 
 export interface Task {

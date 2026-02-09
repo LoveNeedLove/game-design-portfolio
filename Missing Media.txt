@@ -1,0 +1,101 @@
+MISSING MEDIA - Portfolio Projects
+===================================
+This file lists all placeholder images that need to be replaced with actual media.
+Format: [Role] - Description (suggested filename)
+
+
+================================================================================
+LAST SCYTHE
+================================================================================
+
+UX & UI Implementation
+----------------------
+[ ] Main menu with particle effects (mainmenu.png/gif)
+[ ] Level select screen - vertical layout (levelselect.png)
+[ ] Audio/options menu (audiomenu.png)
+[ ] Inspector view of audio system (inspector.png)
+[ ] Combat HUD - threat tracking #1 (hud1.png)
+[ ] Combat HUD - threat tracking #2 (hud2.png)
+[ ] Combo system popup (combo.png/gif)
+[ ] Score counter with soul collection (score.png/gif)
+[ ] Tutorial sequence (tutorial.png)
+
+Narrative & Implementation
+--------------------------
+[ ] Hub progression - before/after (hubprogression.png)
+[ ] Hub path to action (hubpath.png)
+[ ] Mission briefing corridor (corridor.png)
+[ ] NPC manager in inspector (npcmanager.png)
+[ ] NPC example - at table (npctable.png)
+[ ] NPC example - sleeping (npcsleeping.png)
+[ ] NPC example - watching TV (npctv.png)
+[ ] Transformation sequence (transform.png/gif)
+[ ] Ending scene (endingscene.png)
+[ ] Credits roll (creditsroll.png)
+
+Systems & Gamefeel
+------------------
+[ ] Animation system demo (animsystem.gif)
+[ ] Animation setup in inspector (animsetup.png)
+[ ] Visual scripting nodes (vsnodes.png)
+[ ] Audio tool inspector (audiotool.png)
+[ ] Haptic feedback inspector (haptic.png)
+[ ] Fight footage with visual feedback (fightfootage.gif)
+
+Pitches & Direction
+-------------------
+[ ] Knock-Toys pitch document (knocktoyspitch.png)
+[ ] Level design preview #1 (ldpreview1.png)
+[ ] Level design preview #2 (ldpreview2.png)
+[ ] Gameplay bricks schematic (bricks1.png)
+[ ] Moodboard - inspiration (moodboardinsp.png)
+[ ] Moodboard - visual direction (moodboardvis.png)
+[ ] PowerPoint commentary view (pwpcommentary.png)
+
+
+================================================================================
+WA SIR L'TAXI
+================================================================================
+
+Full System Implementation
+--------------------------
+[ ] Car going straight - auto acceleration demo (taxi-straight.gif)
+[ ] Visual scripting overview (taxi-visualscript.png)
+[ ] Car taking off - airborne physics (taxi-takeoff.gif/mp4)
+[ ] Garage - vehicle selection (taxi-garage.png)
+[ ] Car drifting with blinkers (taxi-drifting.gif)
+[ ] White car snaking technique (taxi-snaking.gif)
+[ ] Win screen animation (taxi-winscreen.gif)
+
+Physics Engineering
+-------------------
+[ ] Car on different surfaces (taxi-surfaces.gif/mp4)
+[ ] Car physics visual script (taxi-physicsscript.png)
+[ ] Rolling sphere physics demo (taxi-sphere.gif/mp4)
+
+Level & Progression Design
+--------------------------
+[ ] Hand-drawn track sketch (taxi-sketch.png)
+[ ] Track one from above (taxi-trackabove.png)
+[ ] Track select screen (taxi-trackselect.png)
+[ ] Ramp with white coin (taxi-ramp.png)
+[ ] Crazy shortcut demonstration (taxi-shortcut.gif)
+[ ] Spline editor #1 (taxi-spline1.png)
+[ ] Spline editor #2 (taxi-spline2.png)
+[ ] Title screen billboard (taxi-billboard.png)
+
+One-Button Menu & UI Design
+---------------------------
+[ ] Button radial animations (taxi-buttons.gif)
+[ ] Garage camera transition (taxi-camera.gif)
+
+
+================================================================================
+NOTES
+================================================================================
+- Prefer .gif for animations, .mp4 for longer videos
+- Recommended aspect ratios:
+  - Full width: 1200x500 or 16:9
+  - Medium: 800x450 or 600x400
+  - Small/grouped: 400x300
+- Place files in: /public/projects/[ProjectFolder]/Content/

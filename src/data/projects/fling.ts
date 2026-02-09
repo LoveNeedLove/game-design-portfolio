@@ -42,7 +42,7 @@ export const fling: Project = {
   featuredTextColor: "#000000",
   secondaryTextColor: "#6b7280",
   mediaList: [
-    { type: 'youtube', url: 'dQw4w9WgXcQ' },
+    { type: 'youtube', url: 'vbLfOxRkTsc' },
     { type: 'image', url: '/projects/GD1/Fling/Content/Fling 1.png' },
     { type: 'image', url: '/projects/GD1/Fling/Content/Fling 2.png' },
     { type: 'image', url: '/projects/GD1/Fling/Content/Fling 3.png' }

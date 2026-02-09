@@ -315,11 +315,7 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
                                     initial={{ opacity: 0, scale: 0.95 }}
                                     animate={{ opacity: 1, scale: 1 }}
                                     transition={{ delay: 0.05 + (i * 0.03) }}
-                                    onClick={() => {
-                                      if (hasIllustrations) {
-                                        setSelectedRoleIndex(globalIndex);
-                                      }
-                                    }}
+                                    onClick={() => setSelectedRoleIndex(globalIndex)}
                                     className={`relative cursor-pointer group-hover/row:opacity-60 group-hover/row:scale-95 hover:!opacity-100 hover:!scale-100 hover:!z-10 transition-all duration-300 group/role ${
                                       isLeftColumn
                                         ? 'group-hover/row:-translate-x-16 hover:!-translate-x-24'
@@ -368,14 +364,12 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
                                       >
                                         {task.description}
                                       </p>
-                                      {hasIllustrations && (
-                                        <span
-                                          className={`text-zinc-400 block mt-1 ${isLeftColumn ? 'text-left' : 'text-right'}`}
-                                          style={{ fontSize: 'clamp(5px, 1vmin, 10px)' }}
-                                        >
-                                          (click to view)
-                                        </span>
-                                      )}
+                                      <span
+                                        className={`text-zinc-400 block mt-1 ${isLeftColumn ? 'text-left' : 'text-right'}`}
+                                        style={{ fontSize: 'clamp(5px, 1vmin, 10px)' }}
+                                      >
+                                        (click to view)
+                                      </span>
                                     </div>
                                   </motion.div>
                                 );

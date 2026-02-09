@@ -1,12 +1,23 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from 'react';
-import { motion, AnimatePresence, Variants } from 'framer-motion';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { MediaItem } from '../data';
 
 interface MediaGalleryProps {
   mediaList?: MediaItem[];
   onExpandChange?: (isExpanded: boolean) => void;
+}
+
+// Extended item for flattened list (includes slideshow children)
+interface FlattenedItem {
+  item: MediaItem;
+  originalIndex: number;
+  isSlideshow: boolean;
+  isSlideshowChild: boolean;
+  slideshowParentIndex?: number;
+  childIndex?: number;
+  totalChildren?: number;
 }
 
 export default function MediaGallery({ mediaList = [], onExpandChange }: MediaGalleryProps) {
@@ -17,8 +28,65 @@ export default function MediaGallery({ mediaList = [], onExpandChange }: MediaGa
   const [panPosition, setPanPosition] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+  const [showThumbnails, setShowThumbnails] = useState(false);
+  const [expandedSlideshows, setExpandedSlideshows] = useState<Set<number>>(new Set());
   const scrollRef = useRef<HTMLDivElement>(null);
   const thumbRefs = useRef<(HTMLDivElement | null)[]>([]);
+
+  // Flatten the media list based on expanded slideshows
+  const flattenedList = useMemo((): FlattenedItem[] => {
+    const result: FlattenedItem[] = [];
+
+    mediaList.forEach((item, originalIndex) => {
+      if (item.type === 'slideshow' && item.images && item.images.length > 0) {
+        // Add the slideshow folder itself
+        result.push({
+          item,
+          originalIndex,
+          isSlideshow: true,
+          isSlideshowChild: false,
+          totalChildren: item.images.length
+        });
+
+        // If expanded, add all children
+        if (expandedSlideshows.has(originalIndex)) {
+          item.images.forEach((imageUrl, childIndex) => {
+            result.push({
+              item: { type: 'image', url: imageUrl },
+              originalIndex,
+              isSlideshow: false,
+              isSlideshowChild: true,
+              slideshowParentIndex: originalIndex,
+              childIndex,
+              totalChildren: item.images!.length
+            });
+          });
+        }
+      } else {
+        result.push({
+          item,
+          originalIndex,
+          isSlideshow: false,
+          isSlideshowChild: false
+        });
+      }
+    });
+
+    return result;
+  }, [mediaList, expandedSlideshows]);
+
+  const toggleSlideshow = (originalIndex: number, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setExpandedSlideshows(prev => {
+      const next = new Set(prev);
+      if (next.has(originalIndex)) {
+        next.delete(originalIndex);
+      } else {
+        next.add(originalIndex);
+      }
+      return next;
+    });
+  };
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -31,7 +99,7 @@ export default function MediaGallery({ mediaList = [], onExpandChange }: MediaGa
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [mediaList, isLightboxOpen, activeIndex]);
+  }, [flattenedList, isLightboxOpen, activeIndex]);
 
   useEffect(() => {
     if (thumbRefs.current[activeIndex]) {
@@ -47,7 +115,6 @@ export default function MediaGallery({ mediaList = [], onExpandChange }: MediaGa
     onExpandChange?.(isLightboxOpen || isTheaterMode);
   }, [isLightboxOpen, isTheaterMode, onExpandChange]);
 
-  // Gérer le mouseup global pour arrêter le drag même en dehors du conteneur
   useEffect(() => {
     const handleGlobalMouseUp = () => {
       setIsDragging(false);
@@ -59,11 +126,17 @@ export default function MediaGallery({ mediaList = [], onExpandChange }: MediaGa
     }
   }, [isDragging]);
 
-  // Reset zoom when changing images or closing lightbox
   useEffect(() => {
     setZoomLevel(1);
     setPanPosition({ x: 0, y: 0 });
   }, [activeIndex, isLightboxOpen, isTheaterMode]);
+
+  // Reset active index if it's out of bounds after collapse
+  useEffect(() => {
+    if (activeIndex >= flattenedList.length) {
+      setActiveIndex(Math.max(0, flattenedList.length - 1));
+    }
+  }, [flattenedList.length, activeIndex]);
 
   const handleZoomIn = () => {
     setZoomLevel(prev => Math.min(prev + 0.5, 3));
@@ -84,7 +157,7 @@ export default function MediaGallery({ mediaList = [], onExpandChange }: MediaGa
 
   const handleMouseDown = (e: React.MouseEvent) => {
     if (zoomLevel > 1) {
-      e.preventDefault(); // Empêche le drag natif de l'image
+      e.preventDefault();
       setIsDragging(true);
       setDragStart({ x: e.clientX - panPosition.x, y: e.clientY - panPosition.y });
     }
@@ -110,7 +183,6 @@ export default function MediaGallery({ mediaList = [], onExpandChange }: MediaGa
       const delta = e.deltaY > 0 ? -0.2 : 0.2;
       const rect = e.currentTarget.getBoundingClientRect();
 
-      // Position de la souris dans le conteneur (0,0 au centre)
       const mouseX = e.clientX - rect.left - rect.width / 2;
       const mouseY = e.clientY - rect.top - rect.height / 2;
 
@@ -120,11 +192,9 @@ export default function MediaGallery({ mediaList = [], onExpandChange }: MediaGa
         if (newZoom === 1) {
           setPanPosition({ x: 0, y: 0 });
         } else if (prev !== newZoom) {
-          // Point dans l'image avant le zoom (en tenant compte du pan actuel)
           const imageX = (mouseX - panPosition.x) / prev;
           const imageY = (mouseY - panPosition.y) / prev;
 
-          // Nouveau pan pour garder ce point sous la souris
           setPanPosition({
             x: mouseX - imageX * newZoom,
             y: mouseY - imageY * newZoom
@@ -142,14 +212,37 @@ export default function MediaGallery({ mediaList = [], onExpandChange }: MediaGa
     return (match && match[2].length === 11) ? match[2] : url;
   };
 
-  const handleNext = () => setActiveIndex((prev) => (prev + 1) % mediaList.length);
-  const handlePrev = () => setActiveIndex((prev) => (prev - 1 + mediaList.length) % mediaList.length);
+  const handleNext = () => {
+    // Skip slideshow folders when navigating
+    let nextIndex = (activeIndex + 1) % flattenedList.length;
+    while (flattenedList[nextIndex]?.isSlideshow && flattenedList.length > 1) {
+      nextIndex = (nextIndex + 1) % flattenedList.length;
+      if (nextIndex === activeIndex) break; // Prevent infinite loop
+    }
+    setActiveIndex(nextIndex);
+  };
+
+  const handlePrev = () => {
+    // Skip slideshow folders when navigating
+    let prevIndex = (activeIndex - 1 + flattenedList.length) % flattenedList.length;
+    while (flattenedList[prevIndex]?.isSlideshow && flattenedList.length > 1) {
+      prevIndex = (prevIndex - 1 + flattenedList.length) % flattenedList.length;
+      if (prevIndex === activeIndex) break; // Prevent infinite loop
+    }
+    setActiveIndex(prevIndex);
+  };
 
   if (!mediaList || mediaList.length === 0) return null;
 
-  const activeMedia = mediaList[activeIndex];
+  const activeFlattened = flattenedList[activeIndex];
+  const activeMedia = activeFlattened?.item;
 
-  const renderMedia = (item: MediaItem, isContain: boolean = false) => {
+  // If active is a slideshow folder, show first image as preview
+  const displayMedia = activeFlattened?.isSlideshow && activeMedia?.images?.[0]
+    ? { type: 'image' as const, url: activeMedia.images[0] }
+    : activeMedia;
+
+  const renderMedia = (item: MediaItem | undefined, isContain: boolean = false) => {
     if (!item) return null;
     const cleanID = getYouTubeID(item.url);
     switch (item.type) {
@@ -159,9 +252,115 @@ export default function MediaGallery({ mediaList = [], onExpandChange }: MediaGa
         return <video className={`w-full h-full ${isContain ? 'object-contain' : 'object-cover'}`} src={item.url} autoPlay muted loop playsInline draggable={false} />;
       case 'iframe':
         return <iframe className="w-full h-full" src={item.url} allowFullScreen />;
+      case 'slideshow':
+        // Show first image as preview for slideshow
+        if (item.images && item.images.length > 0) {
+          return <img src={item.images[0]} className={`w-full h-full ${isContain ? 'object-contain' : 'object-cover'}`} alt="Slideshow preview" draggable={false} onDragStart={(e) => e.preventDefault()} />;
+        }
+        return null;
       default:
         return <img src={item.url} className={`w-full h-full ${isContain ? 'object-contain' : 'object-cover'}`} alt="Focus" draggable={false} onDragStart={(e) => e.preventDefault()} />;
     }
+  };
+
+  const renderThumbnail = (flattened: FlattenedItem, index: number, isLightbox: boolean = false) => {
+    const { item, isSlideshow, isSlideshowChild, originalIndex, childIndex, totalChildren } = flattened;
+    const isActive = activeIndex === index;
+
+    if (isSlideshow) {
+      // Render as folder
+      const isExpanded = expandedSlideshows.has(originalIndex);
+      return (
+        <div
+          key={`slideshow-${originalIndex}`}
+          ref={(el) => { thumbRefs.current[index] = el; }}
+          className={`flex-shrink-0 aspect-video rounded-sm overflow-hidden border-2 cursor-pointer transition-all relative ${
+            isActive
+              ? (isLightbox ? 'border-white scale-105' : 'border-blue-500 scale-105')
+              : (isLightbox ? 'border-transparent opacity-50 hover:opacity-100' : 'border-transparent opacity-40 hover:opacity-100')
+          }`}
+          style={{ width: isLightbox ? '80px' : 'clamp(50px, 8vmin, 96px)' }}
+          onClick={(e) => {
+            e.stopPropagation();
+            setActiveIndex(index);
+          }}
+        >
+          {/* Folder background with first image */}
+          <div className="absolute inset-0 bg-zinc-700">
+            {item.images && item.images[0] && (
+              <img
+                src={item.images[0]}
+                className="w-full h-full object-cover opacity-60"
+                alt="Folder preview"
+              />
+            )}
+          </div>
+
+          {/* Folder overlay */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent flex flex-col items-center justify-end p-1">
+            {/* Folder icon */}
+            <svg
+              viewBox="0 0 24 24"
+              fill="white"
+              className="w-4 h-4 mb-0.5 drop-shadow"
+            >
+              <path d="M3 5c0-1.1.9-2 2-2h4l2 2h8c1.1 0 2 .9 2 2v10c0 1.1-.9 2-2 2H5c-1.1 0-2-.9-2-2V5z"/>
+            </svg>
+            <span className="text-white text-[8px] font-bold drop-shadow">{totalChildren}</span>
+          </div>
+
+          {/* Expand/Collapse button */}
+          <button
+            onClick={(e) => toggleSlideshow(originalIndex, e)}
+            className="absolute top-0.5 right-0.5 p-0.5 bg-black/60 hover:bg-black/80 rounded transition-all z-10"
+            title={isExpanded ? "Collapse" : "Expand"}
+          >
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="white"
+              strokeWidth="3"
+              className={`w-3 h-3 transition-transform ${isExpanded ? 'rotate-180' : ''}`}
+            >
+              <path d="M9 6l6 6-6 6"/>
+            </svg>
+          </button>
+        </div>
+      );
+    }
+
+    // Regular thumbnail or slideshow child
+    return (
+      <div
+        key={isSlideshowChild ? `slideshow-${originalIndex}-child-${childIndex}` : `media-${index}`}
+        ref={(el) => { thumbRefs.current[index] = el; }}
+        onClick={(e) => {
+          e.stopPropagation();
+          setActiveIndex(index);
+        }}
+        className={`flex-shrink-0 aspect-video rounded-sm overflow-hidden border-2 cursor-pointer transition-all relative ${
+          isActive
+            ? (isLightbox ? 'border-white scale-105' : 'border-blue-500 scale-105')
+            : (isLightbox ? 'border-transparent opacity-50 hover:opacity-100' : 'border-transparent opacity-40 hover:opacity-100')
+        } ${isSlideshowChild ? 'ml-1' : ''}`}
+        style={{
+          width: isLightbox ? '80px' : 'clamp(50px, 8vmin, 96px)',
+          backgroundColor: isLightbox ? '#27272a' : '#f4f4f5'
+        }}
+      >
+        <img
+          src={item.type === 'youtube' ? `https://img.youtube.com/vi/${getYouTubeID(item.url)}/mqdefault.jpg` : item.url}
+          className="w-full h-full object-cover"
+          alt={`Thumb ${index}`}
+        />
+        {/* Slideshow child indicator */}
+        {isSlideshowChild && (
+          <div className="absolute bottom-0 left-0 right-0 bg-black/60 text-white text-[8px] text-center py-0.5">
+            {(childIndex ?? 0) + 1}/{totalChildren}
+          </div>
+        )}
+      </div>
+    );
   };
 
   const isYouTube = activeMedia?.type === 'youtube';
@@ -188,10 +387,24 @@ export default function MediaGallery({ mediaList = [], onExpandChange }: MediaGa
           onMouseLeave={handleMouseUp}
           onWheel={handleWheel}
         >
-          {renderMedia(activeMedia, isTheaterMode)}
+          {renderMedia(displayMedia, isTheaterMode)}
         </div>
 
-        {/* ICÔNES DISCRÈTES EN HAUT À DROITE (seulement si ce n'est pas YouTube) */}
+        {/* Slideshow info overlay */}
+        {activeFlattened?.isSlideshow && (
+          <div className="absolute bottom-4 left-4 bg-black/70 backdrop-blur-sm rounded-lg px-3 py-2 text-white z-10">
+            <div className="flex items-center gap-2">
+              <svg viewBox="0 0 24 24" fill="white" className="w-5 h-5">
+                <path d="M3 5c0-1.1.9-2 2-2h4l2 2h8c1.1 0 2 .9 2 2v10c0 1.1-.9 2-2 2H5c-1.1 0-2-.9-2-2V5z"/>
+              </svg>
+              <span className="font-medium">{activeMedia?.title || 'Slideshow'}</span>
+              <span className="text-white/60">({activeMedia?.images?.length} images)</span>
+            </div>
+            <p className="text-white/60 text-sm mt-1">Click the arrow on the thumbnail to expand</p>
+          </div>
+        )}
+
+        {/* ICÔNES DISCRÈTES EN HAUT À DROITE */}
         {!hideControls && (
           <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity z-20 bg-black/40 backdrop-blur-sm rounded-lg p-1">
             <button
@@ -260,7 +473,7 @@ export default function MediaGallery({ mediaList = [], onExpandChange }: MediaGa
       </div>
 
       {/* BARRE DE MINIATURES AVEC FLÈCHES */}
-      {mediaList.length > 1 && (
+      {flattenedList.length > 1 && (
         <div className="flex items-center flex-shrink-0" style={{ gap: 'clamp(4px, 0.8vmin, 12px)' }}>
           {/* FLÈCHE GAUCHE */}
           <button
@@ -276,21 +489,7 @@ export default function MediaGallery({ mediaList = [], onExpandChange }: MediaGa
 
           {/* MINIATURES */}
           <div ref={scrollRef} className="flex overflow-x-auto overflow-y-hidden flex-1" style={{ gap: 'clamp(4px, 0.8vmin, 12px)', scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-            {mediaList.map((item, index) => (
-              <div
-                key={index}
-                ref={(el) => { thumbRefs.current[index] = el; }}
-                onClick={() => setActiveIndex(index)}
-                className={`flex-shrink-0 aspect-video bg-zinc-100 rounded-sm overflow-hidden border-2 cursor-pointer transition-all ${activeIndex === index ? 'border-blue-500 scale-105' : 'border-transparent opacity-40 hover:opacity-100'}`}
-                style={{ width: 'clamp(50px, 8vmin, 96px)' }}
-              >
-                <img
-                  src={item.type === 'youtube' ? `https://img.youtube.com/vi/${getYouTubeID(item.url)}/mqdefault.jpg` : item.url}
-                  className="w-full h-full object-cover"
-                  alt={`Thumb ${index}`}
-                />
-              </div>
-            ))}
+            {flattenedList.map((flattened, index) => renderThumbnail(flattened, index, false))}
           </div>
 
           {/* FLÈCHE DROITE */}
@@ -328,7 +527,11 @@ export default function MediaGallery({ mediaList = [], onExpandChange }: MediaGa
               </svg>
             </button>
 
-            <div className="relative w-full h-full flex items-center justify-center max-w-7xl max-h-[90vh]" onClick={(e) => e.stopPropagation()}>
+            <div
+              className="relative w-full h-full flex items-center justify-center overflow-hidden"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Zoom/pan wrapper */}
               <div
                 className={`w-full h-full flex items-center justify-center select-none ${zoomLevel > 1 ? 'cursor-grab active:cursor-grabbing' : 'cursor-default'}`}
                 style={{
@@ -341,7 +544,19 @@ export default function MediaGallery({ mediaList = [], onExpandChange }: MediaGa
                 onMouseLeave={handleMouseUp}
                 onWheel={handleWheel}
               >
-                {renderMedia(activeMedia, true)}
+                {/* Animation wrapper */}
+                <AnimatePresence mode="wait" initial={false}>
+                  <motion.div
+                    key={activeIndex}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.2 }}
+                    className="w-full h-full flex items-center justify-center"
+                  >
+                    {renderMedia(displayMedia, true)}
+                  </motion.div>
+                </AnimatePresence>
               </div>
             </div>
 
@@ -378,7 +593,7 @@ export default function MediaGallery({ mediaList = [], onExpandChange }: MediaGa
               </button>
             </div>
 
-            {mediaList.length > 1 && (
+            {flattenedList.length > 1 && (
               <>
                 <button
                   onClick={(e) => { e.stopPropagation(); handlePrev(); }}
@@ -399,25 +614,39 @@ export default function MediaGallery({ mediaList = [], onExpandChange }: MediaGa
                   </svg>
                 </button>
 
-                {/* BARRE DE MINIATURES EN BAS */}
-                <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-40 max-w-4xl w-full px-4" onClick={(e) => e.stopPropagation()}>
-                  <div className="bg-black/80 backdrop-blur-sm rounded-lg p-3">
-                    <div className="flex gap-3 overflow-x-auto overflow-y-hidden" style={{ scrollbarWidth: 'thin' }}>
-                      {mediaList.map((item, index) => (
-                        <div
-                          key={index}
-                          onClick={(e) => { e.stopPropagation(); setActiveIndex(index); }}
-                          className={`flex-shrink-0 w-24 aspect-video bg-zinc-800 rounded-sm overflow-hidden border-2 cursor-pointer transition-all ${activeIndex === index ? 'border-white scale-105' : 'border-transparent opacity-50 hover:opacity-100'}`}
-                        >
-                          <img
-                            src={item.type === 'youtube' ? `https://img.youtube.com/vi/${getYouTubeID(item.url)}/mqdefault.jpg` : item.url}
-                            className="w-full h-full object-cover"
-                            alt={`Thumb ${index}`}
-                          />
-                        </div>
-                      ))}
+                {/* BARRE DE MINIATURES EN BAS - cachée par défaut */}
+                <div
+                  className="absolute bottom-0 left-0 right-0 z-40"
+                  onMouseEnter={() => setShowThumbnails(true)}
+                  onMouseLeave={() => setShowThumbnails(false)}
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  {/* Zone de détection hover */}
+                  <div className="h-24" />
+
+                  {/* Conteneur des miniatures */}
+                  <motion.div
+                    initial={{ y: 100, opacity: 0 }}
+                    animate={{
+                      y: showThumbnails ? 0 : 100,
+                      opacity: showThumbnails ? 1 : 0
+                    }}
+                    transition={{ duration: 0.3, ease: "easeOut" }}
+                    className="pb-6 px-4"
+                  >
+                    <div className="max-w-4xl mx-auto bg-black/80 backdrop-blur-sm rounded-lg p-3">
+                      <div className="flex gap-3 overflow-x-auto overflow-y-hidden justify-center" style={{ scrollbarWidth: 'thin' }}>
+                        {flattenedList.map((flattened, index) => renderThumbnail(flattened, index, true))}
+                      </div>
                     </div>
-                  </div>
+                    {/* Compteur d'images */}
+                    <p className="text-center text-white/50 text-sm mt-2">
+                      {activeFlattened?.isSlideshow
+                        ? `Slideshow (${activeMedia?.images?.length} images)`
+                        : `${activeIndex + 1} / ${flattenedList.length}`
+                      }
+                    </p>
+                  </motion.div>
                 </div>
               </>
             )}

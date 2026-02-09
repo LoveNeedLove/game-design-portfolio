@@ -18,13 +18,23 @@ export default function RoleDetailModal({ tasks, initialTaskIndex, onClose, acce
   const [panPosition, setPanPosition] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+  const [showThumbnails, setShowThumbnails] = useState(false);
+  const [expandedSlideshows, setExpandedSlideshows] = useState<Set<number>>(new Set());
+  const [slideshowIndices, setSlideshowIndices] = useState<Record<number, number>>({});
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const activeTask = tasks[activeTaskIndex];
   const contentBlocks = activeTask?.content || [];
 
-  // Get all images from content for navigation in fullscreen
-  const allImages = contentBlocks.filter(b => b.type === 'image').map(b => b.url!);
+  // Get all images from content AND illustrations for navigation in fullscreen
+  // Include slideshow images when expanded
+  const contentImages = contentBlocks.flatMap((b, idx) => {
+    if (b.type === 'image') return [b.url!];
+    if (b.type === 'slideshow' && b.images && expandedSlideshows.has(idx)) return b.images;
+    return [];
+  });
+  const illustrationImages = activeTask?.illustrations?.map(img => img.url) || [];
+  const allImages = contentImages.length > 0 ? contentImages : illustrationImages;
   const currentImageIndex = selectedImageUrl ? allImages.indexOf(selectedImageUrl) : -1;
 
   useEffect(() => {
@@ -144,9 +154,6 @@ export default function RoleDetailModal({ tasks, initialTaskIndex, onClose, acce
     }
   };
 
-  // Filter tasks that have content
-  const tasksWithContent = tasks.filter(t => (t.content && t.content.length > 0) || (t.illustrations && t.illustrations.length > 0));
-
   // Render a content block
   const renderContentBlock = (block: ContentBlock, index: number) => {
     switch (block.type) {
@@ -165,6 +172,19 @@ export default function RoleDetailModal({ tasks, initialTaskIndex, onClose, acce
             >
               {block.content}
             </h3>
+          </motion.div>
+        );
+
+      case 'separator':
+        return (
+          <motion.div
+            key={`separator-${index}`}
+            initial={{ opacity: 0, scaleX: 0 }}
+            animate={{ opacity: 1, scaleX: 1 }}
+            transition={{ delay: 0.1 + index * 0.05, duration: 0.4 }}
+            className="py-8"
+          >
+            <div className="h-px bg-white/20 origin-left" />
           </motion.div>
         );
 
@@ -256,10 +276,150 @@ export default function RoleDetailModal({ tasks, initialTaskIndex, onClose, acce
           </motion.div>
         );
 
+      case 'slideshow':
+        if (!block.images || block.images.length === 0) return null;
+        const isExpanded = expandedSlideshows.has(index);
+        const currentIndex = slideshowIndices[index] || 0;
+        const currentImage = block.images[currentIndex];
+
+        return (
+          <motion.div
+            key={`slideshow-${index}`}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 + index * 0.05 }}
+            className="py-4"
+          >
+            {/* Slideshow header */}
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2 text-white/70">
+                <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
+                  <path d="M3 5c0-1.1.9-2 2-2h4l2 2h8c1.1 0 2 .9 2 2v10c0 1.1-.9 2-2 2H5c-1.1 0-2-.9-2-2V5z"/>
+                </svg>
+                <span className="font-medium">{block.title || 'Slideshow'}</span>
+                <span className="text-white/40">({block.images.length} images)</span>
+              </div>
+              <button
+                onClick={() => {
+                  setExpandedSlideshows(prev => {
+                    const next = new Set(prev);
+                    if (next.has(index)) {
+                      next.delete(index);
+                    } else {
+                      next.add(index);
+                    }
+                    return next;
+                  });
+                }}
+                className="flex items-center gap-1 px-3 py-1.5 bg-white/10 hover:bg-white/20 rounded-full text-white/70 text-sm transition-all"
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  className={`w-4 h-4 transition-transform ${isExpanded ? 'rotate-180' : ''}`}
+                >
+                  <path d="M9 6l6 6-6 6"/>
+                </svg>
+                {isExpanded ? 'Collapse' : 'Expand'}
+              </button>
+            </div>
+
+            {/* Main image display */}
+            <div
+              className="relative rounded-xl overflow-hidden bg-zinc-800 cursor-pointer group"
+              onClick={() => setSelectedImageUrl(currentImage)}
+            >
+              <img
+                src={currentImage}
+                alt=""
+                className="w-full h-auto object-cover transition-transform duration-500 group-hover:scale-105"
+              />
+              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-300 flex items-center justify-center">
+                <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-white/20 backdrop-blur-md rounded-full p-4">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" className="w-6 h-6">
+                    <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/>
+                  </svg>
+                </div>
+              </div>
+
+              {/* Navigation arrows */}
+              {block.images.length > 1 && (
+                <>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setSlideshowIndices(prev => ({
+                        ...prev,
+                        [index]: (currentIndex - 1 + block.images!.length) % block.images!.length
+                      }));
+                    }}
+                    className="absolute left-2 top-1/2 -translate-y-1/2 p-2 bg-black/50 hover:bg-black/70 rounded-full transition-all opacity-0 group-hover:opacity-100"
+                  >
+                    <svg viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" className="w-5 h-5">
+                      <path d="M15 18l-6-6 6-6"/>
+                    </svg>
+                  </button>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setSlideshowIndices(prev => ({
+                        ...prev,
+                        [index]: (currentIndex + 1) % block.images!.length
+                      }));
+                    }}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 p-2 bg-black/50 hover:bg-black/70 rounded-full transition-all opacity-0 group-hover:opacity-100"
+                  >
+                    <svg viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" className="w-5 h-5">
+                      <path d="M9 18l6-6-6-6"/>
+                    </svg>
+                  </button>
+                </>
+              )}
+
+              {/* Image counter */}
+              <div className="absolute bottom-2 right-2 px-2 py-1 bg-black/60 rounded text-white/80 text-xs">
+                {currentIndex + 1} / {block.images.length}
+              </div>
+            </div>
+
+            {/* Expanded thumbnails */}
+            <AnimatePresence>
+              {isExpanded && (
+                <motion.div
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: 'auto', opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  transition={{ duration: 0.3 }}
+                  className="overflow-hidden"
+                >
+                  <div className="flex gap-2 mt-3 overflow-x-auto pb-2" style={{ scrollbarWidth: 'thin' }}>
+                    {block.images.map((img, imgIdx) => (
+                      <div
+                        key={imgIdx}
+                        onClick={() => setSlideshowIndices(prev => ({ ...prev, [index]: imgIdx }))}
+                        className={`flex-shrink-0 w-20 aspect-video rounded overflow-hidden cursor-pointer border-2 transition-all ${
+                          imgIdx === currentIndex ? 'border-white scale-105' : 'border-transparent opacity-50 hover:opacity-100'
+                        }`}
+                      >
+                        <img src={img} alt="" className="w-full h-full object-cover" />
+                      </div>
+                    ))}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </motion.div>
+        );
+
       default:
         return null;
     }
   };
+
+  const hasPrevRole = tasks.length > 1 && activeTaskIndex > 0;
+  const hasNextRole = tasks.length > 1 && activeTaskIndex < tasks.length - 1;
 
   return (
     <div className="fixed inset-0 z-[300]">
@@ -273,154 +433,256 @@ export default function RoleDetailModal({ tasks, initialTaskIndex, onClose, acce
         className="absolute inset-0 bg-black/80 backdrop-blur-xl"
       />
 
-      {/* Full screen container */}
+      {/* Close button - fixed position */}
+      <motion.button
+        initial={{ opacity: 0, scale: 0.8 }}
+        animate={{ opacity: 1, scale: 1 }}
+        exit={{ opacity: 0, scale: 0.8 }}
+        transition={{ duration: 0.3 }}
+        onClick={onClose}
+        className="fixed top-4 right-4 z-[350] p-3 bg-white/10 hover:bg-white/20 rounded-full transition-colors text-white font-black backdrop-blur-sm"
+        style={{ fontSize: 'clamp(12px, 1.8vmin, 18px)' }}
+      >
+        [X]
+      </motion.button>
+
+      {/* Full screen scrollable container */}
       <motion.div
+        ref={scrollRef}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         transition={{ duration: 0.3 }}
-        className="relative w-full h-full flex flex-col"
+        className="relative w-full h-full overflow-y-auto overflow-x-hidden"
       >
-        {/* Fixed header */}
-        <div className="flex-shrink-0 relative z-20 bg-gradient-to-b from-black/80 via-black/40 to-transparent">
-          <div
-            className="flex items-start justify-between"
-            style={{ padding: 'clamp(20px, 4vmin, 48px)' }}
+        <div
+          className="max-w-4xl mx-auto"
+          style={{
+            padding: 'clamp(24px, 6vmin, 80px)',
+            paddingBottom: 'clamp(48px, 8vmin, 100px)'
+          }}
+        >
+          {/* Title and description - now part of scrollable content */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="mb-12"
           >
-            <div className="max-w-3xl">
-              <motion.h2
-                initial={{ opacity: 0, y: -20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 }}
-                className="font-black text-white leading-tight"
-                style={{ fontSize: 'clamp(24px, 5vmin, 56px)' }}
-              >
-                {activeTask.title}
-              </motion.h2>
-              <motion.p
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2 }}
-                className="text-white/70 mt-3 leading-relaxed max-w-2xl"
-                style={{ fontSize: 'clamp(14px, 2vmin, 20px)' }}
-              >
-                {activeTask.description}
-              </motion.p>
-            </div>
-
-            {/* Close button */}
-            <motion.button
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.1 }}
-              onClick={onClose}
-              className="p-3 bg-white/10 hover:bg-white/20 rounded-full transition-all text-white font-black backdrop-blur-sm"
-              style={{ fontSize: 'clamp(12px, 1.8vmin, 18px)' }}
+            <h2
+              className="font-black text-white leading-tight mb-6"
+              style={{ fontSize: 'clamp(32px, 7vmin, 72px)' }}
             >
-              [X]
-            </motion.button>
+              {activeTask.title}
+            </h2>
+            <p
+              className="text-white/70 leading-relaxed"
+              style={{ fontSize: 'clamp(16px, 2.5vmin, 24px)' }}
+            >
+              {activeTask.description}
+            </p>
+          </motion.div>
+
+          {/* Separator line */}
+          {contentBlocks.length > 0 && (
+            <motion.div
+              initial={{ opacity: 0, scaleX: 0 }}
+              animate={{ opacity: 1, scaleX: 1 }}
+              transition={{ delay: 0.2, duration: 0.4 }}
+              className="mb-12 h-px bg-white/20 origin-left"
+            />
+          )}
+
+          {/* Content layout with custom groups */}
+          <div className="space-y-8">
+            {(() => {
+              // Build rows: group blocks by their group ID, or render individually
+              const rows: { groupId: string | null; blocks: { block: ContentBlock; index: number }[] }[] = [];
+              const processedIndices = new Set<number>();
+
+              contentBlocks.forEach((block, index) => {
+                if (processedIndices.has(index)) return;
+
+                if (block.group) {
+                  // Find all blocks with the same group ID
+                  const groupBlocks = contentBlocks
+                    .map((b, i) => ({ block: b, index: i }))
+                    .filter(item => item.block.group === block.group && !processedIndices.has(item.index));
+
+                  groupBlocks.forEach(item => processedIndices.add(item.index));
+                  rows.push({ groupId: block.group, blocks: groupBlocks });
+                } else {
+                  processedIndices.add(index);
+                  rows.push({ groupId: null, blocks: [{ block, index }] });
+                }
+              });
+
+              // Render helper for grouped blocks
+              const renderGroupedBlock = (block: ContentBlock, index: number) => {
+                const textAlignClass = block.textAlign === 'center' ? 'text-center' : block.textAlign === 'right' ? 'text-right' : 'text-left';
+
+                if (block.type === 'text') {
+                  return (
+                    <p
+                      className={`text-white/70 leading-relaxed ${textAlignClass}`}
+                      style={{ fontSize: 'clamp(14px, 2vmin, 18px)' }}
+                    >
+                      {block.content}
+                    </p>
+                  );
+                } else if (block.type === 'image') {
+                  return (
+                    <div
+                      className="relative rounded-xl overflow-hidden bg-zinc-800 cursor-pointer group h-full"
+                      onClick={() => setSelectedImageUrl(block.url!)}
+                    >
+                      <img
+                        src={block.url}
+                        alt=""
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                      />
+                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-300 flex items-center justify-center">
+                        <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-white/20 backdrop-blur-md rounded-full p-4">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" className="w-6 h-6">
+                            <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/>
+                          </svg>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                }
+                return null;
+              };
+
+              return rows.map((row, rowIndex) => {
+                if (row.groupId && row.blocks.length > 1) {
+                  // Grouped blocks - render in a flex row
+                  return (
+                    <motion.div
+                      key={`row-${rowIndex}`}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.1 + rowIndex * 0.05 }}
+                      className="flex flex-col md:flex-row gap-6 items-stretch"
+                    >
+                      {row.blocks.map(({ block, index }) => (
+                        <div key={index} className="flex-1 flex flex-col justify-center">
+                          {renderGroupedBlock(block, index)}
+                        </div>
+                      ))}
+                    </motion.div>
+                  );
+                } else {
+                  // Single block - render normally
+                  const { block, index } = row.blocks[0];
+                  return (
+                    <div key={`row-${rowIndex}`}>
+                      {renderContentBlock(block, index)}
+                    </div>
+                  );
+                }
+              });
+            })()}
           </div>
 
-          {/* Other roles navigation */}
-          {tasksWithContent.length > 1 && (
+          {/* Fallback: show illustrations if no content blocks */}
+          {contentBlocks.length === 0 && activeTask.illustrations && activeTask.illustrations.length > 0 && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {activeTask.illustrations.map((img, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.1 + index * 0.05 }}
+                  className="relative rounded-xl overflow-hidden bg-zinc-800 cursor-pointer group"
+                  onClick={() => setSelectedImageUrl(img.url)}
+                >
+                  <img
+                    src={img.url}
+                    alt=""
+                    className="w-full h-auto object-cover transition-transform duration-500 group-hover:scale-105"
+                  />
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-300" />
+                </motion.div>
+              ))}
+            </div>
+          )}
+
+          {/* Fallback: show message if no content and no illustrations */}
+          {contentBlocks.length === 0 && (!activeTask.illustrations || activeTask.illustrations.length === 0) && (
             <motion.div
-              initial={{ opacity: 0, y: -10 }}
+              initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
-              className="pb-4 flex gap-2 overflow-x-auto"
-              style={{ paddingLeft: 'clamp(20px, 4vmin, 48px)', paddingRight: 'clamp(20px, 4vmin, 48px)' }}
+              transition={{ delay: 0.1 }}
+              className="flex flex-col items-center justify-center py-16 text-center"
             >
-              {tasksWithContent.map((task, index) => {
-                const originalIndex = tasks.findIndex(t => t === task);
-                const isActive = originalIndex === activeTaskIndex;
-                return (
+              <p
+                className="text-white/40 italic"
+                style={{ fontSize: 'clamp(14px, 2vmin, 18px)' }}
+              >
+                Detailed content coming soon...
+              </p>
+            </motion.div>
+          )}
+
+          {/* Footer with role buttons */}
+          {tasks.length > 1 && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.4 }}
+              className="mt-24 pt-12 border-t border-white/10"
+            >
+              <div className="flex flex-wrap justify-center gap-3">
+                {tasks.map((task, index) => (
                   <button
                     key={index}
-                    onClick={() => setActiveTaskIndex(originalIndex)}
-                    className={`flex-shrink-0 px-4 py-2 rounded-full font-medium transition-all backdrop-blur-sm ${
-                      isActive
+                    onClick={() => setActiveTaskIndex(index)}
+                    className={`px-4 py-2 rounded-full font-medium transition-all ${
+                      index === activeTaskIndex
                         ? 'bg-white text-black'
-                        : 'bg-white/10 text-white/80 hover:bg-white/20 hover:text-white'
+                        : 'bg-white/10 text-white/60 hover:bg-white/20 hover:text-white'
                     }`}
-                    style={{ fontSize: 'clamp(11px, 1.4vmin, 15px)' }}
+                    style={{ fontSize: 'clamp(11px, 1.4vmin, 14px)' }}
                   >
                     {task.title}
                   </button>
-                );
-              })}
-            </motion.div>
-          )}
-        </div>
-
-        {/* Scrollable content - Magazine layout */}
-        <div
-          ref={scrollRef}
-          className="flex-1 overflow-y-auto overflow-x-hidden"
-        >
-          <div
-            className="max-w-6xl mx-auto"
-            style={{
-              padding: 'clamp(16px, 4vmin, 48px)',
-              paddingTop: '0'
-            }}
-          >
-            {/* Magazine grid layout */}
-            <div className="grid grid-cols-12 gap-6">
-              {contentBlocks.map((block, index) => {
-                // Determine column span based on size
-                const sizeClasses = {
-                  full: 'col-span-12',
-                  large: 'col-span-12 md:col-span-8',
-                  medium: 'col-span-12 md:col-span-6',
-                  small: 'col-span-12 md:col-span-4'
-                };
-                const colSpan = sizeClasses[block.size || 'full'];
-
-                // Determine alignment/offset
-                const alignmentClasses = {
-                  left: '',
-                  center: block.size === 'large' ? 'md:col-start-3' : block.size === 'medium' ? 'md:col-start-4' : block.size === 'small' ? 'md:col-start-5' : '',
-                  right: block.size === 'large' ? 'md:col-start-5' : block.size === 'medium' ? 'md:col-start-7' : block.size === 'small' ? 'md:col-start-9' : ''
-                };
-                const alignClass = alignmentClasses[block.align || 'left'];
-
-                return (
-                  <div key={index} className={`${colSpan} ${alignClass}`}>
-                    {renderContentBlock(block, index)}
-                  </div>
-                );
-              })}
-            </div>
-
-            {/* Fallback: show illustrations if no content blocks */}
-            {contentBlocks.length === 0 && activeTask.illustrations && activeTask.illustrations.length > 0 && (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {activeTask.illustrations.map((img, index) => (
-                  <motion.div
-                    key={index}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.1 + index * 0.05 }}
-                    className="relative rounded-xl overflow-hidden bg-zinc-800 cursor-pointer group"
-                    onClick={() => setSelectedImageUrl(img.url)}
-                  >
-                    <img
-                      src={img.url}
-                      alt=""
-                      className="w-full h-auto object-cover transition-transform duration-500 group-hover:scale-105"
-                    />
-                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-300" />
-                  </motion.div>
                 ))}
               </div>
-            )}
+            </motion.div>
+          )}
 
-            <div style={{ height: 'clamp(40px, 8vmin, 100px)' }} />
-          </div>
         </div>
-
-        <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-black/60 to-transparent pointer-events-none z-10" />
       </motion.div>
+
+      {/* Fixed navigation buttons - always visible */}
+      {hasPrevRole && (
+        <motion.button
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.2 }}
+          onClick={() => setActiveTaskIndex(activeTaskIndex - 1)}
+          className="fixed left-6 top-1/2 -translate-y-1/2 z-[320] p-4 bg-white/10 hover:bg-white/20 backdrop-blur-sm rounded-full transition-colors"
+        >
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-white">
+            <path d="M15 18l-6-6 6-6"/>
+          </svg>
+        </motion.button>
+      )}
+
+      {hasNextRole && (
+        <motion.button
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.2 }}
+          onClick={() => setActiveTaskIndex(activeTaskIndex + 1)}
+          className="fixed right-6 top-1/2 -translate-y-1/2 z-[320] p-4 bg-white/10 hover:bg-white/20 backdrop-blur-sm rounded-full transition-colors"
+        >
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-white">
+            <path d="M9 18l6-6-6-6"/>
+          </svg>
+        </motion.button>
+      )}
 
       {/* Fullscreen image viewer with zoom controls */}
       <AnimatePresence>
@@ -474,9 +736,10 @@ export default function RoleDetailModal({ tasks, initialTaskIndex, onClose, acce
 
             {/* Image container with zoom and pan */}
             <div
-              className="relative w-full h-full flex items-center justify-center max-w-7xl max-h-[90vh]"
+              className="relative w-full h-full flex items-center justify-center overflow-hidden"
               onClick={(e) => e.stopPropagation()}
             >
+              {/* Zoom/pan wrapper */}
               <div
                 className={`w-full h-full flex items-center justify-center select-none ${zoomLevel > 1 ? 'cursor-grab active:cursor-grabbing' : 'cursor-default'}`}
                 style={{
@@ -489,17 +752,25 @@ export default function RoleDetailModal({ tasks, initialTaskIndex, onClose, acce
                 onMouseLeave={handleMouseUp}
                 onWheel={handleWheel}
               >
-                <img
-                  src={selectedImageUrl}
-                  alt="Full size"
-                  className="max-w-full max-h-full object-contain"
-                  draggable={false}
-                  onDragStart={(e) => e.preventDefault()}
-                />
+                {/* Animation wrapper */}
+                <AnimatePresence mode="wait" initial={false}>
+                  <motion.img
+                    key={selectedImageUrl}
+                    src={selectedImageUrl || ''}
+                    alt="Full size"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.2 }}
+                    className="max-w-full max-h-[90vh] object-contain"
+                    draggable={false}
+                    onDragStart={(e) => e.preventDefault()}
+                  />
+                </AnimatePresence>
               </div>
             </div>
 
-            {/* Navigation arrows */}
+            {/* Navigation arrows - always visible when multiple images */}
             {allImages.length > 1 && (
               <>
                 <button
@@ -519,29 +790,55 @@ export default function RoleDetailModal({ tasks, initialTaskIndex, onClose, acce
                   </svg>
                 </button>
 
-                {/* Thumbnails bar */}
-                <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-40 max-w-4xl w-full px-4" onClick={(e) => e.stopPropagation()}>
-                  <div className="bg-black/80 backdrop-blur-sm rounded-lg p-3">
-                    <div className="flex gap-3 overflow-x-auto overflow-y-hidden justify-center" style={{ scrollbarWidth: 'thin' }}>
-                      {allImages.map((url, index) => (
-                        <div
-                          key={index}
-                          onClick={(e) => { e.stopPropagation(); setSelectedImageUrl(url); }}
-                          className={`flex-shrink-0 w-20 aspect-video bg-zinc-800 rounded-sm overflow-hidden border-2 cursor-pointer transition-all ${
-                            selectedImageUrl === url
-                              ? 'border-white scale-105'
-                              : 'border-transparent opacity-50 hover:opacity-100'
-                          }`}
-                        >
-                          <img
-                            src={url}
-                            className="w-full h-full object-cover"
-                            alt={`Thumb ${index}`}
-                          />
-                        </div>
-                      ))}
+                {/* Thumbnails bar - hidden by default, appears on hover */}
+                <div
+                  className="absolute bottom-0 left-0 right-0 z-40"
+                  onMouseEnter={() => setShowThumbnails(true)}
+                  onMouseLeave={() => setShowThumbnails(false)}
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  {/* Hover detection zone */}
+                  <div className="h-24" />
+
+                  {/* Thumbnails container */}
+                  <motion.div
+                    initial={{ y: 100, opacity: 0 }}
+                    animate={{
+                      y: showThumbnails ? 0 : 100,
+                      opacity: showThumbnails ? 1 : 0
+                    }}
+                    transition={{ duration: 0.3, ease: "easeOut" }}
+                    className="pb-6 px-4"
+                  >
+                    <div className="max-w-4xl mx-auto bg-black/80 backdrop-blur-sm rounded-lg p-3">
+                      <div className="flex gap-3 overflow-x-auto overflow-y-hidden justify-center" style={{ scrollbarWidth: 'thin' }}>
+                        {allImages.map((url, index) => (
+                          <div
+                            key={index}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setSelectedImageUrl(url);
+                            }}
+                            className={`flex-shrink-0 w-20 aspect-video bg-zinc-800 rounded-sm overflow-hidden border-2 cursor-pointer transition-all ${
+                              selectedImageUrl === url
+                                ? 'border-white scale-105'
+                                : 'border-transparent opacity-50 hover:opacity-100'
+                            }`}
+                          >
+                            <img
+                              src={url}
+                              className="w-full h-full object-cover"
+                              alt={`Thumb ${index}`}
+                            />
+                          </div>
+                        ))}
+                      </div>
                     </div>
-                  </div>
+                    {/* Image counter */}
+                    <p className="text-center text-white/50 text-sm mt-2">
+                      {currentImageIndex + 1} / {allImages.length}
+                    </p>
+                  </motion.div>
                 </div>
               </>
             )}

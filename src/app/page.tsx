@@ -328,7 +328,7 @@ export default function Home() {
               variants={fadeInUp}
             >
               <p className="text-xl md:text-2xl font-medium leading-relaxed italic text-zinc-800">
-                Welcome! I am a Game Designer dedicated to crafting deep, systemic experiences with a focus on User Experience and Economy Design. I believe games are at their best when they foster connection—whether through community-driven gameplay or seamless collaborative development.
+                Welcome! I am a Game Designer dedicated to crafting deep, systemic experiences with a focus on Economy Design, Narrative Design and UX. I believe games are at their best when they foster connection—whether through community-driven gameplay or seamless collaborative development.
                 <br /><br />
                 I am driven by a desire to translate ambitious creative visions into polished reality, utilizing a diverse toolkit to balance complex systems with intuitive feel.
                 <br /><br />
@@ -733,7 +733,7 @@ export default function Home() {
 
         <div className="mt-16 pt-8 border-t border-zinc-200 text-center">
           <p className="text-xs font-mono text-zinc-400 uppercase tracking-widest">
-            © {new Date().getFullYear()} Ismail — Game Designer
+            © {new Date().getFullYear()} Ismail Benkirane — Game Designer
           </p>
         </div>
       </motion.section>
