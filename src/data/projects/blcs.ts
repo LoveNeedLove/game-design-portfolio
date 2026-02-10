@@ -17,19 +17,71 @@ export const blcs: Project = {
   tasks: [
     {
       title: "Core Systems Design",
-      description: "I designed the primary rules for play and traversal, focusing on how modular raft pieces interacted with a deck of tactical cards (Snake, Ladder, Block, and Cannon)."
+      description: "I designed the primary rules for play and traversal, focusing on how modular raft pieces interacted with a deck of tactical cards (Snake, Ladder, Block, and Cannon).",
+      content: [
+        {
+          type: 'text',
+          content: "I was inspired by John Conway's Game of Life to create a mechanic where players shuffle blocks to build the biggest entity possible. This became our main gameplay brick, where every interaction is based on your current \"raft\"—a group of at least two interconnected blocks—and its positioning on the grid. The core survival mechanic is based on adjacency: a player is eliminated if they end their turn on a single, isolated block without the means to move to another.",
+          group: 'core-mechanic'
+        },
+        {
+          type: 'image',
+          url: 'https://picsum.photos/seed/blcs-prototype-rules/800/500',
+          group: 'core-mechanic'
+        },
+        {
+          type: 'text',
+          content: "To flesh out player interactions, I designed four \"action cards\" that players can draw at the end of each turn: The Ladder allows for teleportation to steal or escape rafts. The Cannon deletes a block to drive the game's pacing. The Snake allows a player to push an entire row or column, creating tactical plays while staying balanced. Finally, the Block card allows moving any block to any space without increasing the total pool, keeping the overall pacing of the game intact, while offering a lot of gameplay possibilities.",
+          group: 'action-cards'
+        },
+        {
+          type: 'image',
+          url: 'https://picsum.photos/seed/blcs-action-cards/600/400',
+          group: 'action-cards'
+        }
+      ]
     },
     {
       title: "Rapid Prototyping",
-      description: "I managed multiple quick-fire iterations of the physical prototype, testing balance and piece-fitting within the tight 6-hour window."
+      description: "I managed multiple quick-fire iterations of the physical prototype, testing balance and piece-fitting within the tight 6-hour window.",
+      content: [
+        {
+          type: 'text',
+          content: "Prototyping a whole game in only 6 hours meant that we had to iterate extremely quickly. Our first idea was a mix of Poker and Old Maid, where players needed to trade cards within their hands to end up with the best hand. However, we wanted to create a game that would stand on its own; after seeing a bunch of small wooden blocks on the material list, we decided to pivot and build our gameplay loop around that instead, testing balance and piece-fitting within the tight window.",
+          size: 'full'
+        },
+        {
+          type: 'image',
+          url: 'https://picsum.photos/seed/blcs-game-photo/1200/500',
+          size: 'full'
+        },
+        {
+          type: 'text',
+          content: "In a survival-based board game, player elimination is a common pain point. During playtests, I found that players who were eliminated early felt excluded, so I implemented a \"Ghost\" mechanic. Once out of the race, players use their turn to remove one block from an opponent's raft (mimicking the effect of the Cannon card). This kept everyone engaged until the final turn and turned a potential frustration into a \"snowball effect\" that heightened the tension for the remaining survivors.",
+          size: 'full'
+        }
+      ]
     },
     {
       title: "UX Structuring",
-      description: "To ensure the game remained clear and fast-paced, I divided the player's turn into three distinct, easy-to-follow phases, significantly reducing the learning curve for new players."
-    },
-    {
-      title: "Item Mechanics",
-      description: "I designed the four core cards—the Block, Ladder, Cannon, and Snake—ensuring that each offered a distinct tactical advantage or environmental interaction."
+      description: "To ensure the game remained clear and fast-paced, I divided the player's turn into three distinct, easy-to-follow phases, significantly reducing the learning curve for new players.",
+      content: [
+        {
+          type: 'image',
+          url: 'https://picsum.photos/seed/blcs-turn-phases/600/400',
+          group: 'ux-phases'
+        },
+        {
+          type: 'text',
+          content: "To ensure the game remained clear and fast-paced, I divided the player's turn into three distinct, easy-to-follow phases. This significantly reduced the game's learning curve and alleviated the players' cognitive load. By clearly separating the movement and block-shifting phases, while ending the turn by drawing a card, I ensured that players could focus on strategy rather than struggling to understand the flow of play.",
+          group: 'ux-phases'
+        },
+        {
+          type: 'text',
+          content: "We made it so that players could use their action cards at any point during their turn, which allowed for a lot of creative plays, made the cards feel more useful, and increased the overall skill expression.",
+          size: 'full'
+        }
+      ]
     }
   ],
   challenge: "In a survival-based board game, player elimination is a common pain point. During playtests, we found that players who were eliminated early felt excluded from the experience, leading to frustration and a lack of interest in the game's conclusion.",

@@ -19,15 +19,91 @@ export const journal2050: Project = {
   tasks: [
     {
       title: "Narrative Architecture",
-      description: "I designed and wrote the complex branching progression tree, ensuring that player choices led to distinct, meaningful story outcomes."
+      description: "I designed and wrote the complex branching progression tree, ensuring that player choices led to distinct, meaningful story outcomes.",
+      content: [
+        {
+          type: 'text',
+          content: "We needed to build a game that could be enjoyed by all ages, including older visitors, while being easily deployable within an exposition setting. To fulfil that goal, we landed on a visual novel concept designed to adapt the content of the exposition, in a neat, intuitive package.",
+          group: 'visual-novel'
+        },
+        {
+          type: 'image',
+          url: 'https://picsum.photos/seed/journal2050-gameplay/800/450',
+          group: 'visual-novel'
+        },
+        {
+          type: 'text',
+          content: "To make each playthrough unique, I built a narrative branching tree where the player's choices could directly impact their progress. This architecture allowed the story to \"converge\" at key milestones, which made the writing load more manageable.",
+          size: 'full'
+        },
+        {
+          type: 'image',
+          url: 'https://picsum.photos/seed/journal2050-branching-tree/1200/500',
+          size: 'full'
+        },
+        {
+          type: 'image',
+          url: 'https://picsum.photos/seed/journal2050-narrative-choice/600/400',
+          group: 'inventory-system'
+        },
+        {
+          type: 'text',
+          content: "I also included an inventory system inspired by 60 seconds, by collecting certain items at any point of their journey, the player could access hidden story beats. This mechanic could drive the whole point of the exposition which was to \"imagine your life during a climatic crisis\". While the short deadline forced us to prioritize the overall aesthetic over the final implementation of this system, the design served to flesh out the world-building and provided a clear framework for the story's stakes.",
+          group: 'inventory-system'
+        }
+      ]
     },
     {
       title: "UX & Interface Design",
-      description: "I designed the game's interface to mirror a \"scrapbook diary,\" creating an immersive aesthetic that makes the player feel as though the character is hand-writing their own experiences in real-time."
+      description: "I designed the game's interface to mirror a \"scrapbook diary,\" creating an immersive aesthetic that makes the player feel as though the character is hand-writing their own experiences in real-time.",
+      content: [
+        {
+          type: 'text',
+          content: "The goal of the experience was to educate about the various climatic crises currently happening all over the world. To immerse the player in the experience, we chose a \"scrapbook\" aesthetic. This look made the game feel like a credible, hand-written diary, yet it was distant enough to be perceived as fiction; a perception we intended to subvert by the end of the story. The scrapbook itself was made to look aged and mysterious, and with every story beat, filled up with sketches, polaroid pictures, crumpled memos, and other memorabilia.",
+          size: 'full'
+        },
+        {
+          type: 'image',
+          url: 'https://picsum.photos/seed/journal2050-scrapbook/800/450',
+          group: 'scrapbook'
+        },
+        {
+          type: 'text',
+          content: "I designed the space surrounding the notebook to evolve dynamically, items like maps and empty cans pilled up as the story progressed. These elements made the player's journey more tangible.",
+          group: 'scrapbook'
+        },
+        {
+          type: 'text',
+          content: "To bridge the gap between our 2050 setting and the actual climatic tragedies currently occurring across the globe, I designed a \"Souvenir\" system. Every time a player meets a character, they receive a special memento to keep in their diary. In order to tie the experience, we replaced the book's pages with plain white layouts, and replace the previously collected \"souvenirs\" with high-fidelity images of actual cities in crisis. This revealed that each character encountered was a representation of a real-life individual's experience, subverting the idea that an apocalyptical crisis was only a thing of fiction.",
+          size: 'full'
+        },
+        {
+          type: 'image',
+          url: 'https://picsum.photos/seed/journal2050-reveal/1200/500',
+          size: 'full'
+        }
+      ]
     },
     {
       title: "Serious Game Design",
-      description: "I designed mechanics and scenarios specifically tailored for a broad audience, ensuring the gameplay was accessible while educating players on real-world social and environmental stakes."
+      description: "I designed mechanics and scenarios specifically tailored for a broad audience, ensuring the gameplay was accessible while educating players on real-world social and environmental stakes.",
+      content: [
+        {
+          type: 'image',
+          url: 'https://picsum.photos/seed/journal2050-hackathon/600/400',
+          group: 'red-cross'
+        },
+        {
+          type: 'text',
+          content: "Our goal was to create a digital and interactive experience that worked well alongside a pre-existing interactive exhibition made by the French Red Cross. To ensure the game fulfilled its role effectively, we chose to adapt the core educational content from the physical exhibit into a format that fit a visual novel better.",
+          group: 'red-cross'
+        },
+        {
+          type: 'text',
+          content: "With each iteration, I worked alongside French Red Cross representatives to make sure that the game's tone and scenario were suitable for their mission. This helped us reach the perfect balance between accurately representing the stakes at hand and making an experience that was enjoyable to play through and fun for all ages.",
+          size: 'full'
+        }
+      ]
     }
   ],
   challenge: "A recurring issue in serious games is the \"empathy gap\"—players often view futuristic scenarios as purely fictional. We struggled to find a way to meaningfully link the player's fictional adventure in 2050 with the actual climatic tragedies currently occurring across the globe.",

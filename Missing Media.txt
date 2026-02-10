@@ -91,6 +91,120 @@ One-Button Menu & UI Design
 
 
 ================================================================================
+FLING
+================================================================================
+
+Level Design & Implementation
+------------------------------
+[ ] Big door with keys around (big_door_with_keys.png)
+[ ] Overall level screenshot - big and clear (overall_level_screenshot.png)
+[ ] Lava chase situation (lava_chase_situation.gif)
+[ ] Final fall sequence (final_fall.gif)
+
+Technical Implementation
+------------------------
+[ ] Destructible walls in action (destructible_walls.gif)
+[ ] Crumble platforms demo (crumble_platforms.gif)
+[ ] Trampolines demonstration (trampolines.gif)
+[ ] Chase sequence from last level (chase_sequence.gif)
+
+Gamefeel & Polish
+-----------------
+[ ] Gamefeel research document (research_document.png)
+[ ] Ball bouncing with squash-stretch (ball_bouncing.gif)
+[ ] Ball in flame at high velocity (ball_in_flame.gif)
+
+Progression & Audio
+-------------------
+[ ] Keys appearing around door (keys_appearing.gif)
+[ ] Musical DNA document - music section (music_document.png)
+[ ] Musical DNA document - ambiance loops (ambiance_document.png)
+[ ] Credits sequence playable (credits_sequence.mp4)
+
+
+================================================================================
+CHAOTILES
+================================================================================
+
+Core Rule Design
+----------------
+[ ] Trailer screenshot showing the board (trailer_screenshot.png)
+[ ] Dual orientation card feature (dual_orientation_card.png)
+[ ] Monster chase phase from trailer (monster_chase.gif)
+
+Content Writing and Documentation
+----------------------------------
+[ ] Dilemma card with both choices visible (card_example.png)
+[ ] Rulebook PDF page screenshot (rulebook_page.png)
+[ ] Presentation slide/video screenshot (presentation_slide.png)
+
+Prototyping & Templating
+-------------------------
+[ ] Canva template for cards (canva_template.png)
+[ ] Cardboard prototype from trailer (physical_prototype.png)
+[ ] Final printed card with layout (finalised_card.png)
+
+
+================================================================================
+BLCS
+================================================================================
+
+Core Systems Design
+-------------------
+[ ] Raft adjacency rules from prototype (prototype_rules.png)
+[ ] 4 action cards: Ladder, Cannon, Snake, Block (action_cards.png)
+
+Rapid Prototyping
+-----------------
+[ ] Game being played with wooden blocks (game_in_action.png)
+
+UX Structuring
+--------------
+[ ] 3-phase turn structure from rules (turn_phases.png)
+
+
+================================================================================
+JOURNAL 2050
+================================================================================
+
+Narrative Architecture
+----------------------
+[ ] Visual novel gameplay screenshot (gameplay_screenshot.png)
+[ ] Miro branching tree diagram (branching_tree.png)
+[ ] Narrative choice with inventory system (narrative_choice.png)
+
+UX & Interface Design
+---------------------
+[ ] Scrapbook diary aesthetic with sketches (scrapbook_aesthetic.png)
+[ ] Final reveal showing real cities in crisis (reveal_screen.png)
+
+Serious Game Design
+-------------------
+[ ] 3-day hackathon photo with Red Cross (hackathon_photo.png)
+
+
+================================================================================
+OSTIN8TO
+================================================================================
+
+HUD Implementation
+------------------
+[ ] Health bar with spinning vinyl (health_vinyl.gif)
+[ ] Test tube combo meter shaking/changing colors (combo_meter.gif)
+
+Systems & Combat Design
+-----------------------
+[ ] Enemy sprites: dividing, aerial, missile, shielded (enemy_sprites.png)
+[ ] Enemies climbing on top of each other (enemy_stack.png)
+[ ] Arena with ramped obstacles and corkscrew pillar (arena_design.png)
+[ ] Bomb detonation chain reactions (bomb_feature.gif)
+
+Collaborative Design
+--------------------
+[ ] Brainstorming document with ideas and scope (brainstorm_document.png)
+
+
+================================================================================
 NOTES
 ================================================================================
 - Prefer .gif for animations, .mp4 for longer videos

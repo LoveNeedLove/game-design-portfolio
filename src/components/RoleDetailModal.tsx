@@ -154,6 +154,65 @@ export default function RoleDetailModal({ tasks, initialTaskIndex, onClose, acce
     }
   };
 
+  // Parse text with custom markup tags
+  const parseMarkup = (text: string): React.ReactNode => {
+    // Regex to match custom tags: [tag=value]content[/tag]
+    const tagRegex = /\[(\w+)(?:=([^\]]+))?\](.*?)\[\/\1\]/g;
+    const parts: React.ReactNode[] = [];
+    let lastIndex = 0;
+    let match;
+
+    while ((match = tagRegex.exec(text)) !== null) {
+      // Add text before the tag
+      if (match.index > lastIndex) {
+        parts.push(text.substring(lastIndex, match.index));
+      }
+
+      const tag = match[1];
+      const value = match[2];
+      const content = match[3];
+
+      // Recursively parse nested tags
+      const parsedContent = parseMarkup(content);
+
+      // Apply styling based on tag
+      switch (tag.toLowerCase()) {
+        case 'b':
+        case 'bold':
+          parts.push(<strong key={match.index}>{parsedContent}</strong>);
+          break;
+        case 'i':
+        case 'italic':
+          parts.push(<em key={match.index}>{parsedContent}</em>);
+          break;
+        case 'color':
+          parts.push(<span key={match.index} style={{ color: value }}>{parsedContent}</span>);
+          break;
+        case 'size':
+          parts.push(<span key={match.index} style={{ fontSize: value }}>{parsedContent}</span>);
+          break;
+        case 'font':
+          parts.push(<span key={match.index} style={{ fontFamily: value }}>{parsedContent}</span>);
+          break;
+        case 'u':
+        case 'underline':
+          parts.push(<span key={match.index} style={{ textDecoration: 'underline' }}>{parsedContent}</span>);
+          break;
+        default:
+          parts.push(content);
+      }
+
+      lastIndex = match.index + match[0].length;
+    }
+
+    // Add remaining text
+    if (lastIndex < text.length) {
+      parts.push(text.substring(lastIndex));
+    }
+
+    return parts.length > 0 ? parts : text;
+  };
+
   // Render a content block
   const renderContentBlock = (block: ContentBlock, index: number) => {
     switch (block.type) {
@@ -170,7 +229,7 @@ export default function RoleDetailModal({ tasks, initialTaskIndex, onClose, acce
               className="font-black text-white/90 leading-tight"
               style={{ fontSize: 'clamp(24px, 4vmin, 42px)' }}
             >
-              {block.content}
+              {parseMarkup(block.content || '')}
             </h3>
           </motion.div>
         );
@@ -210,7 +269,7 @@ export default function RoleDetailModal({ tasks, initialTaskIndex, onClose, acce
               className={`leading-relaxed ${variantStyles[textVariant]}`}
               style={{ fontSize: textVariant === 'quote' ? 'clamp(16px, 2.5vmin, 22px)' : 'clamp(14px, 2vmin, 18px)' }}
             >
-              {block.content}
+              {parseMarkup(block.content || '')}
             </p>
           </motion.div>
         );
@@ -229,7 +288,7 @@ export default function RoleDetailModal({ tasks, initialTaskIndex, onClose, acce
                 className="font-bold text-white/90 mb-4"
                 style={{ fontSize: 'clamp(16px, 2.2vmin, 22px)' }}
               >
-                {block.content}
+                {parseMarkup(block.content)}
               </h4>
             )}
             <ul className="space-y-3">
@@ -240,7 +299,7 @@ export default function RoleDetailModal({ tasks, initialTaskIndex, onClose, acce
                   style={{ fontSize: 'clamp(13px, 1.8vmin, 16px)' }}
                 >
                   <span className="text-white/40 mt-1.5 text-lg">•</span>
-                  <span className="leading-relaxed">{item}</span>
+                  <span className="leading-relaxed">{parseMarkup(item)}</span>
                 </li>
               ))}
             </ul>
@@ -527,7 +586,7 @@ export default function RoleDetailModal({ tasks, initialTaskIndex, onClose, acce
                       className={`text-white/70 leading-relaxed ${textAlignClass}`}
                       style={{ fontSize: 'clamp(14px, 2vmin, 18px)' }}
                     >
-                      {block.content}
+                      {parseMarkup(block.content || '')}
                     </p>
                   );
                 } else if (block.type === 'image') {
