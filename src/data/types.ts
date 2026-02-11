@@ -13,13 +13,14 @@ export interface TeamMember {
 }
 
 export interface ContentBlock {
-  type: 'text' | 'heading' | 'list' | 'image' | 'separator' | 'slideshow';
+  type: 'text' | 'heading' | 'list' | 'image' | 'separator' | 'slideshow' | 'youtube';
   content?: string;
   items?: string[];
   url?: string;
   images?: string[]; // For slideshow type
   title?: string; // For slideshow type
   size?: 'full' | 'large' | 'medium' | 'small';
+  format?: '16/9' | '1/1' | 'auto'; // Aspect ratio for images/slideshows
   align?: 'left' | 'center' | 'right';
   textAlign?: 'left' | 'center' | 'right';
   variant?: 'accent' | 'quote' | 'highlight';
@@ -55,6 +56,7 @@ export interface Project {
   featuredTextColor: string;
   secondaryTextColor: string;
   mediaList: MediaItem[];
+  tools?: string[];
   linkUrl?: string;
   linkTitle?: string;
 }

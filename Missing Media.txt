@@ -113,6 +113,11 @@ Gamefeel & Polish
 [ ] Gamefeel research document (research_document.png)
 [ ] Ball bouncing with squash-stretch (ball_bouncing.gif)
 [ ] Ball in flame at high velocity (ball_in_flame.gif)
+[ ] Tutorial animation #1 - wordless mechanic demo (fling-tuto-anim1.gif)
+[ ] Tutorial animation #2 - wordless mechanic demo (fling-tuto-anim2.gif)
+[ ] Tutorial animation #3 - wordless mechanic demo (fling-tuto-anim3.gif)
+[ ] Tutorial animation #4 - wordless mechanic demo (fling-tuto-anim4.gif)
+[ ] Tutorial animation #5 - wordless mechanic demo (fling-tuto-anim5.gif)
 
 Progression & Audio
 -------------------

@@ -204,6 +204,7 @@ function ProjectGridItem({
               initial={{ opacity: 0 }}
               animate={{ opacity: index === currentMediaIndex ? 1 : 0 }}
               transition={{ duration: 0.6 }}
+              style={{ backfaceVisibility: 'hidden' }}
               className="absolute inset-0 w-full h-full object-cover"
             />
           );

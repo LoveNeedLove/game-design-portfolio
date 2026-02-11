@@ -150,6 +150,42 @@ export const fling: Project = {
           type: 'image',
           url: 'https://picsum.photos/seed/fling-ball-flame/600/400',
           group: 'damage-feedback'
+        },
+        { type: 'separator' },
+        {
+          type: 'text',
+          content: 'During playtesting, we observed that players struggled to grasp the core controls, specifically the interaction between the dash and the "fling" recoil, leading to frustration during high-stakes platforming sections.',
+          size: 'full'
+        },
+        {
+          type: 'text',
+          content: 'To bridge this gap without breaking immersion, I designed and implemented a series of wordless, in-game 2D animations at key progression points. By teaching the mechanics through clear visual observation rather than text, I eliminated the language barrier and allowed players to master the complex controls intuitively.',
+          size: 'full'
+        },
+        {
+          type: 'image',
+          url: 'https://picsum.photos/seed/fling-tuto-anim1/400/300',
+          group: 'tuto-anims-1'
+        },
+        {
+          type: 'image',
+          url: 'https://picsum.photos/seed/fling-tuto-anim2/400/300',
+          group: 'tuto-anims-1'
+        },
+        {
+          type: 'image',
+          url: 'https://picsum.photos/seed/fling-tuto-anim3/400/300',
+          group: 'tuto-anims-2'
+        },
+        {
+          type: 'image',
+          url: 'https://picsum.photos/seed/fling-tuto-anim4/400/300',
+          group: 'tuto-anims-2'
+        },
+        {
+          type: 'image',
+          url: 'https://picsum.photos/seed/fling-tuto-anim5/400/300',
+          size: 'medium'
         }
       ]
     },

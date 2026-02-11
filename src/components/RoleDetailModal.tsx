@@ -21,16 +21,64 @@ export default function RoleDetailModal({ tasks, initialTaskIndex, onClose, acce
   const [showThumbnails, setShowThumbnails] = useState(false);
   const [expandedSlideshows, setExpandedSlideshows] = useState<Set<number>>(new Set());
   const [slideshowIndices, setSlideshowIndices] = useState<Record<number, number>>({});
+  const [pdfPages, setPdfPages] = useState<Record<number, string[]>>({});
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const activeTask = tasks[activeTaskIndex];
   const contentBlocks = activeTask?.content || [];
 
+  // Render PDF pages for slideshow blocks with PDF URLs (dynamic import to avoid SSR crash)
+  useEffect(() => {
+    const pdfBlocks = contentBlocks
+      .map((block, index) => ({ block, index }))
+      .filter(({ block, index }) => block.type === 'slideshow' && block.url?.toLowerCase().endsWith('.pdf') && !pdfPages[index]);
+
+    if (pdfBlocks.length === 0) return;
+
+    (async () => {
+      const pdfjs = await import('pdfjs-dist');
+      pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.mjs`;
+
+      for (const { block, index } of pdfBlocks) {
+        try {
+          const pdf = await pdfjs.getDocument(block.url!).promise;
+          const pages: string[] = [];
+          for (let i = 1; i <= pdf.numPages; i++) {
+            const page = await pdf.getPage(i);
+            const viewport = page.getViewport({ scale: 1.5 });
+            const canvas = document.createElement('canvas');
+            canvas.width = viewport.width;
+            canvas.height = viewport.height;
+            const ctx = canvas.getContext('2d')!;
+            await page.render({ canvasContext: ctx, viewport, canvas } as Parameters<typeof page.render>[0]).promise;
+            pages.push(canvas.toDataURL('image/png'));
+          }
+          setPdfPages(prev => ({ ...prev, [index]: pages }));
+        } catch (err) {
+          console.error('Failed to render PDF:', err);
+        }
+      }
+    })();
+  }, [contentBlocks, pdfPages]);
+
+  // Reset PDF pages when switching tasks
+  useEffect(() => {
+    setPdfPages({});
+  }, [activeTaskIndex]);
+
+  // Helper: get resolved images for a slideshow block (PDF pages or regular images)
+  const getSlideshowImages = (block: ContentBlock, index: number): string[] => {
+    if (block.url?.toLowerCase().endsWith('.pdf')) {
+      return pdfPages[index] || [];
+    }
+    return block.images || [];
+  };
+
   // Get all images from content AND illustrations for navigation in fullscreen
-  // Include slideshow images when expanded
+  // Always include slideshow images so fullscreen navigation works
   const contentImages = contentBlocks.flatMap((b, idx) => {
     if (b.type === 'image') return [b.url!];
-    if (b.type === 'slideshow' && b.images && expandedSlideshows.has(idx)) return b.images;
+    if (b.type === 'slideshow') return getSlideshowImages(b, idx);
     return [];
   });
   const illustrationImages = activeTask?.illustrations?.map(img => img.url) || [];
@@ -213,6 +261,39 @@ export default function RoleDetailModal({ tasks, initialTaskIndex, onClose, acce
     return parts.length > 0 ? parts : text;
   };
 
+  // Image sizing helpers
+  const sizeToMaxWidth: Record<string, string> = {
+    full: '100%',
+    large: '85%',
+    medium: '65%',
+    small: '45%'
+  };
+
+  const formatToAspectRatio = (format?: string) => {
+    switch (format) {
+      case '16/9': return '16 / 9';
+      case '1/1': return '1 / 1';
+      default: return undefined; // auto = native ratio
+    }
+  };
+
+  const getImageContainerStyle = (block: ContentBlock) => {
+    const style: React.CSSProperties = {};
+    const size = block.size || 'full';
+    style.maxWidth = sizeToMaxWidth[size] || '100%';
+    const ar = formatToAspectRatio(block.format);
+    if (ar) style.aspectRatio = ar;
+    return style;
+  };
+
+  const getImageClass = (format?: string) => {
+    // With a forced aspect ratio, use object-cover to fill the box
+    // With auto/no format, let the image keep its native ratio
+    return format && format !== 'auto'
+      ? 'w-full h-full object-cover'
+      : 'w-full h-auto object-cover';
+  };
+
   // Render a content block
   const renderContentBlock = (block: ContentBlock, index: number) => {
     switch (block.type) {
@@ -307,6 +388,10 @@ export default function RoleDetailModal({ tasks, initialTaskIndex, onClose, acce
         );
 
       case 'image':
+        const imgContainerStyle = getImageContainerStyle(block);
+        const imgClass = getImageClass(block.format);
+        const imgAlignClass = block.align === 'right' ? 'ml-auto' : block.align === 'left' ? 'mr-auto' : 'mx-auto';
+
         return (
           <motion.div
             key={`image-${index}`}
@@ -316,13 +401,14 @@ export default function RoleDetailModal({ tasks, initialTaskIndex, onClose, acce
             className="py-4"
           >
             <div
-              className="relative rounded-xl overflow-hidden bg-zinc-800 cursor-pointer group"
+              className={`relative rounded-xl overflow-hidden bg-zinc-800 cursor-pointer group ${imgAlignClass}`}
+              style={imgContainerStyle}
               onClick={() => setSelectedImageUrl(block.url!)}
             >
               <img
                 src={block.url}
                 alt=""
-                className="w-full h-auto object-cover transition-transform duration-500 group-hover:scale-105"
+                className={`${imgClass} transition-transform duration-500 group-hover:scale-105`}
               />
               <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-300 flex items-center justify-center">
                 <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-white/20 backdrop-blur-md rounded-full p-4">
@@ -388,12 +474,13 @@ export default function RoleDetailModal({ tasks, initialTaskIndex, onClose, acce
             {/* Main image display */}
             <div
               className="relative rounded-xl overflow-hidden bg-zinc-800 cursor-pointer group"
+              style={{ aspectRatio: formatToAspectRatio(block.format) }}
               onClick={() => setSelectedImageUrl(currentImage)}
             >
               <img
                 src={currentImage}
                 alt=""
-                className="w-full h-auto object-cover transition-transform duration-500 group-hover:scale-105"
+                className={`${getImageClass(block.format)} transition-transform duration-500 group-hover:scale-105`}
               />
               <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-300 flex items-center justify-center">
                 <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-white/20 backdrop-blur-md rounded-full p-4">
@@ -471,6 +558,39 @@ export default function RoleDetailModal({ tasks, initialTaskIndex, onClose, acce
             </AnimatePresence>
           </motion.div>
         );
+
+      case 'youtube': {
+        // Extract video ID from various YouTube URL formats
+        const getYoutubeId = (url: string) => {
+          const match = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([^&?\s]+)/);
+          return match ? match[1] : url;
+        };
+        const videoId = getYoutubeId(block.url || block.content || '');
+        const ytContainerStyle = getImageContainerStyle(block);
+        const ytAlignClass = block.align === 'right' ? 'ml-auto' : block.align === 'left' ? 'mr-auto' : 'mx-auto';
+
+        return (
+          <motion.div
+            key={`youtube-${index}`}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 + index * 0.05 }}
+            className="py-4"
+          >
+            <div
+              className={`relative rounded-xl overflow-hidden bg-zinc-900 ${ytAlignClass}`}
+              style={{ ...ytContainerStyle, aspectRatio: ytContainerStyle.aspectRatio || '16 / 9' }}
+            >
+              <iframe
+                src={`https://www.youtube.com/embed/${videoId}`}
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                className="absolute inset-0 w-full h-full"
+              />
+            </div>
+          </motion.div>
+        );
+      }
 
       default:
         return null;
@@ -590,15 +710,17 @@ export default function RoleDetailModal({ tasks, initialTaskIndex, onClose, acce
                     </p>
                   );
                 } else if (block.type === 'image') {
+                  const groupedAr = formatToAspectRatio(block.format);
                   return (
                     <div
                       className="relative rounded-xl overflow-hidden bg-zinc-800 cursor-pointer group h-full"
+                      style={groupedAr ? { aspectRatio: groupedAr } : undefined}
                       onClick={() => setSelectedImageUrl(block.url!)}
                     >
                       <img
                         src={block.url}
                         alt=""
-                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                        className={`w-full h-full object-cover transition-transform duration-500 group-hover:scale-105`}
                       />
                       <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-300 flex items-center justify-center">
                         <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-white/20 backdrop-blur-md rounded-full p-4">

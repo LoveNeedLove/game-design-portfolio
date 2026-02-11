@@ -158,6 +158,29 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
                         {project.description}
                       </p>
                     </div>
+
+                    {/* Tools section - only shown if tools exist */}
+                    {project.tools && project.tools.length > 0 && (
+                      <div className="w-full" style={{ marginTop: 'clamp(10px, 2vmin, 20px)' }}>
+                        <span
+                          className="font-black text-zinc-400 tracking-[0.3em] uppercase block"
+                          style={{ fontSize: 'clamp(6px, 1.1vmin, 13px)', marginBottom: 'clamp(4px, 0.8vmin, 10px)' }}
+                        >
+                          Tools
+                        </span>
+                        <div className="flex flex-wrap gap-1.5">
+                          {project.tools.map((tool, i) => (
+                            <span
+                              key={i}
+                              className="bg-zinc-100 text-zinc-600 font-semibold rounded-full"
+                              style={{ fontSize: 'clamp(8px, 1.1vmin, 12px)', padding: 'clamp(2px, 0.4vmin, 5px) clamp(6px, 1vmin, 12px)' }}
+                            >
+                              {tool}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
