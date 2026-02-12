@@ -41,9 +41,9 @@ export default function Header() {
 
           {/* NAVIGATION SECONDAIRE */}
           <nav className="flex gap-8 text-[10px] font-black uppercase tracking-widest mt-8 md:mt-0">
-            <a href="#featured" className="hover:line-through transition-all cursor-pointer">Projects</a>
-            <a href="#about" className="hover:line-through transition-all cursor-pointer">About</a>
-            <a href="#contact" className="hover:line-through transition-all text-zinc-400 cursor-pointer">Contact</a>
+            <a href="#featured" className="">Projects</a>
+            <a href="#about" className="">About</a>
+            <a href="#contact" className="">Contact</a>
           </nav>
         </div>
 
@@ -71,9 +71,9 @@ export default function Header() {
                 ISMAIL BENKIRANE
               </h2>
               <nav className="flex gap-8 text-[10px] font-black uppercase tracking-widest">
-                <a href="#about" className="hover:line-through transition-all cursor-pointer">About</a>
-                <a href="#featured" className="hover:line-through transition-all cursor-pointer">Projects</a>
-                <a href="#contact" className="hover:line-through transition-all text-zinc-400 cursor-pointer">Contact</a>
+                <a href="#about" className="">About</a>
+                <a href="#featured" className="">Projects</a>
+                <a href="#contact" className="">Contact</a>
               </nav>
             </div>
           </motion.div>
