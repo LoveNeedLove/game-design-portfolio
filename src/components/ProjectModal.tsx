@@ -19,7 +19,6 @@ interface ProjectModalProps {
 }
 
 export default function ProjectModal({ project, onClose }: ProjectModalProps) {
-  const [scrollPosition, setScrollPosition] = useState<'top' | 'bottom'>('top');
   const [isMediaExpanded, setIsMediaExpanded] = useState(false);
   const [selectedRoleIndex, setSelectedRoleIndex] = useState<number | null>(null);
   const [rolesPage, setRolesPage] = useState(0);
@@ -38,13 +37,7 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
     return () => { document.body.style.overflow = originalStyle; };
   }, []);
 
-  const scrollToBottom = () => {
-    setScrollPosition('bottom');
-  };
 
-  const scrollToTop = () => {
-    setScrollPosition('top');
-  };
 
   return (
     <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 md:p-8">
@@ -212,317 +205,216 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
             className="w-full h-full bg-zinc-50/50 relative overflow-hidden"
             style={{ width: `${100 - IMAGE_SECTION_PROPORTION}%` }}
           >
-            <AnimatePresence mode="wait">
-              {scrollPosition === 'top' ? (
-                <motion.div
-                  key="top"
-                  initial={{ y: '-100%' }}
-                  animate={{ y: 0 }}
-                  exit={{ y: '-100%' }}
-                  transition={{ duration: 0.5, ease: "easeInOut" }}
-                  className="absolute inset-0 flex flex-col text-center overflow-hidden"
-                  style={{ padding: 'clamp(12px, 3vmin, 48px)' }}
+            <div
+              className="absolute inset-0 flex flex-col text-center overflow-hidden"
+              style={{ padding: 'clamp(12px, 3vmin, 48px)' }}
+            >
+              {/* Context Section */}
+              <div className="flex-shrink-0 flex flex-col justify-center" style={{ marginTop: 'clamp(12px, 2.5vmin, 36px)' }}>
+                <span
+                  className="font-black text-zinc-400 tracking-[0.3em] uppercase block"
+                  style={{ fontSize: 'clamp(6px, 1vmin, 13px)', marginBottom: 'clamp(2px, 0.6vmin, 8px)' }}
                 >
-                  {/* Context Section */}
-                  <div className="flex-shrink-0 flex flex-col justify-center" style={{ marginTop: 'clamp(20px, 5vmin, 70px)' }}>
-                    <span
-                      className="font-black text-zinc-400 tracking-[0.3em] uppercase block"
-                      style={{ fontSize: 'clamp(6px, 1vmin, 13px)', marginBottom: 'clamp(2px, 0.6vmin, 8px)' }}
-                    >
-                      Context
-                    </span>
+                  Context
+                </span>
 
-                    {/* Team Composition and Development Time */}
-                    <p
-                      className="font-medium text-zinc-500 leading-tight italic"
-                      style={{ fontSize: 'clamp(8px, 1.3vmin, 16px)', marginBottom: 'clamp(2px, 0.6vmin, 8px)' }}
-                    >
-                      {(() => {
-                        const totalMembers = project.teamSize.reduce((sum, member) => sum + member.count, 0);
-                        if (totalMembers === 1) {
-                          return `Solo project, ${project.developmentTime}`;
-                        }
-                        return (
-                          <>
-                            {project.teamSize.map((member, i) => {
-                              const text = `${member.count} ${member.role}${member.count > 1 ? 's' : ''}`;
-                              if (i === project.teamSize.length - 1 && project.teamSize.length > 1) {
-                                return `and ${text}`;
-                              } else if (i === project.teamSize.length - 2 && project.teamSize.length > 2) {
-                                return `${text}, `;
-                              } else if (i < project.teamSize.length - 1) {
-                                return `${text}, `;
-                              }
-                              return text;
-                            }).join('')} — {project.developmentTime}
-                          </>
-                        );
-                      })()}
-                    </p>
+                {/* Team Composition and Development Time */}
+                <p
+                  className="font-medium text-zinc-500 leading-tight italic"
+                  style={{ fontSize: 'clamp(8px, 1.3vmin, 16px)', marginBottom: 'clamp(2px, 0.6vmin, 8px)' }}
+                >
+                  {(() => {
+                    const totalMembers = project.teamSize.reduce((sum, member) => sum + member.count, 0);
+                    if (totalMembers === 1) {
+                      return `Solo project, ${project.developmentTime}`;
+                    }
+                    return (
+                      <>
+                        {project.teamSize.map((member, i) => {
+                          const text = `${member.count} ${member.role}${member.count > 1 ? 's' : ''}`;
+                          if (i === project.teamSize.length - 1 && project.teamSize.length > 1) {
+                            return `and ${text}`;
+                          } else if (i === project.teamSize.length - 2 && project.teamSize.length > 2) {
+                            return `${text}, `;
+                          } else if (i < project.teamSize.length - 1) {
+                            return `${text}, `;
+                          }
+                          return text;
+                        }).join('')} — {project.developmentTime}
+                      </>
+                    );
+                  })()}
+                </p>
 
-                    <p
-                      className="font-medium text-black leading-snug"
-                      style={{ fontSize: 'clamp(10px, 1.8vmin, 24px)' }}
-                    >
-                      {project.mission}
-                    </p>
-                  </div>
+                <p
+                  className="font-medium text-black leading-snug"
+                  style={{ fontSize: 'clamp(10px, 1.8vmin, 24px)' }}
+                >
+                  {project.mission}
+                </p>
+              </div>
 
-                  {/* Role Section - Vertical by default, grid when space limited */}
-                  <div className="flex-1 flex flex-col min-h-0 overflow-visible" style={{ marginTop: 'clamp(10px, 2.5vmin, 36px)' }}>
-                    <span
-                      className="font-black text-zinc-400 tracking-[0.3em] uppercase block text-center flex-shrink-0"
-                      style={{ fontSize: 'clamp(6px, 1.1vmin, 13px)', marginBottom: 'clamp(8px, 2vmin, 24px)' }}
+              {/* Role Section - Vertical by default, grid when space limited */}
+              <div className="flex-1 flex flex-col min-h-0 overflow-visible" style={{ marginTop: 'clamp(50px, 2.5vmin, 72px)' }}>
+                <span
+                  className="font-black text-zinc-400 tracking-[0.3em] uppercase block text-center flex-shrink-0"
+                  style={{ fontSize: 'clamp(6px, 1.1vmin, 13px)', marginBottom: 'clamp(0px, 2vmin, 0px)' }}
+                >
+                  Role
+                </span>
+                <div className="flex flex-1 min-h-0 items-stretch overflow-visible" style={{ gap: 'clamp(4px, 0.8vmin, 12px)' }}>
+                  {/* Previous page button */}
+                  {totalRolesPages > 1 && (
+                    <button
+                      onClick={() => setRolesPage(p => Math.max(0, p - 1))}
+                      disabled={rolesPage === 0}
+                      className={`flex-shrink-0 rounded-full transition-all ${
+                        rolesPage === 0 ? 'opacity-30 cursor-not-allowed' : 'hover:bg-zinc-200'
+                      }`}
+                      style={{ padding: 'clamp(4px, 0.8vmin, 10px)' }}
                     >
-                      Role
-                    </span>
-                    <div className="flex flex-1 min-h-0 items-stretch overflow-visible" style={{ gap: 'clamp(4px, 0.8vmin, 12px)' }}>
-                      {/* Previous page button */}
-                      {totalRolesPages > 1 && (
-                        <button
-                          onClick={() => setRolesPage(p => Math.max(0, p - 1))}
-                          disabled={rolesPage === 0}
-                          className={`flex-shrink-0 rounded-full transition-all ${
-                            rolesPage === 0 ? 'opacity-30 cursor-not-allowed' : 'hover:bg-zinc-200'
-                          }`}
-                          style={{ padding: 'clamp(4px, 0.8vmin, 10px)' }}
-                        >
-                          <svg
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            className="text-zinc-600"
-                            style={{ width: 'clamp(12px, 2vmin, 24px)', height: 'clamp(12px, 2vmin, 24px)' }}
-                          >
-                            <polyline points="15 18 9 12 15 6" />
-                          </svg>
-                        </button>
-                      )}
-
-                      {/* 2x2 Grid - Row by row for sibling hover effect */}
-                      <div
-                        className="flex flex-col flex-1 min-h-0 justify-around items-center overflow-visible"
-                        style={{ padding: 'clamp(4px, 1vmin, 12px)', gap: 'clamp(8px, 1.5vmin, 20px)' }}
+                      <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        className="text-zinc-600"
+                        style={{ width: 'clamp(12px, 2vmin, 24px)', height: 'clamp(12px, 2vmin, 24px)' }}
                       >
-                        {[0, 1].map(rowIndex => {
-                          const rowRoles = currentPageRoles.slice(rowIndex * 2, rowIndex * 2 + 2);
-                          return (
-                            <div
-                              key={rowIndex}
-                              className="flex flex-row justify-center items-center group/row"
-                              style={{ gap: 'clamp(80px, 15vmin, 180px)' }}
-                            >
-                              {rowRoles.map((task, colIndex) => {
-                                const i = rowIndex * 2 + colIndex;
-                                const globalIndex = rolesPage * ROLES_PER_PAGE + i;
-                                const hasIllustrations = task.illustrations && task.illustrations.length > 0;
-                                const isLeftColumn = colIndex === 0;
+                        <polyline points="15 18 9 12 15 6" />
+                      </svg>
+                    </button>
+                  )}
 
-                                const folderItems = hasIllustrations && task.illustrations
-                                  ? task.illustrations.map((img, imgIndex) => (
-                                      <img
-                                        key={imgIndex}
-                                        src={img.type === 'image' ? img.url : img.thumbnail || '/placeholder.jpg'}
-                                        alt=""
-                                        className="w-full h-full object-cover"
-                                      />
-                                    ))
-                                  : [];
+                  {/* 2x2 Grid - Row by row for sibling hover effect */}
+                  <div
+                    className="flex flex-col flex-1 min-h-0 justify-around items-center overflow-visible"
+                    style={{ padding: 'clamp(4px, 1vmin, 12px)', gap: 'clamp(8px, 1.5vmin, 20px)' }}
+                  >
+                    {[0, 1].map(rowIndex => {
+                      const rowRoles = currentPageRoles.slice(rowIndex * 2, rowIndex * 2 + 2);
+                      return (
+                        <div
+                          key={rowIndex}
+                          className="flex flex-row justify-center items-center group/row"
+                          style={{ gap: 'clamp(80px, 15vmin, 180px)' }}
+                        >
+                          {rowRoles.map((task, colIndex) => {
+                            const i = rowIndex * 2 + colIndex;
+                            const globalIndex = rolesPage * ROLES_PER_PAGE + i;
+                            const hasIllustrations = task.illustrations && task.illustrations.length > 0;
+                            const isLeftColumn = colIndex === 0;
 
-                                return (
-                                  <motion.div
-                                    key={globalIndex}
-                                    initial={{ opacity: 0, scale: 0.95 }}
-                                    animate={{ opacity: 1, scale: 1 }}
-                                    transition={{ delay: 0.05 + (i * 0.03) }}
-                                    onClick={() => setSelectedRoleIndex(globalIndex)}
-                                    className={`relative cursor-pointer group-hover/row:opacity-60 group-hover/row:scale-95 hover:!opacity-100 hover:!scale-100 hover:!z-10 transition-all duration-300 group/role ${
-                                      isLeftColumn
-                                        ? 'group-hover/row:-translate-x-16 hover:!-translate-x-24'
-                                        : 'group-hover/row:translate-x-16 hover:!translate-x-24'
-                                    }`}
+                            const folderItems = hasIllustrations && task.illustrations
+                              ? task.illustrations.map((img, imgIndex) => (
+                                  <img
+                                    key={imgIndex}
+                                    src={img.type === 'image' ? img.url : img.thumbnail || '/placeholder.jpg'}
+                                    alt=""
+                                    className="w-full h-full object-cover"
+                                  />
+                                ))
+                              : [];
+
+                            return (
+                              <motion.div
+                                key={globalIndex}
+                                initial={{ opacity: 0, scale: 0.95 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                transition={{ delay: 0.05 + (i * 0.03) }}
+                                onClick={() => setSelectedRoleIndex(globalIndex)}
+                                className={`relative cursor-pointer group-hover/row:opacity-60 group-hover/row:scale-95 hover:!opacity-100 hover:!scale-100 hover:!z-10 transition-all duration-300 group/role ${
+                                  isLeftColumn
+                                    ? 'group-hover/row:-translate-x-16 hover:!-translate-x-24'
+                                    : 'group-hover/row:translate-x-16 hover:!translate-x-24'
+                                }`}
+                              >
+                                {/* Zone de détection: petite par défaut, s'étend vers le texte au hover */}
+                                <div
+                                  className="absolute inset-0 group-hover/row:pointer-events-none group-hover/role:!pointer-events-auto"
+                                />
+                                <div
+                                  className={`absolute pointer-events-none group-hover/role:pointer-events-auto ${
+                                    isLeftColumn ? 'left-full' : 'right-full'
+                                  }`}
+                                  style={{
+                                    width: 'clamp(150px, 28vmin, 300px)',
+                                    top: '-20px',
+                                    bottom: '-20px'
+                                  }}
+                                />
+                                <div className="transition-all duration-300">
+                                  <Folder
+                                    color="#e4e4e7"
+                                    size={1.5}
+                                    items={folderItems}
+                                    label={task.title}
+                                  />
+                                </div>
+                                <div
+                                  className={`absolute top-1/2 -translate-y-1/2 transition-all duration-300 opacity-0 group-hover/role:opacity-100 ${
+                                    isLeftColumn
+                                      ? 'left-full text-left ml-8 translate-x-0 group-hover/role:translate-x-4'
+                                      : 'right-full text-right mr-8 translate-x-0 group-hover/role:-translate-x-4'
+                                  }`}
+                                  style={{ width: 'clamp(100px, 20vmin, 220px)' }}
+                                >
+                                  <p
+                                    className={`text-zinc-800 font-bold leading-snug ${isLeftColumn ? 'text-left' : 'text-right'}`}
+                                    style={{ fontSize: 'clamp(8px, 1.5vmin, 14px)', marginBottom: 'clamp(2px, 0.5vmin, 6px)' }}
                                   >
-                                    {/* Zone de détection: petite par défaut, s'étend vers le texte au hover */}
-                                    <div
-                                      className="absolute inset-0 group-hover/row:pointer-events-none group-hover/role:!pointer-events-auto"
-                                    />
-                                    <div
-                                      className={`absolute pointer-events-none group-hover/role:pointer-events-auto ${
-                                        isLeftColumn ? 'left-full' : 'right-full'
-                                      }`}
-                                      style={{
-                                        width: 'clamp(150px, 28vmin, 300px)',
-                                        top: '-20px',
-                                        bottom: '-20px'
-                                      }}
-                                    />
-                                    <div className="transition-all duration-300">
-                                      <Folder
-                                        color="#e4e4e7"
-                                        size={1.5}
-                                        items={folderItems}
-                                        label={task.title}
-                                      />
-                                    </div>
-                                    <div
-                                      className={`absolute top-1/2 -translate-y-1/2 transition-all duration-300 opacity-0 group-hover/role:opacity-100 ${
-                                        isLeftColumn
-                                          ? 'left-full text-left ml-8 translate-x-0 group-hover/role:translate-x-4'
-                                          : 'right-full text-right mr-8 translate-x-0 group-hover/role:-translate-x-4'
-                                      }`}
-                                      style={{ width: 'clamp(100px, 20vmin, 220px)' }}
-                                    >
-                                      <p
-                                        className={`text-zinc-800 font-bold leading-snug ${isLeftColumn ? 'text-left' : 'text-right'}`}
-                                        style={{ fontSize: 'clamp(8px, 1.5vmin, 14px)', marginBottom: 'clamp(2px, 0.5vmin, 6px)' }}
-                                      >
-                                        {task.title}
-                                      </p>
-                                      <p
-                                        className={`text-zinc-600 leading-snug ${isLeftColumn ? 'text-left' : 'text-right'}`}
-                                        style={{ fontSize: 'clamp(6px, 1.2vmin, 12px)' }}
-                                      >
-                                        {task.description}
-                                      </p>
-                                      <span
-                                        className={`text-zinc-400 block mt-1 ${isLeftColumn ? 'text-left' : 'text-right'}`}
-                                        style={{ fontSize: 'clamp(5px, 1vmin, 10px)' }}
-                                      >
-                                        (click to view)
-                                      </span>
-                                    </div>
-                                  </motion.div>
-                                );
-                              })}
-                            </div>
-                          );
-                        })}
-                      </div>
-
-                      {/* Next page button */}
-                      {totalRolesPages > 1 && (
-                        <button
-                          onClick={() => setRolesPage(p => Math.min(totalRolesPages - 1, p + 1))}
-                          disabled={rolesPage === totalRolesPages - 1}
-                          className={`flex-shrink-0 rounded-full transition-all ${
-                            rolesPage === totalRolesPages - 1 ? 'opacity-30 cursor-not-allowed' : 'hover:bg-zinc-200'
-                          }`}
-                          style={{ padding: 'clamp(4px, 0.8vmin, 10px)' }}
-                        >
-                          <svg
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            className="text-zinc-600"
-                            style={{ width: 'clamp(12px, 2vmin, 24px)', height: 'clamp(12px, 2vmin, 24px)' }}
-                          >
-                            <polyline points="9 18 15 12 9 6" />
-                          </svg>
-                        </button>
-                      )}
-                    </div>
+                                    {task.title}
+                                  </p>
+                                  <p
+                                    className={`text-zinc-600 leading-snug ${isLeftColumn ? 'text-left' : 'text-right'}`}
+                                    style={{ fontSize: 'clamp(6px, 1.2vmin, 12px)' }}
+                                  >
+                                    {task.description}
+                                  </p>
+                                  <span
+                                    className={`text-zinc-400 block mt-1 ${isLeftColumn ? 'text-left' : 'text-right'}`}
+                                    style={{ fontSize: 'clamp(5px, 1vmin, 10px)' }}
+                                  >
+                                    (click to view)
+                                  </span>
+                                </div>
+                              </motion.div>
+                            );
+                          })}
+                        </div>
+                      );
+                    })}
                   </div>
 
-                  {/* Scroll Down Button */}
-                  <div className="flex justify-center flex-shrink-0" style={{ paddingTop: 'clamp(6px, 1.5vmin, 20px)' }}>
+                  {/* Next page button */}
+                  {totalRolesPages > 1 && (
                     <button
-                      onClick={scrollToBottom}
-                      className="bg-zinc-200 hover:bg-zinc-300 rounded-full transition-all group"
-                      title="See Challenge & Solution"
-                      style={{ padding: 'clamp(6px, 1.5vmin, 18px)' }}
+                      onClick={() => setRolesPage(p => Math.min(totalRolesPages - 1, p + 1))}
+                      disabled={rolesPage === totalRolesPages - 1}
+                      className={`flex-shrink-0 rounded-full transition-all ${
+                        rolesPage === totalRolesPages - 1 ? 'opacity-30 cursor-not-allowed' : 'hover:bg-zinc-200'
+                      }`}
+                      style={{ padding: 'clamp(4px, 0.8vmin, 10px)' }}
                     >
                       <svg
-                        viewBox="0 0 16 16"
+                        viewBox="0 0 24 24"
                         fill="none"
-                        className="text-zinc-600 group-hover:text-zinc-900 transition-colors"
-                        style={{ width: 'clamp(10px, 2.2vmin, 24px)', height: 'clamp(10px, 2.2vmin, 24px)' }}
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        className="text-zinc-600"
+                        style={{ width: 'clamp(12px, 2vmin, 24px)', height: 'clamp(12px, 2vmin, 24px)' }}
                       >
-                        <path
-                          d="M4 6L8 10L12 6"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
+                        <polyline points="9 18 15 12 9 6" />
                       </svg>
                     </button>
-                  </div>
-                </motion.div>
-              ) : (
-                <motion.div
-                  key="bottom"
-                  initial={{ y: '100%' }}
-                  animate={{ y: 0 }}
-                  exit={{ y: '100%' }}
-                  transition={{ duration: 0.5, ease: "easeInOut" }}
-                  className="absolute inset-0 flex flex-col text-center overflow-hidden"
-                  style={{ padding: 'clamp(12px, 3vmin, 48px)' }}
-                >
-                  {/* Scroll Up Button */}
-                  <div className="flex justify-center flex-shrink-0" style={{ paddingBottom: 'clamp(6px, 1.5vmin, 20px)' }}>
-                    <button
-                      onClick={scrollToTop}
-                      className="bg-zinc-200 hover:bg-zinc-300 rounded-full transition-all group"
-                      title="Back to Overview"
-                      style={{ padding: 'clamp(6px, 1.5vmin, 18px)' }}
-                    >
-                      <svg
-                        viewBox="0 0 16 16"
-                        fill="none"
-                        className="text-zinc-600 group-hover:text-zinc-900 transition-colors"
-                        style={{ width: 'clamp(10px, 2.2vmin, 24px)', height: 'clamp(10px, 2.2vmin, 24px)' }}
-                      >
-                        <path
-                          d="M12 10L8 6L4 10"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                      </svg>
-                    </button>
-                  </div>
-
-                  {/* Challenge Section */}
-                  <div className="flex-1 flex flex-col justify-center min-h-0">
-                    <span
-                      className="font-black text-zinc-400 tracking-[0.3em] uppercase block"
-                      style={{ fontSize: 'clamp(6px, 1.1vmin, 13px)', marginBottom: 'clamp(4px, 1vmin, 14px)' }}
-                    >
-                      Challenge
-                    </span>
-                    <p
-                      className="font-medium text-black leading-snug"
-                      style={{ fontSize: 'clamp(10px, 1.8vmin, 24px)' }}
-                    >
-                      {project.challenge}
-                    </p>
-                  </div>
-
-                  {/* Solution Section */}
-                  <div className="flex-1 flex flex-col justify-center min-h-0">
-                    <span
-                      className="font-black text-zinc-400 tracking-[0.3em] uppercase block"
-                      style={{ fontSize: 'clamp(6px, 1.1vmin, 13px)', marginBottom: 'clamp(4px, 1vmin, 14px)' }}
-                    >
-                      Solution
-                    </span>
-                    <p
-                      className="font-medium text-black leading-snug"
-                      style={{ fontSize: 'clamp(10px, 1.8vmin, 24px)' }}
-                    >
-                      {project.solution}
-                    </p>
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
+                  )}
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </motion.div>

@@ -13,7 +13,7 @@ export interface TeamMember {
 }
 
 export interface ContentBlock {
-  type: 'text' | 'heading' | 'list' | 'image' | 'separator' | 'slideshow' | 'youtube';
+  type: 'text' | 'heading' | 'list' | 'image' | 'separator' | 'slideshow' | 'youtube' | 'video';
   content?: string;
   items?: string[];
   url?: string;

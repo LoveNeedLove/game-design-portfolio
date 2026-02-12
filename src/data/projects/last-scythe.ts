@@ -38,7 +38,7 @@ export const lastScythe: Project = {
         },
         {
           type: 'image',
-          url: 'https://picsum.photos/seed/mainmenu/800/450',
+          url: '/projects/GD2/Last Scythe/Content/Roles/mainmenu.gif',
           group: 'mainmenu'
         },
         {
@@ -48,12 +48,12 @@ export const lastScythe: Project = {
         },
         {
           type: 'image',
-          url: 'https://picsum.photos/seed/levelselect/1200/500',
-          size: 'full'
+          url: '/projects/GD2/Last Scythe/Content/Roles/levelselect.gif',
+          size: 'medium'
         },
         {
           type: 'image',
-          url: 'https://picsum.photos/seed/audiomenu/600/400',
+          url: '/projects/GD2/Last Scythe/Content/Roles/audiomenu.png',
           group: 'options'
         },
         {
@@ -68,7 +68,7 @@ export const lastScythe: Project = {
         },
         {
           type: 'image',
-          url: 'https://picsum.photos/seed/inspector/600/400',
+          url: '/projects/GD2/Last Scythe/Content/Roles/inspector.png',
           group: 'audio'
         },
         { type: 'separator' },
@@ -79,12 +79,7 @@ export const lastScythe: Project = {
         },
         {
           type: 'image',
-          url: 'https://picsum.photos/seed/hud1/600/400',
-          group: 'hud-images'
-        },
-        {
-          type: 'image',
-          url: 'https://picsum.photos/seed/hud2/600/400',
+          url: '/projects/GD2/Last Scythe/Content/Roles/hud1.gif',
           group: 'hud-images'
         },
         {
@@ -99,12 +94,12 @@ export const lastScythe: Project = {
         },
         {
           type: 'image',
-          url: 'https://picsum.photos/seed/combo/600/400',
+          url: '/projects/GD2/Last Scythe/Content/Roles/combo.gif',
           group: 'combo'
         },
         {
           type: 'image',
-          url: 'https://picsum.photos/seed/score/600/400',
+          url: '/projects/GD2/Last Scythe/Content/Roles/score.gif',
           group: 'score'
         },
         {
@@ -124,8 +119,8 @@ export const lastScythe: Project = {
           size: 'full'
         },
         {
-          type: 'image',
-          url: 'https://picsum.photos/seed/tutorial/1200/600',
+          type: 'video',
+          url: '/projects/GD2/Last Scythe/Content/Roles/tutorial.mp4',
           size: 'full'
         }
       ]
@@ -149,18 +144,13 @@ export const lastScythe: Project = {
         },
         {
           type: 'image',
-          url: 'https://picsum.photos/seed/hubprogression/1200/500',
+          url: '/projects/GD2/Last Scythe/Content/Roles/hubprogression.gif',
           size: 'full'
-        },
-        {
-          type: 'image',
-          url: 'https://picsum.photos/seed/hubpath/600/400',
-          group: 'skip'
         },
         {
           type: 'text',
           content: 'To ensure the story never obstructed the gameplay, I designed the hub as a straight path to the action and implemented a "skip" feature for those wanting to jump directly into the fray. This balance ensures the narrative serves as a reward rather than a hurdle.',
-          group: 'skip'
+          size: 'full'
         },
         { type: 'separator' },
         {
@@ -170,7 +160,7 @@ export const lastScythe: Project = {
         },
         {
           type: 'image',
-          url: 'https://picsum.photos/seed/corridor/800/450',
+          url: '/projects/GD2/Last Scythe/Content/Roles/corridor.gif',
           group: 'briefings'
         },
         {
@@ -180,22 +170,22 @@ export const lastScythe: Project = {
         },
         {
           type: 'image',
-          url: 'https://picsum.photos/seed/npcmanager/600/400',
+          url: '/projects/GD2/Last Scythe/Content/Roles/npcmanager.png',
           group: 'npc-system'
         },
         {
           type: 'image',
-          url: 'https://picsum.photos/seed/npctable/400/300',
+          url: '/projects/GD2/Last Scythe/Content/Roles/npctable.gif',
           group: 'npc-examples'
         },
         {
           type: 'image',
-          url: 'https://picsum.photos/seed/npcsleeping/400/300',
+          url: '/projects/GD2/Last Scythe/Content/Roles/npcsleeping.gif',
           group: 'npc-examples'
         },
         {
           type: 'image',
-          url: 'https://picsum.photos/seed/npctv/400/300',
+          url: '/projects/GD2/Last Scythe/Content/Roles/npctv.gif',
           group: 'npc-examples'
         },
         { type: 'separator' },
@@ -206,7 +196,7 @@ export const lastScythe: Project = {
         },
         {
           type: 'image',
-          url: 'https://picsum.photos/seed/transform/800/450',
+          url: '/projects/GD2/Last Scythe/Content/Roles/transformation.gif',
           group: 'twist'
         },
         {
@@ -215,14 +205,14 @@ export const lastScythe: Project = {
           size: 'full'
         },
         {
-          type: 'image',
-          url: 'https://picsum.photos/seed/endingscene/600/400',
-          group: 'finale'
+          type: 'video',
+          url: '/projects/GD2/Last Scythe/Content/Roles/endingscene.mp4',
+          size: 'full'
         },
         {
           type: 'image',
-          url: 'https://picsum.photos/seed/creditsroll/600/400',
-          group: 'finale'
+          url: '/projects/GD2/Last Scythe/Content/Roles/creditsroll.gif',
+          size: 'full'
         }
       ]
     },
@@ -239,14 +229,14 @@ export const lastScythe: Project = {
           size: 'full'
         },
         {
-          type: 'image',
-          url: 'https://picsum.photos/seed/animsystem/600/400',
-          group: 'anim-demo'
+          type: 'video',
+          url: '/projects/GD2/Last Scythe/Content/Roles/animation system demo.mp4',
+          size: 'full'
         },
         {
           type: 'image',
-          url: 'https://picsum.photos/seed/animsetup/600/400',
-          group: 'anim-demo'
+          url: '/projects/GD2/Last Scythe/Content/Roles/animator setup.png',
+          size: 'large'
         },
         {
           type: 'text',
@@ -255,13 +245,13 @@ export const lastScythe: Project = {
         },
         {
           type: 'image',
-          url: 'https://picsum.photos/seed/vsnodes/600/400',
+          url: '/projects/GD2/Last Scythe/Content/Roles/vsnodes.png',
           group: 'vs-nodes'
         },
         { type: 'separator' },
         {
           type: 'image',
-          url: 'https://picsum.photos/seed/audiotool/600/400',
+          url: '/projects/GD2/Last Scythe/Content/Roles/audiotool.png',
           group: 'audio'
         },
         {
@@ -276,7 +266,7 @@ export const lastScythe: Project = {
         },
         {
           type: 'image',
-          url: 'https://picsum.photos/seed/haptic/600/400',
+          url: '/projects/GD2/Last Scythe/Content/Roles/playerhaptics.png',
           group: 'haptic'
         },
         { type: 'separator' },
@@ -292,7 +282,7 @@ export const lastScythe: Project = {
         },
         {
           type: 'image',
-          url: 'https://picsum.photos/seed/fightfootage/800/450',
+          url: '/projects/GD2/Last Scythe/Content/Roles/fightfootage.gif',
           group: 'visual-feedback'
         }
       ]
@@ -313,12 +303,31 @@ export const lastScythe: Project = {
         {
           type: 'text',
           content: 'Before settling on the top-down simplicity of Last Scythe, we explored a 3D brawler-platformer concept titled Knock-Toys. Although the project was eventually dropped, creating the pitch document was a vital exercise in conveying high-energy gameplay and verticality through a static medium.',
-          group: 'knocktoys'
+          size: 'full'
         },
         {
-          type: 'image',
-          url: 'https://picsum.photos/seed/knocktoyspitch/800/450',
-          group: 'knocktoys'
+          type: 'slideshow',
+          title: 'Knock-Toys Pitch',
+          images: [
+            '/projects/GD2/Last Scythe/Content/Roles/knocktoyspitch/1.png',
+            '/projects/GD2/Last Scythe/Content/Roles/knocktoyspitch/2.png',
+            '/projects/GD2/Last Scythe/Content/Roles/knocktoyspitch/3.png',
+            '/projects/GD2/Last Scythe/Content/Roles/knocktoyspitch/4.png',
+            '/projects/GD2/Last Scythe/Content/Roles/knocktoyspitch/5.png',
+            '/projects/GD2/Last Scythe/Content/Roles/knocktoyspitch/6.png',
+            '/projects/GD2/Last Scythe/Content/Roles/knocktoyspitch/7.png',
+            '/projects/GD2/Last Scythe/Content/Roles/knocktoyspitch/8.png',
+            '/projects/GD2/Last Scythe/Content/Roles/knocktoyspitch/9.gif',
+            '/projects/GD2/Last Scythe/Content/Roles/knocktoyspitch/10.png',
+            '/projects/GD2/Last Scythe/Content/Roles/knocktoyspitch/11.png',
+            '/projects/GD2/Last Scythe/Content/Roles/knocktoyspitch/12.png',
+            '/projects/GD2/Last Scythe/Content/Roles/knocktoyspitch/13.png',
+            '/projects/GD2/Last Scythe/Content/Roles/knocktoyspitch/14.png',
+            '/projects/GD2/Last Scythe/Content/Roles/knocktoyspitch/15.png',
+            '/projects/GD2/Last Scythe/Content/Roles/knocktoyspitch/16.gif',
+            '/projects/GD2/Last Scythe/Content/Roles/knocktoyspitch/17.png'
+          ],
+          size: 'full'
         },
         { type: 'separator' },
         {
@@ -328,17 +337,17 @@ export const lastScythe: Project = {
         },
         {
           type: 'image',
-          url: 'https://picsum.photos/seed/ldpreview1/400/300',
+          url: '/projects/GD2/Last Scythe/Content/Roles/ldpreview1.png',
           group: 'ld-previews'
         },
         {
           type: 'image',
-          url: 'https://picsum.photos/seed/ldpreview2/400/300',
+          url: '/projects/GD2/Last Scythe/Content/Roles/ldpreview2.png',
           group: 'ld-previews'
         },
         {
           type: 'image',
-          url: 'https://picsum.photos/seed/bricks1/400/300',
+          url: '/projects/GD2/Last Scythe/Content/Roles/bricks1.png',
           group: 'ld-previews'
         },
         { type: 'separator' },
@@ -349,12 +358,12 @@ export const lastScythe: Project = {
         },
         {
           type: 'image',
-          url: 'https://picsum.photos/seed/moodboardinsp/600/400',
+          url: '/projects/GD2/Last Scythe/Content/Roles/moodboardinsp.png',
           group: 'moodboards'
         },
         {
           type: 'image',
-          url: 'https://picsum.photos/seed/moodboardvis/600/400',
+          url: '/projects/GD2/Last Scythe/Content/Roles/moodboardvis.png',
           group: 'moodboards'
         },
         {
@@ -363,14 +372,9 @@ export const lastScythe: Project = {
           size: 'full'
         },
         {
-          type: 'image',
-          url: 'https://picsum.photos/seed/pwpcommentary/600/400',
-          group: 'commentary'
-        },
-        {
           type: 'text',
           content: 'To ensure our live presentations remained smooth and focused, I utilized the commentary features of PowerPoint and Google Slides to provide key notes for the team. This allowed us to stay on track during high-pressure orals, ensuring we covered every vital subject without deviating from our core message.',
-          group: 'commentary'
+          size: 'full'
         }
       ]
     }
@@ -389,5 +393,8 @@ export const lastScythe: Project = {
     { type: 'image', url: '/projects/GD2/Last Scythe/Content/Last_Scythe_Screenshot 2.png' },
     { type: 'image', url: '/projects/GD2/Last Scythe/Content/Last_Scythe_Screenshot 3.png' },
     { type: 'image', url: '/projects/GD2/Last Scythe/Content/Last_Scythe_Screenshot 4.png' }
-  ]
+  ],
+  tools: ['Unity', 'git'],
+  linkUrl: "https://loveneedlove.itch.io/last-scythe",
+  linkTitle: "Play Last Scythe on itch.io"
 };

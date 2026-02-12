@@ -28,7 +28,7 @@ export const waSirLtaxi: Project = {
         },
         {
           type: 'image',
-          url: 'https://picsum.photos/seed/taxi-straight/800/450',
+          url: '/projects/GD1/Wa Sir L\'taxi/Content/Roles/taxi-straight.gif',
           size: 'medium',
           align: 'center'
         },
@@ -39,7 +39,7 @@ export const waSirLtaxi: Project = {
         },
         {
           type: 'image',
-          url: 'https://picsum.photos/seed/taxi-visualscript/600/400',
+          url: '/projects/GD1/Wa Sir L\'taxi/Content/Roles/taxi-visualscript..png',
           size: 'medium',
           group: 'visual-script'
         },
@@ -49,7 +49,7 @@ export const waSirLtaxi: Project = {
         },
         {
           type: 'image',
-          url: 'https://picsum.photos/seed/taxi-takeoff/1000/500',
+          url: '/projects/GD1/Wa Sir L\'taxi/Content/Roles/taxi-takeoff.gif',
           size: 'large',
           align: 'center'
         },
@@ -61,19 +61,20 @@ export const waSirLtaxi: Project = {
         },
         {
           type: 'image',
-          url: 'https://picsum.photos/seed/taxi-garage/600/400',
+          url: '/projects/GD1/Wa Sir L\'taxi/Content/Roles/taxi-garage.png',
           size: 'medium',
           group: 'garage'
         },
         {
           type: 'text',
-          content: "Visual clarity was essential for the control scheme, so I implemented dynamic blinkers on the rear of the vehicles to preview the next drift direction. This is complemented by a responsive camera system that snaps to a tactical angle during drifts, emphasizing the sense of speed while ensuring the player has a clear view of the upcoming track and time-trial line."
+          content: "Visual clarity was essential for the control scheme, so I implemented dynamic blinkers on the rear of the vehicles to preview the next drift direction. This is complemented by a responsive camera system that snaps to a tactical angle during drifts, emphasizing the sense of speed while ensuring the player has a clear view of the upcoming track and time-trial line.",
+          group: 'blinkers'
         },
         {
           type: 'image',
-          url: 'https://picsum.photos/seed/taxi-drifting/1000/500',
-          size: 'large',
-          align: 'center'
+          url: '/projects/GD1/Wa Sir L\'taxi/Content/Roles/blinkers.gif',
+          size: 'medium',
+          group: 'blinkers'
         },
         { type: 'separator' },
         {
@@ -87,7 +88,7 @@ export const waSirLtaxi: Project = {
         },
         {
           type: 'image',
-          url: 'https://picsum.photos/seed/taxi-snaking/600/400',
+          url: '/projects/GD1/Wa Sir L\'taxi/Content/Roles/snaking.gif',
           size: 'medium',
           group: 'snaking'
         },
@@ -98,7 +99,7 @@ export const waSirLtaxi: Project = {
         },
         {
           type: 'image',
-          url: 'https://picsum.photos/seed/taxi-winscreen/600/400',
+          url: '/projects/GD1/Wa Sir L\'taxi/Content/Roles/win screen.gif',
           size: 'medium',
           group: 'win-screen'
         }
@@ -120,10 +121,9 @@ export const waSirLtaxi: Project = {
           content: "Before implementing a single gameplay feature, I prioritized building a versatile and modular physics base. This technical foundation was essential to ensure I wouldn't be restricted later when designing complex levels or adding new mechanics, allowing the vehicle to adapt to any environment I could imagine."
         },
         {
-          type: 'image',
-          url: 'https://picsum.photos/seed/taxi-surfaces/1000/500',
-          size: 'large',
-          align: 'center'
+          type: 'video',
+          url: '/projects/GD1/Wa Sir L\'taxi/Content/Roles/taxi-surfaces.mp4',
+          size: 'large'
         },
         { type: 'separator' },
         {
@@ -133,7 +133,7 @@ export const waSirLtaxi: Project = {
         },
         {
           type: 'image',
-          url: 'https://picsum.photos/seed/taxi-physicsscript/600/400',
+          url: '/projects/GD1/Wa Sir L\'taxi/Content/Roles/taxi-physicsscript.png',
           size: 'medium',
           group: 'physics-script'
         },
@@ -141,12 +141,6 @@ export const waSirLtaxi: Project = {
         {
           type: 'text',
           content: "The core of the system is a hidden physics sphere that \"rolls\" through the environment. The car model acts as a visual layer that calculates the forward vector and rotates to match the sphere's movement. This separation allowed me to achieve smooth, responsive handling while maintaining the visual weight and silhouette of a racing vehicle."
-        },
-        {
-          type: 'image',
-          url: 'https://picsum.photos/seed/taxi-sphere/1000/500',
-          size: 'large',
-          align: 'center'
         },
         {
           type: 'text',
@@ -172,7 +166,7 @@ export const waSirLtaxi: Project = {
         },
         {
           type: 'image',
-          url: 'https://picsum.photos/seed/taxi-sketch/400/300',
+          url: '/projects/GD1/Wa Sir L\'taxi/Content/Roles/track sketch.jpg',
           size: 'small',
           group: 'sketches'
         },
@@ -184,7 +178,7 @@ export const waSirLtaxi: Project = {
         },
         {
           type: 'image',
-          url: 'https://picsum.photos/seed/taxi-trackabove/400/300',
+          url: '/projects/GD1/Wa Sir L\'taxi/Content/Roles/map 1 from above.png',
           size: 'small',
           group: 'sketches'
         },
@@ -195,7 +189,7 @@ export const waSirLtaxi: Project = {
         },
         {
           type: 'image',
-          url: 'https://picsum.photos/seed/taxi-trackselect/600/400',
+          url: '/projects/GD1/Wa Sir L\'taxi/Content/Roles/taxi-trackselect.png',
           size: 'medium',
           group: 'track-select'
         },
@@ -207,7 +201,7 @@ export const waSirLtaxi: Project = {
         },
         {
           type: 'image',
-          url: 'https://picsum.photos/seed/taxi-ramp/600/400',
+          url: '/projects/GD1/Wa Sir L\'taxi/Content/Roles/taxi-ramp.png',
           size: 'medium',
           group: 'ramp'
         },
@@ -218,7 +212,7 @@ export const waSirLtaxi: Project = {
         },
         {
           type: 'image',
-          url: 'https://picsum.photos/seed/taxi-shortcut/600/400',
+          url: '/projects/GD1/Wa Sir L\'taxi/Content/Roles/taxi-shortcut.gif',
           size: 'medium',
           group: 'shortcut'
         },
@@ -229,13 +223,13 @@ export const waSirLtaxi: Project = {
         },
         {
           type: 'image',
-          url: 'https://picsum.photos/seed/taxi-spline1/400/300',
+          url: '/projects/GD1/Wa Sir L\'taxi/Content/Roles/taxi-spline1.gif',
           size: 'small',
           group: 'splines'
         },
         {
           type: 'image',
-          url: 'https://picsum.photos/seed/taxi-spline2/400/300',
+          url: '/projects/GD1/Wa Sir L\'taxi/Content/Roles/taxi-spline2.gif',
           size: 'small',
           group: 'splines'
         },
@@ -247,7 +241,7 @@ export const waSirLtaxi: Project = {
         },
         {
           type: 'image',
-          url: 'https://picsum.photos/seed/taxi-billboard/600/400',
+          url: '/projects/GD1/Wa Sir L\'taxi/Content/Roles/taxi-billboard.png',
           size: 'medium',
           group: 'billboard'
         },
@@ -284,19 +278,19 @@ export const waSirLtaxi: Project = {
         },
         {
           type: 'image',
-          url: 'https://picsum.photos/seed/taxi-buttons/600/400',
+          url: '/projects/GD1/Wa Sir L\'taxi/Content/Roles/buttons.gif',
           size: 'medium',
           group: 'buttons'
         },
         { type: 'separator' },
         {
           type: 'text',
-          content: "To heighten the production value, I integrated a dynamic camera system that snaps to different locations based on the current menu. These transitions work in tandem with the UI animations to create a cohesive sense of space, guiding the player's eye from the garage to the track selection without breaking immersion.",
+          content: "To heighten the production value, I integrated a dynamic camera system that snaps to different locations based on the current menu. These transitions work in tandem with the UI animations to create a cohesive sense of space, guiding the player's eye from the main menu to the garage without breaking immersion.",
           group: 'camera'
         },
         {
           type: 'image',
-          url: 'https://picsum.photos/seed/taxi-camera/600/400',
+          url: '/projects/GD1/Wa Sir L\'taxi/Content/Roles/taxi-camera.gif',
           size: 'medium',
           group: 'camera'
         },
@@ -324,5 +318,8 @@ export const waSirLtaxi: Project = {
     { type: 'image', url: '/projects/GD1/Wa Sir L\'taxi/Content/Wa Sir l\'taxi 1.png' },
     { type: 'image', url: '/projects/GD1/Wa Sir L\'taxi/Content/Wa Sir l\'taxi 2.png' },
     { type: 'image', url: '/projects/GD1/Wa Sir L\'taxi/Content/Wa Sir l\'taxi 3.png' }
-  ]
+  ],
+  tools: ['Unity'],
+  linkUrl: "https://loveneedlove.itch.io/wa-sir-ltaxi",
+  linkTitle: "Play Wa Sir L'taxi on itch.io"
 };

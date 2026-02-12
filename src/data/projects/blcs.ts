@@ -26,7 +26,7 @@ export const blcs: Project = {
         },
         {
           type: 'image',
-          url: 'https://picsum.photos/seed/blcs-prototype-rules/800/500',
+          url: '/projects/GD1/BLCS/Content/Roles/rule board and rafts.png',
           group: 'core-mechanic'
         },
         {
@@ -36,7 +36,7 @@ export const blcs: Project = {
         },
         {
           type: 'image',
-          url: 'https://picsum.photos/seed/blcs-action-cards/600/400',
+          url: '/projects/GD1/BLCS/Content/Roles/cards.png',
           group: 'action-cards'
         }
       ]
@@ -52,7 +52,7 @@ export const blcs: Project = {
         },
         {
           type: 'image',
-          url: 'https://picsum.photos/seed/blcs-game-photo/1200/500',
+          url: '/projects/GD1/BLCS/Content/Roles/prototype pic.jpg',
           size: 'full'
         },
         {
@@ -68,7 +68,7 @@ export const blcs: Project = {
       content: [
         {
           type: 'image',
-          url: 'https://picsum.photos/seed/blcs-turn-phases/600/400',
+          url: '/projects/GD1/BLCS/Content/Roles/turn phases.png',
           group: 'ux-phases'
         },
         {

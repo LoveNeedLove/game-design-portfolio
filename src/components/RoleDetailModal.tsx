@@ -74,11 +74,13 @@ export default function RoleDetailModal({ tasks, initialTaskIndex, onClose, acce
     return block.images || [];
   };
 
-  // Get all images from content AND illustrations for navigation in fullscreen
-  // Always include slideshow images so fullscreen navigation works
-  const contentImages = contentBlocks.flatMap((b, idx) => {
+  // Dedicated slideshow viewer state (separate from fullscreen image viewer)
+  const [openSlideshowIndex, setOpenSlideshowIndex] = useState<number | null>(null);
+  const [slideshowViewerPage, setSlideshowViewerPage] = useState(0);
+
+  // Get all images from content for navigation in fullscreen (excludes slideshows)
+  const contentImages = contentBlocks.flatMap((b) => {
     if (b.type === 'image') return [b.url!];
-    if (b.type === 'slideshow') return getSlideshowImages(b, idx);
     return [];
   });
   const illustrationImages = activeTask?.illustrations?.map(img => img.url) || [];
@@ -88,12 +90,29 @@ export default function RoleDetailModal({ tasks, initialTaskIndex, onClose, acce
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
-        if (selectedImageUrl) {
+        if (openSlideshowIndex !== null) {
+          setOpenSlideshowIndex(null);
+        } else if (selectedImageUrl) {
           setSelectedImageUrl(null);
         } else {
           onClose();
         }
       }
+      // Slideshow viewer navigation
+      if (openSlideshowIndex !== null) {
+        const ssBlock = contentBlocks[openSlideshowIndex];
+        const ssImages = getSlideshowImages(ssBlock, openSlideshowIndex);
+        if (ssImages.length > 1) {
+          if (e.key === 'ArrowLeft') {
+            setSlideshowViewerPage(prev => (prev - 1 + ssImages.length) % ssImages.length);
+          }
+          if (e.key === 'ArrowRight') {
+            setSlideshowViewerPage(prev => (prev + 1) % ssImages.length);
+          }
+        }
+        return;
+      }
+      // Fullscreen image navigation
       if (selectedImageUrl && allImages.length > 1) {
         if (e.key === 'ArrowLeft') {
           const newIndex = (currentImageIndex - 1 + allImages.length) % allImages.length;
@@ -107,7 +126,7 @@ export default function RoleDetailModal({ tasks, initialTaskIndex, onClose, acce
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [onClose, selectedImageUrl, allImages, currentImageIndex]);
+  }, [onClose, selectedImageUrl, allImages, currentImageIndex, openSlideshowIndex, contentBlocks, pdfPages]);
 
   // Global mouseup handler
   useEffect(() => {
@@ -475,17 +494,20 @@ export default function RoleDetailModal({ tasks, initialTaskIndex, onClose, acce
             <div
               className="relative rounded-xl overflow-hidden bg-zinc-800 cursor-pointer group"
               style={{ aspectRatio: formatToAspectRatio(block.format) }}
-              onClick={() => setSelectedImageUrl(currentImage)}
+              onClick={() => {
+                setOpenSlideshowIndex(index);
+                setSlideshowViewerPage(currentIndex);
+              }}
             >
               <img
                 src={currentImage}
                 alt=""
-                className={`${getImageClass(block.format)} transition-transform duration-500 group-hover:scale-105`}
+                className={getImageClass(block.format)}
               />
               <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-300 flex items-center justify-center">
                 <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-white/20 backdrop-blur-md rounded-full p-4">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" className="w-6 h-6">
-                    <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/>
+                  <svg viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6 text-white">
+                    <path d="M3 5c0-1.1.9-2 2-2h4l2 2h8c1.1 0 2 .9 2 2v10c0 1.1-.9 2-2 2H5c-1.1 0-2-.9-2-2V5z"/>
                   </svg>
                 </div>
               </div>
@@ -558,6 +580,34 @@ export default function RoleDetailModal({ tasks, initialTaskIndex, onClose, acce
             </AnimatePresence>
           </motion.div>
         );
+
+      case 'video': {
+        const vidContainerStyle = getImageContainerStyle(block);
+        const vidAlignClass = block.align === 'right' ? 'ml-auto' : block.align === 'left' ? 'mr-auto' : 'mx-auto';
+
+        return (
+          <motion.div
+            key={`video-${index}`}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 + index * 0.05 }}
+            className="py-4"
+          >
+            <div
+              className={`relative rounded-xl overflow-hidden bg-zinc-900 ${vidAlignClass}`}
+              style={vidContainerStyle}
+            >
+              <video
+                src={block.url}
+                controls
+                playsInline
+                className="w-full h-full"
+                style={formatToAspectRatio(block.format) ? { aspectRatio: formatToAspectRatio(block.format) } : undefined}
+              />
+            </div>
+          </motion.div>
+        );
+      }
 
       case 'youtube': {
         // Extract video ID from various YouTube URL formats
@@ -729,6 +779,17 @@ export default function RoleDetailModal({ tasks, initialTaskIndex, onClose, acce
                           </svg>
                         </div>
                       </div>
+                    </div>
+                  );
+                } else if (block.type === 'video') {
+                  return (
+                    <div className="relative rounded-xl overflow-hidden bg-zinc-900 h-full">
+                      <video
+                        src={block.url}
+                        controls
+                        playsInline
+                        className="w-full h-full"
+                      />
                     </div>
                   );
                 }
@@ -1040,6 +1101,107 @@ export default function RoleDetailModal({ tasks, initialTaskIndex, onClose, acce
             )}
           </motion.div>
         )}
+      </AnimatePresence>
+
+      {/* Dedicated slideshow viewer */}
+      <AnimatePresence>
+        {openSlideshowIndex !== null && (() => {
+          const ssBlock = contentBlocks[openSlideshowIndex];
+          const ssImages = getSlideshowImages(ssBlock, openSlideshowIndex);
+          if (!ssImages.length) return null;
+          const ssPage = slideshowViewerPage;
+          const ssTotal = ssImages.length;
+
+          return (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-[400] bg-black/95 flex flex-col"
+              onClick={() => setOpenSlideshowIndex(null)}
+            >
+              {/* Top bar */}
+              <div className="flex items-center justify-between px-6 py-4 flex-shrink-0" onClick={(e) => e.stopPropagation()}>
+                <div className="flex items-center gap-3 text-white/80">
+                  <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
+                    <path d="M3 5c0-1.1.9-2 2-2h4l2 2h8c1.1 0 2 .9 2 2v10c0 1.1-.9 2-2 2H5c-1.1 0-2-.9-2-2V5z"/>
+                  </svg>
+                  <span className="font-medium">{ssBlock.title || 'Slideshow'}</span>
+                  <span className="text-white/40 text-sm">{ssPage + 1} / {ssTotal}</span>
+                </div>
+                <button
+                  onClick={() => setOpenSlideshowIndex(null)}
+                  className="p-3 bg-white rounded-full shadow-lg hover:bg-zinc-100 transition-all"
+                >
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                    <path d="M18 6L6 18M6 6l12 12"/>
+                  </svg>
+                </button>
+              </div>
+
+              {/* Main image area */}
+              <div className="flex-1 flex items-center justify-center relative px-16 min-h-0" onClick={(e) => e.stopPropagation()}>
+                {/* Navigation arrows */}
+                {ssTotal > 1 && (
+                  <>
+                    <button
+                      onClick={() => setSlideshowViewerPage((ssPage - 1 + ssTotal) % ssTotal)}
+                      className="absolute left-4 top-1/2 -translate-y-1/2 z-10 p-4 bg-white/90 hover:bg-white rounded-full shadow-lg transition-all"
+                    >
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                        <path d="M15 18l-6-6 6-6"/>
+                      </svg>
+                    </button>
+                    <button
+                      onClick={() => setSlideshowViewerPage((ssPage + 1) % ssTotal)}
+                      className="absolute right-4 top-1/2 -translate-y-1/2 z-10 p-4 bg-white/90 hover:bg-white rounded-full shadow-lg transition-all"
+                    >
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                        <path d="M9 18l6-6-6-6"/>
+                      </svg>
+                    </button>
+                  </>
+                )}
+
+                {/* Image with animation */}
+                <AnimatePresence mode="wait" initial={false}>
+                  <motion.img
+                    key={ssPage}
+                    src={ssImages[ssPage]}
+                    alt={`Slide ${ssPage + 1}`}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.2 }}
+                    className="max-w-full max-h-full object-contain rounded-lg"
+                    draggable={false}
+                  />
+                </AnimatePresence>
+              </div>
+
+              {/* Thumbnail strip */}
+              <div className="flex-shrink-0 px-4 pb-4 pt-2" onClick={(e) => e.stopPropagation()}>
+                <div className="max-w-4xl mx-auto bg-black/60 backdrop-blur-sm rounded-lg p-3">
+                  <div className="flex gap-2 overflow-x-auto justify-center" style={{ scrollbarWidth: 'thin' }}>
+                    {ssImages.map((img, i) => (
+                      <div
+                        key={i}
+                        onClick={() => setSlideshowViewerPage(i)}
+                        className={`flex-shrink-0 w-16 aspect-video bg-zinc-800 rounded-sm overflow-hidden border-2 cursor-pointer transition-all ${
+                          i === ssPage
+                            ? 'border-white scale-105'
+                            : 'border-transparent opacity-40 hover:opacity-100'
+                        }`}
+                      >
+                        <img src={img} alt="" className="w-full h-full object-cover" />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          );
+        })()}
       </AnimatePresence>
     </div>
   );

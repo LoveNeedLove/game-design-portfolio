@@ -26,12 +26,12 @@ export const chaotiles: Project = {
         },
         {
           type: 'image',
-          url: 'https://picsum.photos/seed/chaotiles-trailer/1200/500',
+          url: '/projects/GD1/Chaotiles/Content/Roles/trailer gif.gif',
           size: 'full'
         },
         {
           type: 'image',
-          url: 'https://picsum.photos/seed/chaotiles-card-dual/600/400',
+          url: '/projects/GD1/Chaotiles/Content/Roles/dual orientation card.gif',
           group: 'dual-card'
         },
         {
@@ -51,7 +51,7 @@ export const chaotiles: Project = {
         },
         {
           type: 'image',
-          url: 'https://picsum.photos/seed/chaotiles-monster-chase/800/450',
+          url: '/projects/GD1/Chaotiles/Content/Roles/moster_chase.gif',
           group: 'monster-chase'
         },
         {
@@ -77,18 +77,13 @@ export const chaotiles: Project = {
         },
         {
           type: 'image',
-          url: 'https://picsum.photos/seed/chaotiles-card-example/600/400',
+          url: '/projects/GD1/Chaotiles/Content/Roles/card example.png',
           group: 'content-creation'
-        },
-        {
-          type: 'image',
-          url: 'https://picsum.photos/seed/chaotiles-rulebook/800/500',
-          group: 'rulebook'
         },
         {
           type: 'text',
           content: "I wrote the rulebook that seeks to simplify complex mechanics such as the \"dual-orientation\" feature of the dilemma cards. My goal was to provide a manual that allowed players to grasp the core loop quickly, and discover the game progressively.",
-          group: 'rulebook'
+          size: 'full'
         },
         {
           type: 'text',
@@ -97,7 +92,7 @@ export const chaotiles: Project = {
         },
         {
           type: 'image',
-          url: 'https://picsum.photos/seed/chaotiles-presentation/800/450',
+          url: '/projects/GD1/Chaotiles/Content/Roles/presentation.png',
           group: 'presentations'
         }
       ]
@@ -113,12 +108,12 @@ export const chaotiles: Project = {
         },
         {
           type: 'image',
-          url: 'https://picsum.photos/seed/chaotiles-canva-template/600/400',
+          url: '/projects/GD1/Chaotiles/Content/Roles/canva template.png',
           group: 'templates'
         },
         {
           type: 'image',
-          url: 'https://picsum.photos/seed/chaotiles-prototype/800/450',
+          url: '/projects/GD1/Chaotiles/Content/Roles/prototype.png',
           group: 'prototype'
         },
         {
@@ -129,12 +124,7 @@ export const chaotiles: Project = {
         {
           type: 'text',
           content: "I was responsible for the final layout of all game elements, ensuring high readability during high-stress play sessions. I ensured that players could instantly distinguish between item types, dilemmas, and world tiles, streamlining the overall UX of the physical board.",
-          group: 'final-layout'
-        },
-        {
-          type: 'image',
-          url: 'https://picsum.photos/seed/chaotiles-final-card/600/400',
-          group: 'final-layout'
+          size: 'full'
         }
       ]
     }

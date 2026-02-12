@@ -33,7 +33,7 @@ export const ostin8to: Project = {
         },
         {
           type: 'image',
-          url: 'https://picsum.photos/seed/ostin8to-health-vinyl/600/400',
+          url: '/projects/GD1/Ostin8to/Content/Roles/life bar.gif',
           group: 'health-vinyl'
         },
         {
@@ -49,7 +49,7 @@ export const ostin8to: Project = {
         },
         {
           type: 'image',
-          url: 'https://picsum.photos/seed/ostin8to-combo-meter/1200/500',
+          url: '/projects/GD1/Ostin8to/Content/Roles/combo meter.gif',
           size: 'full'
         }
       ]
@@ -70,7 +70,7 @@ export const ostin8to: Project = {
         },
         {
           type: 'image',
-          url: 'https://picsum.photos/seed/ostin8to-enemy-sprites/600/400',
+          url: '/projects/GD1/Ostin8to/Content/Roles/enemy_sprites.png',
           group: 'enemy-types'
         },
         {
@@ -80,7 +80,7 @@ export const ostin8to: Project = {
         },
         {
           type: 'image',
-          url: 'https://picsum.photos/seed/ostin8to-enemy-stack/600/400',
+          url: '/projects/GD1/Ostin8to/Content/Roles/enemy stack.png',
           group: 'enemy-stack'
         },
         {
@@ -96,7 +96,7 @@ export const ostin8to: Project = {
         },
         {
           type: 'image',
-          url: 'https://picsum.photos/seed/ostin8to-arena-design/800/450',
+          url: '/projects/GD1/Ostin8to/Content/Roles/arena_design.png',
           group: 'level-design'
         },
         {
@@ -106,7 +106,7 @@ export const ostin8to: Project = {
         },
         {
           type: 'image',
-          url: 'https://picsum.photos/seed/ostin8to-bomb-feature/600/400',
+          url: '/projects/GD1/Ostin8to/Content/Roles/bomb_feature.gif',
           group: 'bombs'
         }
       ]
@@ -127,7 +127,7 @@ export const ostin8to: Project = {
         },
         {
           type: 'image',
-          url: 'https://picsum.photos/seed/ostin8to-brainstorm-doc/800/450',
+          url: '/projects/GD1/Ostin8to/Content/Roles/brainstorm document.png',
           group: 'brainstorming'
         },
         {
@@ -159,5 +159,8 @@ export const ostin8to: Project = {
     { type: 'image', url: '/projects/GD1/Ostin8to/Content/ostin8to_photo.png' },
     { type: 'image', url: '/projects/GD1/Ostin8to/Content/osin8to_flip.gif' },
     { type: 'image', url: '/projects/GD1/Ostin8to/Content/ostin8tosexy.gif' }
-  ]
+  ],
+  tools: ['Unity', 'git'],
+  linkUrl: "https://crashyflower.itch.io/ostin8to",
+  linkTitle: "Play Ostin8to on itch.io"
 };

@@ -28,7 +28,7 @@ export const fling: Project = {
         },
         {
           type: 'image',
-          url: 'https://picsum.photos/seed/fling-door-keys/600/400',
+          url: '/projects/GD1/Fling/Content/Roles/big door with keys.png',
           group: 'level-intro'
         },
         {
@@ -37,8 +37,17 @@ export const fling: Project = {
           group: 'level-intro'
         },
         {
-          type: 'image',
-          url: 'https://picsum.photos/seed/fling-level-overview/1200/500',
+          type: 'slideshow',
+          title: 'Level 6 Design',
+          images: [
+            '/projects/GD1/Fling/Content/Roles/ld/overview.png',
+            '/projects/GD1/Fling/Content/Roles/ld/phase 1.png',
+            '/projects/GD1/Fling/Content/Roles/ld/phase 2.png',
+            '/projects/GD1/Fling/Content/Roles/ld/phase 3.png',
+            '/projects/GD1/Fling/Content/Roles/ld/phase 4.png',
+            '/projects/GD1/Fling/Content/Roles/ld/phase 6.png'
+          ],
+          format: '16/9',
           size: 'full'
         },
         {
@@ -47,8 +56,8 @@ export const fling: Project = {
           group: 'lava-mechanics'
         },
         {
-          type: 'image',
-          url: 'https://picsum.photos/seed/fling-lava-chase/800/450',
+          type: 'video',
+          url: '/projects/GD1/Fling/Content/Roles/lava chase situation.mp4',
           group: 'lava-mechanics'
         },
         {
@@ -64,12 +73,7 @@ export const fling: Project = {
         {
           type: 'text',
           content: "Instead of the standard key reward found in earlier stages, the level culminates in a subversion of the core mechanic. The player must possess the Earth's core itself—designed as a giant, gargantuan ball—to trigger the final fall and lead directly into the game's credits.",
-          group: 'finale'
-        },
-        {
-          type: 'image',
-          url: 'https://picsum.photos/seed/fling-final-fall/600/400',
-          group: 'finale'
+          size: 'full'
         }
       ]
     },
@@ -84,19 +88,19 @@ export const fling: Project = {
         },
         {
           type: 'image',
-          url: 'https://picsum.photos/seed/fling-destructible-walls/400/300',
+          url: '/projects/GD1/Fling/Content/Roles/destructible wall.gif',
           group: 'bricks',
           groupStack: '1'
         },
         {
           type: 'image',
-          url: 'https://picsum.photos/seed/fling-crumble-platforms/400/300',
+          url: '/projects/GD1/Fling/Content/Roles/crumble platforms.gif',
           group: 'bricks',
           groupStack: '2'
         },
         {
           type: 'image',
-          url: 'https://picsum.photos/seed/fling-trampolines/400/300',
+          url: '/projects/GD1/Fling/Content/Roles/trampoline showcase.gif',
           group: 'bricks',
           groupStack: '3'
         },
@@ -106,8 +110,8 @@ export const fling: Project = {
           group: 'spline-system'
         },
         {
-          type: 'image',
-          url: 'https://picsum.photos/seed/fling-chase-sequence/800/450',
+          type: 'video',
+          url: '/projects/GD1/Fling/Content/Roles/final chase sequence.mp4',
           group: 'spline-system'
         },
         {
@@ -128,18 +132,13 @@ export const fling: Project = {
         },
         {
           type: 'image',
-          url: 'https://picsum.photos/seed/fling-gamefeel-doc/1200/500',
+          url: '/projects/GD1/Fling/Content/Roles/gamefeel document.gif',
           size: 'full'
-        },
-        {
-          type: 'image',
-          url: 'https://picsum.photos/seed/fling-ball-bounce/600/400',
-          group: 'ball-feedback'
         },
         {
           type: 'text',
           content: "To make the physics-based movement feel more organic, I implemented a dynamic squash-and-stretch system for the balls. The intensity of the deformation scales with the speed of the bounce, providing immediate visual feedback on the momentum and weight of the object as it moves through the environment.",
-          group: 'ball-feedback'
+          size: 'full'
         },
         {
           type: 'text',
@@ -148,7 +147,7 @@ export const fling: Project = {
         },
         {
           type: 'image',
-          url: 'https://picsum.photos/seed/fling-ball-flame/600/400',
+          url: '/projects/GD1/Fling/Content/Roles/ball_in_flames.gif',
           group: 'damage-feedback'
         },
         { type: 'separator' },
@@ -163,29 +162,16 @@ export const fling: Project = {
           size: 'full'
         },
         {
-          type: 'image',
-          url: 'https://picsum.photos/seed/fling-tuto-anim1/400/300',
-          group: 'tuto-anims-1'
-        },
-        {
-          type: 'image',
-          url: 'https://picsum.photos/seed/fling-tuto-anim2/400/300',
-          group: 'tuto-anims-1'
-        },
-        {
-          type: 'image',
-          url: 'https://picsum.photos/seed/fling-tuto-anim3/400/300',
-          group: 'tuto-anims-2'
-        },
-        {
-          type: 'image',
-          url: 'https://picsum.photos/seed/fling-tuto-anim4/400/300',
-          group: 'tuto-anims-2'
-        },
-        {
-          type: 'image',
-          url: 'https://picsum.photos/seed/fling-tuto-anim5/400/300',
-          size: 'medium'
+          type: 'slideshow',
+          title: 'Tutorial Animations',
+          images: [
+            '/projects/GD1/Fling/Content/Roles/Tutorials/tuto start.gif',
+            '/projects/GD1/Fling/Content/Roles/Tutorials/tuto jump.gif',
+            '/projects/GD1/Fling/Content/Roles/Tutorials/tuto dash.gif',
+            '/projects/GD1/Fling/Content/Roles/Tutorials/tuto grab.gif',
+            '/projects/GD1/Fling/Content/Roles/Tutorials/tuto presse.gif'
+          ],
+          size: 'full'
         }
       ]
     },
@@ -200,7 +186,7 @@ export const fling: Project = {
         },
         {
           type: 'image',
-          url: 'https://picsum.photos/seed/fling-keys-appearing/600/400',
+          url: '/projects/GD1/Fling/Content/Roles/keys appearing.gif',
           group: 'hub-progression'
         },
         {
@@ -210,13 +196,13 @@ export const fling: Project = {
         },
         {
           type: 'image',
-          url: 'https://picsum.photos/seed/fling-music-doc/600/400',
+          url: '/projects/GD1/Fling/Content/Roles/Music Doc.png',
           group: 'audio',
           groupStack: '1'
         },
         {
           type: 'image',
-          url: 'https://picsum.photos/seed/fling-ambiance-doc/600/400',
+          url: '/projects/GD1/Fling/Content/Roles/Ambiance Loop document.png',
           group: 'audio',
           groupStack: '2'
         },
@@ -226,8 +212,8 @@ export const fling: Project = {
           size: 'full'
         },
         {
-          type: 'image',
-          url: 'https://picsum.photos/seed/fling-credits/1200/500',
+          type: 'video',
+          url: '/projects/GD1/Fling/Content/Roles/fling credits.mp4',
           size: 'full'
         }
       ]
@@ -246,6 +232,7 @@ export const fling: Project = {
     { type: 'image', url: '/projects/GD1/Fling/Content/Fling 2.png' },
     { type: 'image', url: '/projects/GD1/Fling/Content/Fling 3.png' }
   ],
-  linkUrl: "https://example.com/fling",
-  linkTitle: "Play Fling"
+  tools: ['Unity', 'git'],
+  linkUrl: "https://loveneedlove.itch.io/fling",
+  linkTitle: "Play Fling on itch.io"
 };

@@ -12,8 +12,8 @@ export const journal2050: Project = {
   roles: ["Narrative Design", "UX"],
   teamSize: [
     { count: 2, role: "Game Designer" },
-    { count: 2, role: "Developer" },
-    { count: 1, role: "Artist" }
+    { count: 1, role: "Programmer" },
+    { count: 2, role: "Artist" }
   ],
   mission: "The goal of this project was to create an interactive \"Serious Game\" for the French Red Cross (Croix-Rouge française). Developed during an intensive 3-day hackathon, we were tasked with adapting an existing physical exhibition titled \"Living in 2050\" into a digital format. To preserve the integrity of the exhibition's information while increasing engagement, we transformed the content into a branching visual novel where players navigate various social and environmental risks through a personal, narrative-driven lens.",
   tasks: [
@@ -24,12 +24,12 @@ export const journal2050: Project = {
         {
           type: 'text',
           content: "We needed to build a game that could be enjoyed by all ages, including older visitors, while being easily deployable within an exposition setting. To fulfil that goal, we landed on a visual novel concept designed to adapt the content of the exposition, in a neat, intuitive package.",
-          group: 'visual-novel'
+          size: 'full'
         },
         {
-          type: 'image',
-          url: 'https://picsum.photos/seed/journal2050-gameplay/800/450',
-          group: 'visual-novel'
+          type: 'youtube',
+          url: 'V8atEgIWxNM',
+          size: 'full'
         },
         {
           type: 'text',
@@ -38,12 +38,12 @@ export const journal2050: Project = {
         },
         {
           type: 'image',
-          url: 'https://picsum.photos/seed/journal2050-branching-tree/1200/500',
+          url: '/projects/GD1/Journal de bord 2050/Content/Roles/branching_tree.png',
           size: 'full'
         },
         {
           type: 'image',
-          url: 'https://picsum.photos/seed/journal2050-narrative-choice/600/400',
+          url: '/projects/GD1/Journal de bord 2050/Content/Roles/narrative_choice.png',
           group: 'inventory-system'
         },
         {
@@ -64,7 +64,7 @@ export const journal2050: Project = {
         },
         {
           type: 'image',
-          url: 'https://picsum.photos/seed/journal2050-scrapbook/800/450',
+          url: '/projects/GD1/Journal de bord 2050/Content/Roles/scrapbook_aesthetic.png',
           group: 'scrapbook'
         },
         {
@@ -79,7 +79,7 @@ export const journal2050: Project = {
         },
         {
           type: 'image',
-          url: 'https://picsum.photos/seed/journal2050-reveal/1200/500',
+          url: '/projects/GD1/Journal de bord 2050/Content/Roles/reveal_screen.png',
           size: 'full'
         }
       ]
@@ -90,7 +90,7 @@ export const journal2050: Project = {
       content: [
         {
           type: 'image',
-          url: 'https://picsum.photos/seed/journal2050-hackathon/600/400',
+          url: '/projects/GD1/Journal de bord 2050/Content/Roles/hackathon_photo.png',
           group: 'red-cross'
         },
         {
@@ -115,5 +115,6 @@ export const journal2050: Project = {
   secondaryTextColor: "#6b7280",
   mediaList: [
     { type: 'youtube', url: 'V8atEgIWxNM' }
-  ]
+  ],
+  tools: ['Godot', 'Figma']
 };
