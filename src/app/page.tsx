@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence, Variants } from "framer-motion";
 import { projects, Project, MediaItem } from "../data";
 import Header from "../components/Header";
@@ -278,6 +278,48 @@ export default function Home() {
   } | null>(null);
   const [hoveredRowIndex, setHoveredRowIndex] = useState<number | null>(null);
 
+  // URL sync: open project from URL on mount
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const projectId = params.get('project');
+    if (projectId) {
+      const found = projects.find(p => p.id === projectId);
+      if (found) setSelectedProject(found);
+    }
+  }, []);
+
+  // URL sync: handle browser back/forward
+  useEffect(() => {
+    const onPopState = () => {
+      const params = new URLSearchParams(window.location.search);
+      const projectId = params.get('project');
+      if (projectId) {
+        const found = projects.find(p => p.id === projectId);
+        setSelectedProject(found ?? null);
+      } else {
+        setSelectedProject(null);
+      }
+    };
+    window.addEventListener('popstate', onPopState);
+    return () => window.removeEventListener('popstate', onPopState);
+  }, []);
+
+  // Open a project and update URL
+  const openProject = useCallback((project: Project) => {
+    setSelectedProject(project);
+    const url = new URL(window.location.href);
+    url.searchParams.set('project', project.id);
+    window.history.pushState({}, '', url.toString());
+  }, []);
+
+  // Close project and clean URL
+  const closeProject = useCallback(() => {
+    setSelectedProject(null);
+    const url = new URL(window.location.href);
+    url.searchParams.delete('project');
+    window.history.pushState({}, '', url.toString());
+  }, []);
+
   // Helper function to parse date strings like "Month Year" into comparable Date objects
   const parseDate = (dateStr: string): Date => {
     const [month, year] = dateStr.split(' ');
@@ -498,7 +540,7 @@ export default function Home() {
                 easing="elastic"
                 skewAmount={6}
                 onCardClick={(idx) => {
-                  setSelectedProject(featuredMissions[idx]);
+                  openProject(featuredMissions[idx]);
                   setResetTimer(prev => prev + 1);
                 }}
                 onActiveIndexChange={(idx) => setActiveCardIndex(idx)}
@@ -664,7 +706,7 @@ export default function Home() {
                       >
                         <ProjectGridItem
                           project={project}
-                          onClick={() => setSelectedProject(project)}
+                          onClick={() => openProject(project)}
                           isHovered={isHovered}
                           onHoverChange={(hovered) =>
                             setHoveredProjectInfo(
@@ -690,7 +732,7 @@ export default function Home() {
 
       <AnimatePresence>
         {selectedProject && (
-          <ProjectModal project={selectedProject} onClose={() => setSelectedProject(null)} />
+          <ProjectModal project={selectedProject} onClose={closeProject} />
         )}
       </AnimatePresence>
 
