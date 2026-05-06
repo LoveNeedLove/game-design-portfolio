@@ -1,0 +1,978 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Merging Game</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #f0f2f5;
+      color: #1a1a2e;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      gap: 1rem;
+      padding: 1.5rem;
+    }
+
+    h1 { font-size: 2rem; letter-spacing: 0.05em; color: #e94560; margin-bottom: 0.25rem; }
+    h2 { font-size: 1.6rem; color: #e94560; margin-bottom: 0.5rem; }
+
+    .hidden { display: none !important; }
+
+    /* ── SETUP SCREEN ── */
+    #screen-setup {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.2rem;
+      background: #ffffff;
+      padding: 2rem 2.5rem;
+      border-radius: 18px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.10);
+      width: 100%;
+      max-width: 460px;
+    }
+
+    .option-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.55rem;
+      width: 100%;
+    }
+
+    .option-group label.group-label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.09em;
+      color: #aaa;
+    }
+
+    /* Mode radio cards */
+    .radio-row { display: flex; gap: 0.75rem; }
+
+    .radio-card {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.65rem 0.75rem;
+      border: 2px solid #d5dde8;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: border-color 0.15s, background 0.15s;
+      user-select: none;
+    }
+
+    .radio-card input[type="radio"] { display: none; }
+
+    .radio-card:has(input:checked) {
+      border-color: #e94560;
+      background: rgba(233, 69, 96, 0.05);
+    }
+
+    .radio-card .dots {
+      display: flex; gap: 4px; flex-wrap: wrap;
+      justify-content: center; max-width: 80px;
+    }
+
+    .dot {
+      width: 26px; height: 26px; border-radius: 5px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.8rem; line-height: 1;
+    }
+
+    .radio-card > span { font-size: 0.75rem; color: #666; text-align: center; }
+
+    /* Distribution select */
+    select {
+      width: 100%;
+      padding: 6px 10px;
+      border-radius: 8px;
+      background: #f5f7fa;
+      color: #333;
+      border: 1px solid #d5dde8;
+      font-size: 0.9rem;
+      outline: none;
+      cursor: pointer;
+      transition: border-color 0.15s;
+    }
+
+    select:focus { border-color: #e94560; }
+
+    /* Inline field rows */
+    .inline-field {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .inline-field label {
+      font-size: 0.88rem;
+      color: #555;
+      flex: 1;
+    }
+
+    input[type="number"] {
+      width: 76px;
+      padding: 6px 10px;
+      border-radius: 8px;
+      background: #f5f7fa;
+      color: #333;
+      border: 1px solid #d5dde8;
+      font-size: 1rem;
+      text-align: center;
+      outline: none;
+      transition: border-color 0.15s;
+      flex-shrink: 0;
+    }
+
+    input[type="number"]:focus { border-color: #e94560; }
+
+    .section-divider {
+      width: 100%;
+      border: none;
+      border-top: 1px solid #eaeef3;
+    }
+
+    /* ── BUTTONS ── */
+    button {
+      padding: 0.7rem 2rem;
+      border: none;
+      border-radius: 10px;
+      background: #e94560;
+      color: white;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.1s, box-shadow 0.1s;
+      letter-spacing: 0.03em;
+    }
+
+    button:hover { transform: translateY(-2px); box-shadow: 0 4px 20px rgba(233,69,96,0.35); }
+    button:active { transform: translateY(0); box-shadow: none; }
+    button.secondary { background: #7f8c8d; }
+    button.secondary:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.2); }
+
+    /* ── GAME SCREEN ── */
+    #screen-game { display: flex; flex-direction: column; align-items: center; gap: 1rem; }
+
+    #hud {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      max-width: 424px;
+    }
+
+    #move-counter { font-size: 1.1rem; font-weight: 700; color: #333; }
+    #move-counter .moves-left { color: #e94560; }
+
+    /* ── GRID ── */
+    #grid-container {
+      display: grid;
+      grid-template-columns: repeat(6, 64px);
+      grid-template-rows: repeat(6, 64px);
+      gap: 4px;
+      background: #cdd5e0;
+      padding: 8px;
+      border-radius: 14px;
+      box-shadow: 0 2px 16px rgba(0,0,0,0.12);
+    }
+
+    .cell {
+      width: 64px; height: 64px;
+      border-radius: 10px;
+      background: #e4e9f2;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      position: relative;
+      transition: background 0.12s;
+      overflow: visible;
+    }
+
+    .cell:hover { background: #d8e2f0; }
+
+    .block {
+      width: 52px; height: 52px;
+      border-radius: 8px;
+      pointer-events: none;
+      transition: box-shadow 0.15s, transform 0.15s;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.55rem; line-height: 1;
+    }
+
+    /* Selected */
+    .cell.selected { background: #d0e4f8; box-shadow: inset 0 0 0 2px #3498DB; }
+    .cell.selected .block { box-shadow: 0 0 16px 5px rgba(52,152,219,0.45); transform: scale(1.09); }
+
+    /* Valid rook destination */
+    .cell.valid-destination::after {
+      content: '';
+      position: absolute;
+      width: 16px; height: 16px;
+      border-radius: 50%;
+      background: rgba(0,0,0,0.12);
+      border: 2px solid rgba(0,0,0,0.28);
+      pointer-events: none;
+    }
+
+    .cell.valid-destination:hover { background: #c8d8f0; }
+
+    /* Swap hint */
+    .cell.swap-hint { box-shadow: inset 0 0 0 2px rgba(200,150,0,0.8); background: #f5f0d8; }
+    .cell.swap-hint .block { box-shadow: 0 0 10px 3px rgba(200,150,0,0.35); }
+
+    /* ── STAR CELLS ── */
+    .cell.star-empty {
+      background: #fffbea;
+      box-shadow: inset 0 0 0 2px rgba(230, 190, 0, 0.45);
+    }
+
+    .cell.star-empty:hover { background: #fff5cc; }
+
+    .cell.star-occupied {
+      box-shadow: inset 0 0 0 2px rgba(230, 190, 0, 0.4);
+    }
+
+    .star-idle {
+      position: absolute;
+      font-size: 1.5rem;
+      opacity: 0.45;
+      pointer-events: none;
+      z-index: 1;
+      line-height: 1;
+    }
+
+    .star-badge {
+      position: absolute;
+      bottom: 3px; right: 4px;
+      font-size: 0.6rem;
+      line-height: 1;
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    /* ── CLUSTER ANIMATION ── */
+    @keyframes clusterPop {
+      0%   { transform: scale(1); }
+      35%  { transform: scale(1.22); }
+      65%  { transform: scale(0.96); }
+      100% { transform: scale(1.1); }
+    }
+
+    @keyframes scoreFloat {
+      0%   { opacity: 0;  transform: translate(-50%, -50%) scale(0.6); }
+      20%  { opacity: 1;  transform: translate(-50%, -80%) scale(1.2); }
+      70%  { opacity: 1;  transform: translate(-50%, -110%) scale(1); }
+      100% { opacity: 0;  transform: translate(-50%, -140%) scale(0.85); }
+    }
+
+    @keyframes starFloat {
+      0%   { opacity: 0;  transform: translate(-50%, -50%) scale(0.6) rotate(-10deg); }
+      20%  { opacity: 1;  transform: translate(-50%, -70%) scale(1.25) rotate(5deg); }
+      70%  { opacity: 1;  transform: translate(-50%, -100%) scale(1.05) rotate(0deg); }
+      100% { opacity: 0;  transform: translate(-50%, -130%) scale(0.9) rotate(-3deg); }
+    }
+
+    .cell.cluster-highlight {
+      background: color-mix(in srgb, var(--cluster-color) 18%, #e4e9f2);
+      box-shadow: inset 0 0 0 3px var(--cluster-color);
+    }
+
+    .cell.cluster-highlight .block {
+      animation: clusterPop 0.55s cubic-bezier(0.36, 0.07, 0.19, 0.97) forwards;
+      box-shadow: 0 0 0 3px white, 0 0 14px 5px var(--cluster-color);
+    }
+
+    .cell.star-triggered {
+      box-shadow: inset 0 0 0 3px #d4ac0d, 0 0 18px 6px rgba(220,180,0,0.5) !important;
+    }
+
+    .score-popup {
+      position: absolute;
+      top: 50%; left: 50%;
+      pointer-events: none;
+      z-index: 20;
+      font-size: 1rem;
+      font-weight: 900;
+      white-space: nowrap;
+      animation: scoreFloat 0.8s ease-out forwards;
+      text-shadow: 0 0 6px white, 0 1px 3px rgba(255,255,255,0.9), 0 2px 8px rgba(0,0,0,0.25);
+    }
+
+    .score-popup.star-popup {
+      animation-name: starFloat;
+      animation-delay: 0.1s;
+      color: #c89000;
+      font-size: 1.05rem;
+    }
+
+    /* ── END SCREEN ── */
+    #screen-end {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+      background: #ffffff;
+      padding: 2rem 2.5rem;
+      border-radius: 18px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.10);
+      min-width: 300px;
+    }
+
+    #score-list { display: flex; flex-direction: column; gap: 0.45rem; width: 100%; }
+
+    .score-row {
+      display: flex; align-items: center; gap: 0.75rem;
+      font-size: 1rem; padding: 0.3rem 0;
+    }
+
+    .score-row.total-row {
+      border-top: 1px solid #e8ecf2;
+      margin-top: 0.4rem; padding-top: 0.7rem;
+      font-weight: 700;
+    }
+
+    .score-row.super-row {
+      border-top: 1px dashed #f0d060;
+      margin-top: 0.2rem; padding-top: 0.5rem;
+      background: #fffbea;
+      border-radius: 8px;
+      padding: 0.5rem 0.6rem;
+    }
+
+    .score-swatch {
+      width: 34px; height: 34px;
+      border-radius: 7px; flex-shrink: 0;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.2rem; line-height: 1;
+    }
+
+    .score-label { flex: 1; color: #666; }
+    .score-value { font-weight: 700; color: #1a1a2e; }
+
+    .end-buttons { display: flex; gap: 1rem; margin-top: 0.25rem; }
+  </style>
+</head>
+<body>
+
+  <!-- ══════════════════ SETUP SCREEN ══════════════════ -->
+  <div id="screen-setup">
+    <h1>Merging Game</h1>
+
+    <!-- Mode -->
+    <div class="option-group">
+      <label class="group-label">Produits</label>
+      <div class="radio-row">
+        <label class="radio-card">
+          <input type="radio" name="mode" value="3" checked>
+          <div class="dots">
+            <div class="dot" style="background:#E74C3C">🍶</div>
+            <div class="dot" style="background:#3498DB">🧀</div>
+            <div class="dot" style="background:#2ECC71">🧈</div>
+          </div>
+          <span>Lait · Fromage · Beurre</span>
+        </label>
+        <label class="radio-card">
+          <input type="radio" name="mode" value="6">
+          <div class="dots">
+            <div class="dot" style="background:#E74C3C">🍶</div>
+            <div class="dot" style="background:#3498DB">🧀</div>
+            <div class="dot" style="background:#2ECC71">🧈</div>
+            <div class="dot" style="background:#F1C40F">🧶</div>
+            <div class="dot" style="background:#9B59B6">🧵</div>
+            <div class="dot" style="background:#E67E22">🧣</div>
+          </div>
+          <span>+ Laine · Fil · Tissu</span>
+        </label>
+      </div>
+    </div>
+
+    <hr class="section-divider">
+
+    <!-- Distribution -->
+    <div class="option-group">
+      <label class="group-label">Distribution des blocs</label>
+      <select id="select-dist">
+        <option value="random">Totalement aléatoire (aucun minimum)</option>
+        <option value="minimum" selected>Minimum fixe par couleur</option>
+        <option value="selection">Sélectionner X couleurs sur les actives</option>
+      </select>
+      <div id="dist-param-wrap" class="inline-field">
+        <label for="input-dist-param" id="dist-param-label">Minimum / couleur</label>
+        <input type="number" id="input-dist-param" value="2" min="0" max="12">
+      </div>
+    </div>
+
+    <hr class="section-divider">
+
+    <!-- Numeric params -->
+    <div class="option-group">
+      <div class="inline-field">
+        <label for="input-blocks">Nombre de blocs</label>
+        <input type="number" id="input-blocks" value="16" min="2" max="36">
+      </div>
+      <div class="inline-field">
+        <label for="input-stars">Cases étoilées ⭐</label>
+        <input type="number" id="input-stars" value="0" min="0" max="34">
+      </div>
+      <div class="inline-field">
+        <label for="input-moves">Nombre de coups</label>
+        <input type="number" id="input-moves" value="6" min="1" max="99">
+      </div>
+      <div class="inline-field">
+        <label for="input-coeff">Coefficient de score</label>
+        <input type="number" id="input-coeff" value="250" min="1" max="9999">
+      </div>
+    </div>
+
+    <button id="btn-start">Commencer</button>
+  </div>
+
+  <!-- ══════════════════ GAME SCREEN ══════════════════ -->
+  <div id="screen-game" class="hidden">
+    <div id="hud">
+      <span id="move-counter">Coups restants : <span class="moves-left">6</span> / 6</span>
+      <button id="btn-end" class="secondary">Terminer</button>
+    </div>
+    <div id="grid-container"></div>
+  </div>
+
+  <!-- ══════════════════ END SCREEN ══════════════════ -->
+  <div id="screen-end" class="hidden">
+    <h2>Résultats</h2>
+    <div id="score-list"></div>
+    <div class="end-buttons">
+      <button id="btn-replay">Rejouer</button>
+    </div>
+  </div>
+
+  <script>
+    // ─── CONSTANTS ───────────────────────────────────────────────────
+    const GRID = 6;
+    const DIRS = [[-1,0],[1,0],[0,-1],[0,1]];
+
+    const COLORS_3 = [
+      { name: 'Lait',    hex: '#E74C3C', emoji: '🍶' },
+      { name: 'Fromage', hex: '#3498DB', emoji: '🧀' },
+      { name: 'Beurre',  hex: '#2ECC71', emoji: '🧈' },
+    ];
+    const COLORS_6 = [
+      ...COLORS_3,
+      { name: 'Laine',  hex: '#F1C40F', emoji: '🧶' },
+      { name: 'Fil',    hex: '#9B59B6', emoji: '🧵' },
+      { name: 'Tissu',  hex: '#E67E22', emoji: '🧣' },
+    ];
+
+    // ─── STATE ───────────────────────────────────────────────────────
+    let state = {
+      mode: 3,
+      maxMoves: 6,
+      coefficient: 250,
+      totalBlocks: 16,
+      distMode: 'minimum', // 'random' | 'minimum' | 'selection'
+      distParam: 2,
+      starCount: 0,
+      starCells: new Set(),  // Set of "r,c" strings
+      colors: [],
+      grid: [],
+      movesUsed: 0,
+      selectedCell: null,
+      validMoves: [],
+      swapTargets: [],
+      gameOver: false,
+    };
+
+    // ─── DOM ─────────────────────────────────────────────────────────
+    const cellElements = Array.from({ length: GRID }, () => Array(GRID).fill(null));
+
+    function showScreen(name) {
+      ['setup', 'game', 'end'].forEach(s =>
+        document.getElementById(`screen-${s}`).classList.toggle('hidden', s !== name)
+      );
+    }
+
+    // ─── GRID DOM ────────────────────────────────────────────────────
+    function createGridDOM() {
+      const container = document.getElementById('grid-container');
+      container.innerHTML = '';
+      for (let r = 0; r < GRID; r++) {
+        for (let c = 0; c < GRID; c++) {
+          const cell = document.createElement('div');
+          cell.className = 'cell';
+          cell.dataset.row = r;
+          cell.dataset.col = c;
+          cell.addEventListener('click', onCellClick);
+          container.appendChild(cell);
+          cellElements[r][c] = cell;
+        }
+      }
+    }
+
+    function shuffle(arr) {
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+
+    // ─── GRID BUILD ──────────────────────────────────────────────────
+    function buildColorCounts(nColors, total) {
+      const counts = Array(nColors).fill(0);
+
+      if (state.distMode === 'random') {
+        // Every block picks a random color — no minimum guaranteed
+        for (let i = 0; i < total; i++)
+          counts[Math.floor(Math.random() * nColors)]++;
+
+      } else if (state.distMode === 'minimum') {
+        // Each color gets at least distParam blocks; rest distributed randomly
+        const minPer = Math.max(0, Math.min(state.distParam, Math.floor(total / nColors)));
+        for (let i = 0; i < nColors; i++) counts[i] = minPer;
+        for (let i = 0; i < total - nColors * minPer; i++)
+          counts[Math.floor(Math.random() * nColors)]++;
+
+      } else { // 'selection': pick distParam colors; give each at least 1, rest random
+        const nActive = Math.max(1, Math.min(state.distParam, nColors));
+        const activeIndices = shuffle([...Array(nColors).keys()]).slice(0, nActive);
+        for (const idx of activeIndices) counts[idx] = 1;
+        for (let i = 0; i < total - nActive; i++)
+          counts[activeIndices[Math.floor(Math.random() * nActive)]]++;
+      }
+
+      return counts;
+    }
+
+    function buildGrid() {
+      const grid = Array.from({ length: GRID }, () => Array(GRID).fill(null));
+      const nColors = state.colors.length;
+      const total = state.totalBlocks;
+
+      const counts = buildColorCounts(nColors, total);
+
+      const blocks = [];
+      for (let i = 0; i < nColors; i++)
+        for (let j = 0; j < counts[i]; j++)
+          blocks.push({ color: state.colors[i].name, hex: state.colors[i].hex, emoji: state.colors[i].emoji });
+      shuffle(blocks);
+
+      // Shuffle all 36 positions; first `total` get blocks, rest are candidates for star cells
+      const positions = shuffle(
+        Array.from({ length: GRID * GRID }, (_, k) => ({ row: Math.floor(k / GRID), col: k % GRID }))
+      );
+
+      for (let i = 0; i < blocks.length; i++)
+        grid[positions[i].row][positions[i].col] = blocks[i];
+
+      // Place star cells on remaining empty positions
+      state.starCells = new Set();
+      const emptyPositions = positions.slice(blocks.length);
+      const starCount = Math.min(state.starCount, emptyPositions.length);
+      for (let i = 0; i < starCount; i++)
+        state.starCells.add(`${emptyPositions[i].row},${emptyPositions[i].col}`);
+
+      return grid;
+    }
+
+    // ─── RENDER ──────────────────────────────────────────────────────
+    function renderGrid() {
+      const selR = state.selectedCell ? state.selectedCell.row : -1;
+      const selC = state.selectedCell ? state.selectedCell.col : -1;
+
+      for (let r = 0; r < GRID; r++) {
+        for (let c = 0; c < GRID; c++) {
+          const cell = cellElements[r][c];
+          const blockData = state.grid[r][c];
+          const isStar = state.starCells.has(`${r},${c}`);
+
+          cell.className = 'cell';
+          cell.innerHTML = '';
+
+          if (blockData) {
+            const block = document.createElement('div');
+            block.className = 'block';
+            block.style.background = blockData.hex;
+            block.textContent = blockData.emoji;
+            cell.appendChild(block);
+          }
+
+          // State classes (selection / movement hints)
+          if (r === selR && c === selC) {
+            cell.classList.add('selected');
+          } else if (state.validMoves.some(m => m.row === r && m.col === c)) {
+            cell.classList.add('valid-destination');
+          } else if (state.swapTargets.some(m => m.row === r && m.col === c)) {
+            cell.classList.add('swap-hint');
+          }
+
+          // Star cell visual
+          if (isStar) {
+            const starEl = document.createElement('span');
+            if (blockData) {
+              cell.classList.add('star-occupied');
+              starEl.className = 'star-badge';
+              starEl.textContent = '⭐';
+            } else {
+              cell.classList.add('star-empty');
+              starEl.className = 'star-idle';
+              starEl.textContent = '⭐';
+            }
+            cell.appendChild(starEl);
+          }
+        }
+      }
+    }
+
+    function updateHUD() {
+      const remaining = state.maxMoves - state.movesUsed;
+      document.getElementById('move-counter').innerHTML =
+        `Coups restants : <span class="moves-left">${remaining}</span> / ${state.maxMoves}`;
+    }
+
+    // ─── GAME INIT ───────────────────────────────────────────────────
+    function initGame() {
+      state.mode        = parseInt(document.querySelector('input[name="mode"]:checked').value);
+      state.maxMoves    = parseInt(document.getElementById('input-moves').value) || 6;
+      state.coefficient = parseInt(document.getElementById('input-coeff').value) || 250;
+      state.distMode    = document.getElementById('select-dist').value;
+      state.distParam   = parseInt(document.getElementById('input-dist-param').value) || 2;
+      state.starCount   = parseInt(document.getElementById('input-stars').value) || 0;
+      state.colors      = state.mode === 3 ? COLORS_3 : COLORS_6;
+
+      const rawBlocks   = parseInt(document.getElementById('input-blocks').value) || 16;
+      state.totalBlocks = Math.max(1, Math.min(36, rawBlocks));
+
+      state.movesUsed    = 0;
+      state.selectedCell = null;
+      state.validMoves   = [];
+      state.swapTargets  = [];
+      state.gameOver     = false;
+      state.grid         = buildGrid();
+
+      renderGrid();
+      updateHUD();
+      showScreen('game');
+    }
+
+    // ─── MOVEMENT ────────────────────────────────────────────────────
+    function getValidRookMoves(row, col) {
+      const moves = [];
+      for (const [dr, dc] of DIRS) {
+        let r = row + dr, c = col + dc;
+        while (r >= 0 && r < GRID && c >= 0 && c < GRID) {
+          if (state.grid[r][c] !== null) break;
+          moves.push({ row: r, col: c });
+          r += dr; c += dc;
+        }
+      }
+      return moves;
+    }
+
+    function getSwapTargets(row, col) {
+      const targets = [];
+      for (const [dr, dc] of DIRS) {
+        const r = row + dr, c = col + dc;
+        if (r >= 0 && r < GRID && c >= 0 && c < GRID && state.grid[r][c] !== null)
+          targets.push({ row: r, col: c });
+      }
+      return targets;
+    }
+
+    function isAdjacent(r1, c1, r2, c2) {
+      return Math.abs(r1 - r2) + Math.abs(c1 - c2) === 1;
+    }
+
+    // ─── SELECTION ───────────────────────────────────────────────────
+    function selectCell(row, col) {
+      state.selectedCell = { row, col };
+      state.validMoves   = getValidRookMoves(row, col);
+      state.swapTargets  = getSwapTargets(row, col);
+      renderGrid();
+    }
+
+    function deselect() {
+      state.selectedCell = null;
+      state.validMoves   = [];
+      state.swapTargets  = [];
+      renderGrid();
+    }
+
+    // ─── ACTIONS ─────────────────────────────────────────────────────
+    function rookMove(fromRow, fromCol, toRow, toCol) {
+      state.grid[toRow][toCol]     = state.grid[fromRow][fromCol];
+      state.grid[fromRow][fromCol] = null;
+    }
+
+    function swapBlocks(r1, c1, r2, c2) {
+      [state.grid[r1][c1], state.grid[r2][c2]] = [state.grid[r2][c2], state.grid[r1][c1]];
+    }
+
+    function spendMove() {
+      state.movesUsed++;
+      updateHUD();
+      if (state.movesUsed >= state.maxMoves) endGame();
+    }
+
+    // ─── CLICK HANDLER ───────────────────────────────────────────────
+    function onCellClick(e) {
+      if (state.gameOver) return;
+
+      const row = parseInt(e.currentTarget.dataset.row);
+      const col = parseInt(e.currentTarget.dataset.col);
+      const occupied = state.grid[row][col] !== null;
+
+      if (state.selectedCell === null) {
+        if (occupied) selectCell(row, col);
+        return;
+      }
+
+      const { row: sr, col: sc } = state.selectedCell;
+
+      if (sr === row && sc === col) { deselect(); return; }
+
+      if (occupied && isAdjacent(sr, sc, row, col)) {
+        swapBlocks(sr, sc, row, col);
+        deselect();
+        spendMove();
+        return;
+      }
+
+      if (!occupied && state.validMoves.some(m => m.row === row && m.col === col)) {
+        rookMove(sr, sc, row, col);
+        deselect();
+        spendMove();
+        return;
+      }
+
+      if (occupied) { selectCell(row, col); return; }
+      deselect();
+    }
+
+    // ─── SCORING ─────────────────────────────────────────────────────
+    function bfsCluster(startRow, startCol, visited) {
+      const targetColor = state.grid[startRow][startCol].color;
+      const cells = [];
+      const queue = [{ row: startRow, col: startCol }];
+      visited[startRow][startCol] = true;
+
+      while (queue.length > 0) {
+        const { row, col } = queue.shift();
+        cells.push({ row, col });
+        for (const [dr, dc] of DIRS) {
+          const nr = row + dr, nc = col + dc;
+          if (nr < 0 || nr >= GRID || nc < 0 || nc >= GRID) continue;
+          if (visited[nr][nc] || state.grid[nr][nc] === null) continue;
+          if (state.grid[nr][nc].color !== targetColor) continue;
+          visited[nr][nc] = true;
+          queue.push({ row: nr, col: nc });
+        }
+      }
+      return cells;
+    }
+
+    // Per-block multipliers: cluster of 1 = poor, 2 = normal, 3 = bonus, 4+ = big bonus.
+    // Formula targets ~coeff/10 total for an average game.
+    function clusterScore(N) {
+      const unit = state.coefficient / (10 * state.totalBlocks);
+      const perBlockMult = [0, 0.4, 1.0, 1.8, 3.0, 4.5, 6.0]; // index = N, capped at 6
+      const m = N < perBlockMult.length ? perBlockMult[N] : N;  // N²-scaling beyond 6
+      return Math.max(1, Math.round(N * m * unit));
+    }
+
+    function computeAllClusters() {
+      const visited = Array.from({ length: GRID }, () => Array(GRID).fill(false));
+      const clusters = [];
+
+      for (let r = 0; r < GRID; r++) {
+        for (let c = 0; c < GRID; c++) {
+          if (!visited[r][c] && state.grid[r][c] !== null) {
+            const cells = bfsCluster(r, c, visited);
+            const colorName = state.grid[r][c].color;
+            const colorData = state.colors.find(col => col.name === colorName);
+            const N = cells.length;
+
+            // Count star cells covered by this cluster → each gives +N super-products
+            const starCovered = cells.filter(({ row, col }) => state.starCells.has(`${row},${col}`)).length;
+            const superProduct = starCovered * N;
+
+            clusters.push({
+              cells, color: colorName, hex: colorData.hex, emoji: colorData.emoji,
+              score: clusterScore(N), superProduct,
+            });
+          }
+        }
+      }
+      return clusters;
+    }
+
+    function computeScores(clusters) {
+      const scores = {};
+      const superProducts = {};
+      for (const c of state.colors) { scores[c.name] = 0; superProducts[c.name] = 0; }
+      for (const cluster of clusters) {
+        scores[cluster.color] += cluster.score;
+        superProducts[cluster.color] += cluster.superProduct;
+      }
+      return { scores, superProducts };
+    }
+
+    // ─── CLUSTER ANIMATION ───────────────────────────────────────────
+    function wait(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+    async function animateSingleCluster(cluster) {
+      const toCleanup = [];
+
+      for (const { row, col } of cluster.cells) {
+        const cell = cellElements[row][col];
+        cell.style.setProperty('--cluster-color', cluster.hex);
+        cell.classList.add('cluster-highlight');
+        if (state.starCells.has(`${row},${col}`)) cell.classList.add('star-triggered');
+      }
+
+      // Regular score popup (middle cell)
+      const midCell = cluster.cells[Math.floor(cluster.cells.length / 2)];
+      const popup = document.createElement('div');
+      popup.className = 'score-popup';
+      popup.textContent = `${cluster.emoji} +${cluster.score}`;
+      popup.style.color = cluster.hex;
+      cellElements[midCell.row][midCell.col].appendChild(popup);
+      toCleanup.push(popup);
+
+      // Star bonus popup (first star cell in cluster, if any)
+      if (cluster.superProduct > 0) {
+        const starCell = cluster.cells.find(({ row, col }) => state.starCells.has(`${row},${col}`));
+        if (starCell) {
+          const starPopup = document.createElement('div');
+          starPopup.className = 'score-popup star-popup';
+          starPopup.textContent = `⭐ +${cluster.superProduct}`;
+          cellElements[starCell.row][starCell.col].appendChild(starPopup);
+          toCleanup.push(starPopup);
+        }
+      }
+
+      await wait(820);
+
+      for (const { row, col } of cluster.cells)
+        cellElements[row][col].classList.remove('cluster-highlight', 'star-triggered');
+      for (const el of toCleanup) if (el.parentNode) el.remove();
+    }
+
+    async function animateClusters(clusters) {
+      const sorted = [...clusters].sort((a, b) => a.score - b.score);
+      const promises = sorted.map((cluster, i) =>
+        wait(i * 180).then(() => animateSingleCluster(cluster))
+      );
+      await Promise.all(promises);
+    }
+
+    // ─── END GAME ────────────────────────────────────────────────────
+    async function endGame() {
+      if (state.gameOver) return;
+      state.gameOver = true;
+      deselect();
+
+      const clusters = computeAllClusters();
+      const { scores, superProducts } = computeScores(clusters);
+
+      await animateClusters(clusters);
+
+      renderEndScreen(scores, superProducts);
+      showScreen('end');
+
+      if (typeof window.onGameEnd === 'function') window.onGameEnd(scores, superProducts);
+    }
+
+    function renderEndScreen(scores, superProducts) {
+      const list = document.getElementById('score-list');
+      list.innerHTML = '';
+      let total = 0;
+
+      for (const color of state.colors) {
+        const s = scores[color.name];
+        total += s;
+        const row = document.createElement('div');
+        row.className = 'score-row';
+        row.innerHTML = `
+          <div class="score-swatch" style="background:${color.hex}">${color.emoji}</div>
+          <span class="score-label">${color.name}</span>
+          <span class="score-value">${s}</span>
+        `;
+        list.appendChild(row);
+      }
+
+      // Total products row
+      const totalRow = document.createElement('div');
+      totalRow.className = 'score-row total-row';
+      totalRow.innerHTML = `
+        <span class="score-label" style="color:#333; font-weight:700">Total produits</span>
+        <span class="score-value">${total}</span>
+      `;
+      list.appendChild(totalRow);
+
+      // Super-products: one row per color (only shown if at least one color has any)
+      const hasSuperProducts = state.colors.some(c => superProducts[c.name] > 0);
+      if (hasSuperProducts) {
+        const superHeader = document.createElement('div');
+        superHeader.className = 'score-row';
+        superHeader.style.cssText = 'margin-top:0.6rem; padding-bottom:0.1rem;';
+        superHeader.innerHTML = `<span style="font-size:0.75rem; text-transform:uppercase; letter-spacing:0.08em; color:#b08000; font-weight:700;">⭐ Super-Produits</span>`;
+        list.appendChild(superHeader);
+
+        for (const color of state.colors) {
+          const sp = superProducts[color.name];
+          if (sp === 0) continue;
+          const superRow = document.createElement('div');
+          superRow.className = 'score-row super-row';
+          superRow.innerHTML = `
+            <div class="score-swatch" style="background:${color.hex}; box-shadow: 0 0 0 2px #d4ac0d, 0 1px 4px rgba(0,0,0,0.15);">${color.emoji}</div>
+            <span class="score-label" style="color:#8a6000;">Super-${color.name}</span>
+            <span class="score-value" style="color:#8a6000;">+${sp}</span>
+          `;
+          list.appendChild(superRow);
+        }
+      }
+    }
+
+    // ─── SETUP UI INTERACTIONS ───────────────────────────────────────
+    function onDistModeChange() {
+      const val   = document.getElementById('select-dist').value;
+      const wrap  = document.getElementById('dist-param-wrap');
+      const label = document.getElementById('dist-param-label');
+      const input = document.getElementById('input-dist-param');
+
+      if (val === 'random') {
+        wrap.classList.add('hidden');
+      } else {
+        wrap.classList.remove('hidden');
+        if (val === 'minimum') {
+          label.textContent = 'Minimum / couleur';
+          input.min = 0; input.max = 12;
+        } else { // selection
+          label.textContent = 'Nb de couleurs actives';
+          input.min = 1; input.max = 6;
+          if (parseInt(input.value) < 1) input.value = 3;
+        }
+      }
+    }
+
+    // ─── INIT ────────────────────────────────────────────────────────
+    document.addEventListener('DOMContentLoaded', () => {
+      createGridDOM();
+      document.getElementById('btn-start').addEventListener('click', initGame);
+      document.getElementById('btn-end').addEventListener('click', endGame);
+      document.getElementById('btn-replay').addEventListener('click', () => showScreen('setup'));
+      document.getElementById('select-dist').addEventListener('change', onDistModeChange);
+      showScreen('setup');
+    });
+  </script>
+</body>
+</html>
