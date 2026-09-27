@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Guide Technique &amp; Narratif : Moteur d'Exploration Ren'Py</title>
+  <style>
+    :root {
+      --bg: #0f1115;
+      --card-bg: #161922;
+      --border: #262b3a;
+      --text: #c9d1d9;
+      --heading: #f0f6fc;
+      --accent: #58a6ff;
+      --accent-muted: #1f6feb;
+      --code-bg: #0b0d11;
+      --tag-bg: #1c2128;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      padding: 2.5rem 1rem;
+    }
+
+    .container {
+      max-width: 860px;
+      margin: 0 auto;
+    }
+
+    header {
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    header h1 {
+      color: var(--heading);
+      font-size: 1.75rem;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+    }
+
+    header p {
+      color: #8b949e;
+      margin-top: 0.5rem;
+      font-size: 0.95rem;
+    }
+
+    section {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin-bottom: 1.75rem;
+    }
+
+    h2 {
+      color: var(--heading);
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    h2::before {
+      content: "";
+      display: inline-block;
+      width: 4px;
+      height: 1.1rem;
+      background: var(--accent);
+      border-radius: 2px;
+    }
+
+    h3 {
+      color: var(--heading);
+      font-size: 1rem;
+      font-weight: 600;
+      margin: 1.25rem 0 0.5rem 0;
+    }
+
+    p, ul, ol {
+      margin-bottom: 0.85rem;
+      font-size: 0.95rem;
+    }
+
+    ul, ol {
+      padding-left: 1.25rem;
+    }
+
+    li {
+      margin-bottom: 0.35rem;
+    }
+
+    .rule-box {
+      background: rgba(88, 166, 255, 0.08);
+      border-left: 3px solid var(--accent);
+      padding: 0.85rem 1rem;
+      margin: 1rem 0;
+      border-radius: 0 4px 4px 0;
+    }
+
+    .rule-box strong {
+      color: var(--accent);
+      display: block;
+      margin-bottom: 0.25rem;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0;
+      font-size: 0.9rem;
+    }
+
+    th, td {
+      text-align: left;
+      padding: 0.65rem 0.85rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    th {
+      color: var(--heading);
+      background: var(--tag-bg);
+      font-weight: 600;
+    }
+
+    pre {
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 1rem;
+      overflow-x: auto;
+      margin: 0.75rem 0 1rem 0;
+    }
+
+    code {
+      font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, Liberation Mono, monospace;
+      font-size: 0.85rem;
+      color: #79c0ff;
+    }
+
+    p code, li code {
+      background: var(--tag-bg);
+      padding: 0.15rem 0.35rem;
+      border-radius: 4px;
+      border: 1px solid var(--border);
+      color: #e6edf3;
+    }
+
+    footer {
+      text-align: center;
+      color: #8b949e;
+      font-size: 0.85rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--border);
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+
+  <header>
+    <h1>Architecture d'Exploration Ren'Py</h1>
+    <p>Spécification technique de l'agencement des calques et guide de scénarisation des pièces interactives.</p>
+  </header>
+
+  <!-- 1. HIÉRARCHIE DES CALQUES -->
+  <section>
+    <h2>1. Hiérarchie visuelle (La métaphore du théâtre)</h2>
+    <p>L'affichage est découpé en quatre plans stricts d'arrière vers l'avant afin d'éviter tout chevauchement non maîtrisé entre décors, sprites et interface :</p>
+    
+    <table>
+      <thead>
+        <tr>
+          <th>Plan</th>
+          <th>Calque Ren'Py</th>
+          <th>Contenu</th>
+          <th>Rôle visuel</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>1. Fond</strong></td>
+          <td><code>master</code></td>
+          <td>Fond noir uni / Shaders</td>
+          <td>Arrière-plan global</td>
+        </tr>
+        <tr>
+          <td><strong>2. Décor</strong></td>
+          <td><code>screens</code></td>
+          <td><code>room_screen</code> (viewport fixe)</td>
+          <td>La pièce cadrée et ses zones cliquables</td>
+        </tr>
+        <tr>
+          <td><strong>3. Acteurs</strong></td>
+          <td><code>front_sprites</code></td>
+          <td>Sprites de personnages (<code>show</code>)</td>
+          <td>Personnages positionnés devant la pièce</td>
+        </tr>
+        <tr>
+          <td><strong>4. Régie</strong></td>
+          <td><code>overlay</code></td>
+          <td><code>say</code>, choix, <code>quick_menu</code></td>
+          <td>Interface prioritaire, toujours au premier plan</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="rule-box">
+      <strong>Règle pour le scénariste :</strong>
+      Aucun calque n'est à spécifier dans les dialogues. Un simple <code>show Eileen</code> place automatiquement le personnage au bon niveau devant le décor sans masquer les boîtes de texte.
+    </div>
+  </section>
+
+  <!-- 2. CONFIGURATION TECHNIQUE -->
+  <section>
+    <h2>2. Configuration moteur</h2>
+    
+    <h3>Dans <code>options.rpy</code></h3>
+    <pre><code>define config.layers = [
+    'master',           # Fond / Shaders
+    'transient',        # Requis par le système Ren'Py
+    'screens',          # room_screen (pièce interactive)
+    'front_sprites',    # Personnages affichés devant la pièce
+    'overlay'           # Dialogues, menus et alertes
+]
+
+init python:
+    # Redirige les personnages vers le calque intermédiaire
+    config.tag_layer["Eileen"] = "front_sprites"
+
+    # Verrouille l'interface de dialogue sur le calque supérieur
+    config.say_layer = "overlay"
+    config.choice_layer = "overlay"</code></pre>
+
+    <h3>Dans <code>screens.rpy</code></h3>
+    <pre><code>screen room_screen():
+    zorder 10
+
+    $ room_w = 1300
+    $ room_h = 700
+    $ dialogue_top_y = 840
+
+    viewport:
+        xsize room_w
+        ysize room_h
+        xalign 0.5
+        yanchor 1.0
+        ypos dialogue_top_y
+        clips True
+
+        imagemap:
+            xfill True
+            yfill True
+            idle current_room.bg
+
+            for h in current_room.hotspots:
+                hotspot h.rect action h.action
+
+screen say(who, what) layer "overlay":
+    zorder 100
+    style_prefix "say"
+    window:
+        id "window"
+        # ... code say standard inchangé
+
+screen quick_menu() layer "overlay":
+    zorder 200
+    # ... code quick_menu standard inchangé</code></pre>
+  </section>
+
+  <!-- 3. MODÈLE DE DONNÉES -->
+  <section>
+    <h2>3. Modèle de données (Classes)</h2>
+    <pre><code>init python:
+    class Room():
+        def __init__(self, id, bg):
+            self.id = id
+            self.bg = bg
+            self.hotspots = []
+            self.convos = []
+            self.neighbors = []
+            self.cinematic = None  # Label déclenché à la première visite
+
+    class HotspotData:
+        def __init__(self, rect, action):
+            self.rect = rect      # Format: (x, y, largeur, hauteur)
+            self.action = action  # ui.jumps("label_cible")
+
+    class EventManager():
+        def __init__(self):
+            self.eventsObserved = set()
+
+        def unlock(self, eventId):
+            self.eventsObserved.add(eventId)
+
+        def has(self, eventId):
+            return eventId in self.eventsObserved</code></pre>
+  </section>
+
+  <!-- 4. NAVIGATION ET DÉPLACEMENTS -->
+  <section>
+    <h2>4. Déplacements (<code>travel_to</code>)</h2>
+    <p>Le label <code>travel_to</code> orchestre les changements de lieu en assurant la transition, le nettoyage des acteurs précédents et le déclenchement d'éventuelles cinématiques :</p>
+    
+    <pre><code>label travel_to(destination):
+    scene black with dissolve
+    $ current_room = destination
+
+    if current_room.cinematic is not None:
+        $ cutscene = current_room.cinematic
+        $ current_room.cinematic = None  # Consommée immédiatement
+        call expression cutscene
+
+    jump room_loop
+
+label room_loop:
+    call screen room_screen
+    jump room_loop</code></pre>
+  </section>
+
+  <!-- 5. GUIDE D'ÉCRITURE ET EXEMPLE -->
+  <section>
+    <h2>5. Exemple de scénarisation (Style Ace Attorney)</h2>
+
+    <h3>Déclaration de l'environnement</h3>
+    <pre><code>init python:
+    mgr = EventManager()
+
+    # Déclaration des pièces
+    bureau = Room("bureau", "backgrounds/bureau.png")
+    archives = Room("archives", "backgrounds/archives.png")
+    archives.cinematic = "premiere_visite_archives"
+
+    # Hotspots du bureau
+    spot_tiroir = HotspotData((200, 350, 180, 120), ui.jumps("inspect_drawer"))
+    spot_porte  = HotspotData((50, 200, 120, 400), ui.jumps("aller_archives"))
+    bureau.hotspots = [spot_tiroir, spot_porte]
+
+    # Hotspots des archives
+    spot_retour = HotspotData((50, 200, 120, 400), ui.jumps("aller_bureau"))
+    archives.hotspots = [spot_retour]</code></pre>
+
+    <h3>Labels d'interaction (Fouille d'objets)</h3>
+    <pre><code>label inspect_drawer:
+    show Eileen
+    e "Voyons ce que contient ce vieux tiroir..."
+    "Le tiroir s'ouvre : une lettre anonyme y est cachée."
+    
+    $ mgr.unlock("lettre_trouvee")
+    
+    e "Une pièce à conviction capitale ! Je la garde avec moi."
+    hide Eileen with dissolve
+    
+    # Règle : toujours terminer un label d'interaction par un return
+    return</code></pre>
+
+    <h3>Navigation par clic de porte</h3>
+    <pre><code>label aller_archives:
+    call travel_to(archives)
+    return
+
+label aller_bureau:
+    call travel_to(bureau)
+    return</code></pre>
+
+    <h3>Changement de pièce en cours d'échange (Mid-dialogue)</h3>
+    <pre><code>label alerte_archives:
+    show Eileen
+    e "Tu as entendu ce fracas à l'instant ?"
+    e "Ça provient tout droit de la salle d'archives... Suis-moi !"
+
+    # Téléportation immédiate au cours de la scène
+    call travel_to(archives)
+
+    # La narration reprend aussitôt dans le nouvel environnement
+    show Eileen
+    e "Regarde tout ce désordre au sol... Quelqu'un est passé avant nous."
+    hide Eileen with dissolve
+
+    jump room_loop</code></pre>
+
+    <h3>Cinématique d'entrée automatique</h3>
+    <pre><code>label premiere_visite_archives:
+    show Eileen
+    e "L'air est glacial ici... Les documents ont été éparpillés."
+    hide Eileen with dissolve
+    return</code></pre>
+  </section>
+
+  <footer>
+    Guide de conception interne &mdash; Système d'exploration Ren'Py
+  </footer>
+
+</div>
+
+</body>
+</html>
