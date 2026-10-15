@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Carrousel Multimédia pour Canva</title>
+  
+  <!-- Feuilles de style officielles de Swiper -->
+  <link rel="stylesheet" href="https://jsdelivr.net" />
+
+  <style>
+    html, body {
+      position: relative;
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      background: transparent; /* Permet une intégration propre dans Canva */
+    }
+    .swiper {
+      width: 100%;
+      height: 100vh;
+    }
+    .swiper-slide {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: #f4f4f4;
+    }
+    /* Rendre les contenus responsives dans le slider */
+    .swiper-slide img, 
+    .swiper-slide video, 
+    .swiper-slide iframe {
+      width: 100%;
+      height: 100%;
+      object-fit: contain; /* Évite de déformer les vidéos/images */
+      border: none;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Structure standard de Swiper -->
+  <div class="swiper monCarrousel">
+    <div class="swiper-wrapper">
+      
+      <!-- Slide 1 : Une simple Photo -->
+      <div class="swiper-slide">
+        <img src="https://unsplash.com" alt="Photo">
+      </div>
+      
+      <!-- Slide 2 : Une Vidéo native (avec contrôles) -->
+      <div class="swiper-slide">
+        <video controls playsinline muted>
+          <source src="https://w3schools.com" type="video/mp4">
+          Votre navigateur ne supporte pas les vidéos.
+        </video>
+      </div>
+      
+      <!-- Slide 3 : Un Document PDF ou une autre page HTML (via iframe) -->
+      <div class="swiper-slide">
+        <iframe src="https://w3.org"></div>
+      </div>
+
+    </div>
+    
+    <!-- Éléments de navigation optionnels -->
+    <div class="swiper-button-next"></div>
+    <div class="swiper-button-prev"></div>
+    <div class="swiper-pagination"></div>
+  </div>
+
+  <!-- Scripts officiels de Swiper -->
+  <script src="https://jsdelivr.net"></script>
+
+  <!-- Initialisation standard -->
+  <script>
+    const swiper = new Swiper('.monCarrousel', {
+      loop: true, /* Boucle infinie */
+      pagination: {
+        el: '.swiper-pagination',
+        clickable: true,
+      },
+      navigation: {
+        nextEl: '.swiper-button-next',
+        prevEl: '.swiper-button-prev',
+      },
+    });
+  </script>
+</body>
+</html>
